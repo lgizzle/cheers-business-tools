@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Tax Calculator - Cheers Liquor Mart</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding-top: 2rem;
+            background-color: #f8f9fa;
+        }
+        .calculator-card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            background-color: white;
+        }
+        .card-header {
+            background-color: #4472c4;
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+            padding: 1rem;
+        }
+        .btn-primary {
+            background-color: #4472c4;
+            border-color: #4472c4;
+        }
+        .btn-primary:hover {
+            background-color: #365aa1;
+            border-color: #365aa1;
+        }
+        .form-container {
+            padding: 1.5rem;
+        }
+        .results-section {
+            padding: 1.5rem;
+            border-top: 1px solid #dee2e6;
+        }
+        .section-header {
+            background-color: #f2f2f2;
+            padding: 0.5rem 1rem;
+            margin-bottom: 1rem;
+            border-radius: 5px;
+        }
+        .back-button {
+            margin-bottom: 1rem;
+        }
+        .jurisdiction-row {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #e9e9e9;
+        }
+        .add-row-button {
+            margin-top: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .delete-row-btn {
+            margin-top: 1.75rem;
+        }
+        .table-container {
+            overflow-x: auto;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        table.results-table {
+            width: 100%;
+            font-size: 0.9rem;
+        }
+        table.results-table th {
+            position: sticky;
+            top: 0;
+            background-color: #4472c4;
+            color: white;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <a href="{{ url_for('index') }}" class="btn btn-secondary back-button">
+                    &laquo; Back to Tools
+                </a>
+                <div class="calculator-card">
+                    <div class="card-header">
+                        <h2 class="text-center mb-0">Sales Tax Calculator</h2>
+                    </div>
+                    <div class="form-container">
+                        <div class="section-header">
+                            <h4 class="mb-0">Enter Tax Collection Data</h4>
+                        </div>
+                        <form id="salesTaxForm">
+                            <div class="mb-3">
+                                <p class="text-muted">Enter the tax amounts collected by jurisdiction from your POS system. The calculator will determine sales amounts and tax distributions.</p>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table table-striped table-bordered">
+                                    <thead class="table-primary">
+                                        <tr>
+                                            <th>Jurisdiction Code</th>
+                                            <th>City Name</th>
+                                            <th>Standard Tax Collected ($)</th>
+                                            <th>Cigarette Tax Collected ($)</th>
+                                            <th>Soda Tax Collected ($)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>040017</td>
+                                            <td>COLORADO SPRINGS</td>
+                                            <td><input type="number" class="form-control" id="standardTax_040017" name="standardTax_040017" step="0.01" min="0" value="0"></td>
+                                            <td><input type="number" class="form-control" id="cigaretteTax_040017" name="cigaretteTax_040017" step="0.01" min="0" value="0"></td>
+                                            <td><input type="number" class="form-control" id="sodaTax_040017" name="sodaTax_040017" step="0.01" min="0" value="0"></td>
+                                        </tr>
+                                        <tr>
+                                            <td>040031</td>
+                                            <td>FOUNTAIN</td>
+                                            <td><input type="number" class="form-control" id="standardTax_040031" name="standardTax_040031" step="0.01" min="0" value="0"></td>
+                                            <td><input type="number" class="form-control" id="cigaretteTax_040031" name="cigaretteTax_040031" step="0.01" min="0" value="0"></td>
+                                            <td><input type="number" class="form-control" id="sodaTax_040031" name="sodaTax_040031" step="0.01" min="0" value="0"></td>
+                                        </tr>
+                                        <tr>
+                                            <td>040052</td>
+                                            <td>MANITOU SPRINGS</td>
+                                            <td><input type="number" class="form-control" id="standardTax_040052" name="standardTax_040052" step="0.01" min="0" value="0"></td>
+                                            <td><input type="number" class="form-control" id="cigaretteTax_040052" name="cigaretteTax_040052" step="0.01" min="0" value="0"></td>
+                                            <td><input type="number" class="form-control" id="sodaTax_040052" name="sodaTax_040052" step="0.01" min="0" value="0"></td>
+                                        </tr>
+                                        <tr>
+                                            <td>040059</td>
+                                            <td>PALMER LAKE</td>
+                                            <td><input type="number" class="form-control" id="standardTax_040059" name="standardTax_040059" step="0.01" min="0" value="0"></td>
+                                            <td><input type="number" class="form-control" id="cigaretteTax_040059" name="cigaretteTax_040059" step="0.01" min="0" value="0"></td>
+                                            <td><input type="number" class="form-control" id="sodaTax_040059" name="sodaTax_040059" step="0.01" min="0" value="0"></td>
+                                        </tr>
+                                        <tr>
+                                            <td>040097</td>
+                                            <td>WOODLAND PARK</td>
+                                            <td><input type="number" class="form-control" id="standardTax_040097" name="standardTax_040097" step="0.01" min="0" value="0"></td>
+                                            <td><input type="number" class="form-control" id="cigaretteTax_040097" name="cigaretteTax_040097" step="0.01" min="0" value="0"></td>
+                                            <td><input type="number" class="form-control" id="sodaTax_040097" name="sodaTax_040097" step="0.01" min="0" value="0"></td>
+                                        </tr>
+                                        <tr>
+                                            <td>040057</td>
+                                            <td>MONUMENT</td>
+                                            <td><input type="number" class="form-control" id="standardTax_040057" name="standardTax_040057" step="0.01" min="0" value="0"></td>
+                                            <td><input type="number" class="form-control" id="cigaretteTax_040057" name="cigaretteTax_040057" step="0.01" min="0" value="0"></td>
+                                            <td><input type="number" class="form-control" id="sodaTax_040057" name="sodaTax_040057" step="0.01" min="0" value="0"></td>
+                                        </tr>
+                                        <tr>
+                                            <td>040206</td>
+                                            <td>FALCON</td>
+                                            <td><input type="number" class="form-control" id="standardTax_040206_falcon" name="standardTax_040206_falcon" step="0.01" min="0" value="0"></td>
+                                            <td><input type="number" class="form-control" id="cigaretteTax_040206_falcon" name="cigaretteTax_040206_falcon" step="0.01" min="0" value="0"></td>
+                                            <td><input type="number" class="form-control" id="sodaTax_040206_falcon" name="sodaTax_040206_falcon" step="0.01" min="0" value="0"></td>
+                                        </tr>
+                                        <tr>
+                                            <td>040206</td>
+                                            <td>SECURITY/WIDEFIELD</td>
+                                            <td><input type="number" class="form-control" id="standardTax_040206_sw" name="standardTax_040206_sw" step="0.01" min="0" value="0"></td>
+                                            <td><input type="number" class="form-control" id="cigaretteTax_040206_sw" name="cigaretteTax_040206_sw" step="0.01" min="0" value="0"></td>
+                                            <td><input type="number" class="form-control" id="sodaTax_040206_sw" name="sodaTax_040206_sw" step="0.01" min="0" value="0"></td>
+                                        </tr>
+                                        <tr>
+                                            <td>040206</td>
+                                            <td>CHIPITA PARK</td>
+                                            <td><input type="number" class="form-control" id="standardTax_040206_cp" name="standardTax_040206_cp" step="0.01" min="0" value="0"></td>
+                                            <td><input type="number" class="form-control" id="cigaretteTax_040206_cp" name="cigaretteTax_040206_cp" step="0.01" min="0" value="0"></td>
+                                            <td><input type="number" class="form-control" id="sodaTax_040206_cp" name="sodaTax_040206_cp" step="0.01" min="0" value="0"></td>
+                                        </tr>
+                                        <tr>
+                                            <td>040206</td>
+                                            <td>PEYTON</td>
+                                            <td><input type="number" class="form-control" id="standardTax_040206_peyton" name="standardTax_040206_peyton" step="0.01" min="0" value="0"></td>
+                                            <td><input type="number" class="form-control" id="cigaretteTax_040206_peyton" name="cigaretteTax_040206_peyton" step="0.01" min="0" value="0"></td>
+                                            <td><input type="number" class="form-control" id="sodaTax_040206_peyton" name="sodaTax_040206_peyton" step="0.01" min="0" value="0"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                                <button type="button" id="loadSampleBtn" class="btn btn-outline-info">Load Sample Data</button>
+                                <button type="submit" class="btn btn-primary">Calculate Taxes</button>
+                                <button type="button" id="generateReport" class="btn btn-success" disabled>Generate Excel Report</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Hide the old jurisdictionRows div -->
+                    <div id="jurisdictionRows" style="display: none;">
+                        <!-- Old content kept for JavaScript compatibility but hidden -->
+                        <div class="jurisdiction-row" data-row="0">
+                            <!-- Original form structure kept but hidden -->
+                        </div>
+                    </div>
+
+                    <!-- Hide the add row button -->
+                    <div class="d-grid gap-2" style="display: none;">
+                        <button type="button" class="btn btn-outline-primary add-row-button" onclick="addJurisdictionRow()">
+                            <i class="bi bi-plus-circle"></i> Add Another Jurisdiction
+                        </button>
+                    </div>
+
+                    <!-- Results Section (initially hidden) -->
+                    <div class="results-section" id="resultsSection" style="display: none;">
+                        <div class="section-header">
+                            <h4 class="mb-0">Calculation Results</h4>
+                        </div>
+
+                        <ul class="nav nav-tabs" id="resultTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="sales-tab" data-bs-toggle="tab" data-bs-target="#sales" type="button" role="tab" aria-controls="sales" aria-selected="true">Sales Summary</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="tax-tab" data-bs-toggle="tab" data-bs-target="#tax" type="button" role="tab" aria-controls="tax" aria-selected="false">Tax Distributions</button>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content mt-3">
+                            <div class="tab-pane fade show active" id="sales" role="tabpanel" aria-labelledby="sales-tab">
+                                <div class="table-container">
+                                    <table class="table table-striped table-bordered results-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Jurisdiction</th>
+                                                <th>City Name</th>
+                                                <th>Tax Collected</th>
+                                                <th>Standard Sales</th>
+                                                <th>Cigarette Sales</th>
+                                                <th>Soda Sales</th>
+                                                <th>Total Sales</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="salesTableBody">
+                                            <!-- Sales results will be displayed here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade" id="tax" role="tabpanel" aria-labelledby="tax-tab">
+                                <div class="table-container">
+                                    <table class="table table-striped table-bordered results-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Jurisdiction</th>
+                                                <th>City Name</th>
+                                                <th>County Tax</th>
+                                                <th>City Tax</th>
+                                                <th>RTA Tax</th>
+                                                <th>State Tax</th>
+                                                <th>State Service Fee</th>
+                                                <th>City Service Fee</th>
+                                                <th>Net Tax</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="taxTableBody">
+                                            <!-- Tax distribution results will be displayed here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let rowCount = 1; // Keep this for compatibility
+
+        // Add load sample data function
+        function loadSampleData() {
+            // Clear existing values
+            const inputs = document.querySelectorAll('input[type="number"]');
+            inputs.forEach(input => {
+                input.value = "0";
+            });
+
+            // Set values from the receipt image
+            // Colorado Springs (SALES TAX - standard)
+            document.getElementById('standardTax_040017').value = "57374.49";
+
+            // Colorado Springs (CIG tax)
+            document.getElementById('cigaretteTax_040017').value = "346.58";
+
+            // Colorado Springs (SODA tax)
+            document.getElementById('sodaTax_040017').value = "125.90";
+
+            // Palmer Lake
+            document.getElementById('standardTax_040059').value = "36.22";
+
+            // Falcon
+            document.getElementById('standardTax_040206_falcon').value = "0.78";
+
+            // Manitou Springs
+            document.getElementById('standardTax_040052').value = "156.73";
+            document.getElementById('sodaTax_040052').value = "1.07";
+
+            // Chipita Park
+            document.getElementById('standardTax_040206_cp').value = "26.66";
+
+            // Woodland Park
+            document.getElementById('standardTax_040097').value = "6.20";
+
+            // Fountain
+            document.getElementById('standardTax_040031').value = "142.16";
+
+            // Monument
+            document.getElementById('standardTax_040057').value = "36.14";
+
+            // Security/Widefield
+            document.getElementById('standardTax_040206_sw').value = "8.54";
+
+            // Peyton
+            document.getElementById('standardTax_040206_peyton').value = "32.00";
+        }
+
+        function addJurisdictionRow() {
+            // Function kept for compatibility but no longer used
+        }
+
+        function deleteJurisdictionRow(rowIndex) {
+            // Function kept for compatibility but no longer used
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add event listener for the load sample button
+            document.getElementById('loadSampleBtn').addEventListener('click', loadSampleData);
+
+            const salesTaxForm = document.getElementById('salesTaxForm');
+            const resultsSection = document.getElementById('resultsSection');
+            const generateReportBtn = document.getElementById('generateReport');
+            let lastCalculationData = null;
+
+            salesTaxForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                calculateTaxes();
+            });
+
+            generateReportBtn.addEventListener('click', function() {
+                generateExcelReport();
+            });
+
+            function calculateTaxes() {
+                // Collect tax data from the table
+                const taxData = [];
+
+                // Colorado Springs
+                if (parseFloat(document.getElementById('standardTax_040017').value) > 0 ||
+                    parseFloat(document.getElementById('cigaretteTax_040017').value) > 0 ||
+                    parseFloat(document.getElementById('sodaTax_040017').value) > 0) {
+                    taxData.push({
+                        jurisdiction_code: '040017',
+                        city_name: 'COLORADO SPRINGS',
+                        standard_tax: document.getElementById('standardTax_040017').value,
+                        cigarette_tax: document.getElementById('cigaretteTax_040017').value || '0',
+                        soda_tax: document.getElementById('sodaTax_040017').value || '0'
+                    });
+                }
+
+                // Fountain
+                if (parseFloat(document.getElementById('standardTax_040031').value) > 0 ||
+                    parseFloat(document.getElementById('cigaretteTax_040031').value) > 0 ||
+                    parseFloat(document.getElementById('sodaTax_040031').value) > 0) {
+                    taxData.push({
+                        jurisdiction_code: '040031',
+                        city_name: 'FOUNTAIN',
+                        standard_tax: document.getElementById('standardTax_040031').value,
+                        cigarette_tax: document.getElementById('cigaretteTax_040031').value || '0',
+                        soda_tax: document.getElementById('sodaTax_040031').value || '0'
+                    });
+                }
+
+                // Manitou Springs
+                if (parseFloat(document.getElementById('standardTax_040052').value) > 0 ||
+                    parseFloat(document.getElementById('cigaretteTax_040052').value) > 0 ||
+                    parseFloat(document.getElementById('sodaTax_040052').value) > 0) {
+                    taxData.push({
+                        jurisdiction_code: '040052',
+                        city_name: 'MANITOU SPRINGS',
+                        standard_tax: document.getElementById('standardTax_040052').value,
+                        cigarette_tax: document.getElementById('cigaretteTax_040052').value || '0',
+                        soda_tax: document.getElementById('sodaTax_040052').value || '0'
+                    });
+                }
+
+                // Palmer Lake
+                if (parseFloat(document.getElementById('standardTax_040059').value) > 0 ||
+                    parseFloat(document.getElementById('cigaretteTax_040059').value) > 0 ||
+                    parseFloat(document.getElementById('sodaTax_040059').value) > 0) {
+                    taxData.push({
+                        jurisdiction_code: '040059',
+                        city_name: 'PALMER LAKE',
+                        standard_tax: document.getElementById('standardTax_040059').value,
+                        cigarette_tax: document.getElementById('cigaretteTax_040059').value || '0',
+                        soda_tax: document.getElementById('sodaTax_040059').value || '0'
+                    });
+                }
+
+                // Woodland Park
+                if (parseFloat(document.getElementById('standardTax_040097').value) > 0 ||
+                    parseFloat(document.getElementById('cigaretteTax_040097').value) > 0 ||
+                    parseFloat(document.getElementById('sodaTax_040097').value) > 0) {
+                    taxData.push({
+                        jurisdiction_code: '040097',
+                        city_name: 'WOODLAND PARK',
+                        standard_tax: document.getElementById('standardTax_040097').value,
+                        cigarette_tax: document.getElementById('cigaretteTax_040097').value || '0',
+                        soda_tax: document.getElementById('sodaTax_040097').value || '0'
+                    });
+                }
+
+                // Monument
+                if (parseFloat(document.getElementById('standardTax_040057').value) > 0 ||
+                    parseFloat(document.getElementById('cigaretteTax_040057').value) > 0 ||
+                    parseFloat(document.getElementById('sodaTax_040057').value) > 0) {
+                    taxData.push({
+                        jurisdiction_code: '040057',
+                        city_name: 'MONUMENT',
+                        standard_tax: document.getElementById('standardTax_040057').value,
+                        cigarette_tax: document.getElementById('cigaretteTax_040057').value || '0',
+                        soda_tax: document.getElementById('sodaTax_040057').value || '0'
+                    });
+                }
+
+                // Falcon (Unincorporated)
+                if (parseFloat(document.getElementById('standardTax_040206_falcon').value) > 0 ||
+                    parseFloat(document.getElementById('cigaretteTax_040206_falcon').value) > 0 ||
+                    parseFloat(document.getElementById('sodaTax_040206_falcon').value) > 0) {
+                    taxData.push({
+                        jurisdiction_code: '040206',
+                        city_name: 'FALCON',
+                        standard_tax: document.getElementById('standardTax_040206_falcon').value,
+                        cigarette_tax: document.getElementById('cigaretteTax_040206_falcon').value || '0',
+                        soda_tax: document.getElementById('sodaTax_040206_falcon').value || '0'
+                    });
+                }
+
+                // Security/Widefield (Unincorporated)
+                if (parseFloat(document.getElementById('standardTax_040206_sw').value) > 0 ||
+                    parseFloat(document.getElementById('cigaretteTax_040206_sw').value) > 0 ||
+                    parseFloat(document.getElementById('sodaTax_040206_sw').value) > 0) {
+                    taxData.push({
+                        jurisdiction_code: '040206',
+                        city_name: 'SECURITY/WIDEFIELD',
+                        standard_tax: document.getElementById('standardTax_040206_sw').value,
+                        cigarette_tax: document.getElementById('cigaretteTax_040206_sw').value || '0',
+                        soda_tax: document.getElementById('sodaTax_040206_sw').value || '0'
+                    });
+                }
+
+                // Chipita Park (Unincorporated)
+                if (parseFloat(document.getElementById('standardTax_040206_cp').value) > 0 ||
+                    parseFloat(document.getElementById('cigaretteTax_040206_cp').value) > 0 ||
+                    parseFloat(document.getElementById('sodaTax_040206_cp').value) > 0) {
+                    taxData.push({
+                        jurisdiction_code: '040206',
+                        city_name: 'CHIPITA PARK',
+                        standard_tax: document.getElementById('standardTax_040206_cp').value,
+                        cigarette_tax: document.getElementById('cigaretteTax_040206_cp').value || '0',
+                        soda_tax: document.getElementById('sodaTax_040206_cp').value || '0'
+                    });
+                }
+
+                // Peyton (Unincorporated)
+                if (parseFloat(document.getElementById('standardTax_040206_peyton').value) > 0 ||
+                    parseFloat(document.getElementById('cigaretteTax_040206_peyton').value) > 0 ||
+                    parseFloat(document.getElementById('sodaTax_040206_peyton').value) > 0) {
+                    taxData.push({
+                        jurisdiction_code: '040206',
+                        city_name: 'PEYTON',
+                        standard_tax: document.getElementById('standardTax_040206_peyton').value,
+                        cigarette_tax: document.getElementById('cigaretteTax_040206_peyton').value || '0',
+                        soda_tax: document.getElementById('sodaTax_040206_peyton').value || '0'
+                    });
+                }
+
+                // Save for report generation
+                lastCalculationData = taxData;
+
+                // Only proceed if we have data
+                if (taxData.length === 0) {
+                    alert('Please enter tax amounts for at least one jurisdiction.');
+                    return;
+                }
+
+                // Send to API
+                fetch('/api/calculate-sales-tax', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ tax_data: taxData })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        displayResults(data.results);
+                        generateReportBtn.disabled = false;
+                        resultsSection.style.display = 'block';
+
+                        // Scroll to results
+                        resultsSection.scrollIntoView({ behavior: 'smooth' });
+                    } else {
+                        alert('Error: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while calculating taxes.');
+                });
+            }
+
+            // Keep the original functions for compatibility
+            function displayResults(results) {
+                // Display sales results
+                const salesTableBody = document.getElementById('salesTableBody');
+                salesTableBody.innerHTML = '';
+
+                results.sales_calculations.forEach(item => {
+                    const row = document.createElement('tr');
+
+                    // Apply bold styling to totals row
+                    const isTotal = !item.jurisdiction_code && !item.city_name;
+                    if (isTotal) {
+                        row.style.fontWeight = 'bold';
+                        row.style.backgroundColor = '#f2f2f2';
+                    }
+
+                    row.innerHTML = `
+                        <td>${item.jurisdiction_code || 'TOTAL'}</td>
+                        <td>${item.city_name || ''}</td>
+                        <td>${formatMoney(item.total_tax_collected)}</td>
+                        <td>${formatMoney(item.standard_sales)}</td>
+                        <td>${formatMoney(item.cigarette_sales)}</td>
+                        <td>${formatMoney(item.soda_sales)}</td>
+                        <td>${formatMoney(item.total_sales)}</td>
+                    `;
+
+                    salesTableBody.appendChild(row);
+                });
+
+                // Display tax distribution results
+                const taxTableBody = document.getElementById('taxTableBody');
+                taxTableBody.innerHTML = '';
+
+                results.tax_calculations.forEach(item => {
+                    const row = document.createElement('tr');
+
+                    // Apply bold styling to totals row
+                    const isTotal = !item.jurisdiction_code && !item.city_name;
+                    if (isTotal) {
+                        row.style.fontWeight = 'bold';
+                        row.style.backgroundColor = '#f2f2f2';
+                    }
+
+                    row.innerHTML = `
+                        <td>${item.jurisdiction_code || 'TOTAL'}</td>
+                        <td>${item.city_name || ''}</td>
+                        <td>${formatMoney(item.calculated_county_tax)}</td>
+                        <td>${formatMoney(item.calculated_city_tax)}</td>
+                        <td>${formatMoney(item.calculated_rta_tax)}</td>
+                        <td>${formatMoney(item.calculated_state_tax)}</td>
+                        <td>${formatMoney(item.calculated_state_svc_fee)}</td>
+                        <td>${formatMoney(item.calculated_city_svc_fee)}</td>
+                        <td>${formatMoney(item.calculated_total_net_tax)}</td>
+                    `;
+
+                    taxTableBody.appendChild(row);
+                });
+            }
+
+            function generateExcelReport() {
+                // Only proceed if we have data
+                if (!lastCalculationData) {
+                    alert('Please calculate taxes first.');
+                    return;
+                }
+
+                fetch('/api/generate-sales-tax-report', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ tax_data: lastCalculationData })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Trigger download
+                        window.location.href = data.download_url;
+                    } else {
+                        alert('Error: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while generating the report.');
+                });
+            }
+
+            function formatMoney(amount) {
+                return new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: 'USD',
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                }).format(amount);
+            }
+        });
+    </script>
+</body>
+</html>

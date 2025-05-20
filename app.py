@@ -5,7 +5,10 @@ from werkzeug.utils import secure_filename
 from report_processor import APReportProcessor
 from deal_split_processor import DealSplitCalculator
 from single_deal_calculator import SingleDealCalculator
+from sales_tax_calculator import SalesTaxCalculator
 import json
+import shutil
+from pathlib import Path
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your-secret-key'
@@ -20,6 +23,7 @@ os.makedirs(app.config['REPORT_FOLDER'], exist_ok=True)
 # Initialize calculators
 deal_calculator = DealSplitCalculator()
 single_deal_calculator = SingleDealCalculator()
+sales_tax_calculator = SalesTaxCalculator()
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
@@ -244,6 +248,105 @@ def generate_single_deal_report():
         })
     except Exception as e:
         return jsonify({"success": False, "error": str(e)})
+
+# Sales Tax Calculator routes
+@app.route('/sales-tax-calculator')
+def sales_tax_calculator_page():
+    return render_template('sales_tax_calculator.html')
+
+@app.route('/api/calculate-sales-tax', methods=['POST'])
+def calculate_sales_tax():
+    try:
+        data = request.json
+        tax_data = data.get('tax_data', [])
+
+        if not tax_data:
+            return jsonify({"success": False, "error": "No tax data provided"})
+
+        # Calculate results
+        results = sales_tax_calculator.calculate_sales_from_tax(tax_data)
+
+        # Convert DataFrame results to lists for JSON response
+        sales_calculations = results['sales_calculations'].to_dict('records')
+        tax_calculations = results['tax_calculations'].to_dict('records')
+
+        # Handle NumPy types for JSON serialization
+        def convert_numpy_types(item):
+            for key, value in item.items():
+                if 'numpy' in str(type(value)):
+                    item[key] = float(value)
+            return item
+
+        sales_calculations = [convert_numpy_types(item) for item in sales_calculations]
+        tax_calculations = [convert_numpy_types(item) for item in tax_calculations]
+
+        return jsonify({
+            "success": True,
+            "results": {
+                "sales_calculations": sales_calculations,
+                "tax_calculations": tax_calculations
+            }
+        })
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({"success": False, "error": str(e)})
+
+@app.route('/api/generate-sales-tax-report', methods=['POST'])
+def generate_sales_tax_report():
+    try:
+        data = request.json
+        tax_data = data.get('tax_data', [])
+
+        if not tax_data:
+            return jsonify({"success": False, "error": "No tax data provided"})
+
+        # Generate a filename
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"sales_tax_{timestamp}.xlsx"
+        file_path = os.path.join(app.config['REPORT_FOLDER'], filename)
+
+        # Generate the report
+        sales_tax_calculator.generate_report(tax_data, file_path)
+
+        return jsonify({
+            "success": True,
+            "filename": filename,
+            "download_url": url_for('download_file', filename=filename)
+        })
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({"success": False, "error": str(e)})
+
+@app.route('/view-sample-report')
+def view_sample_report():
+    """Generate a report using sample data for demonstration purposes."""
+    try:
+        # Path to the real source file in the project root
+        sample_file_path = os.path.join('.', 'Victory Spirits LLC dba Cheers Liquor Mart_A_P Aging Detail Report-2.xlsx')
+
+        # Check if source file exists, if not, show an error
+        if not os.path.exists(sample_file_path):
+            flash('Sample data file not found. Please contact the administrator.')
+            return redirect(url_for('index'))
+
+        # Create a temporary copy of the source file to process
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        temp_file_path = os.path.join(app.config['UPLOAD_FOLDER'], f'sample_temp_{timestamp}.xlsx')
+        shutil.copy2(sample_file_path, temp_file_path)
+
+        # Process the report
+        processor = APReportProcessor(temp_file_path)
+        output_file = processor.generate_report()
+
+        # Pass the generated file path to the template
+        return render_template('success.html',
+                              filename=os.path.basename(output_file),
+                              is_sample=True)
+    except Exception as e:
+        flash(f'Error processing sample file: {str(e)}')
+        return redirect(url_for('index'))
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8080)
