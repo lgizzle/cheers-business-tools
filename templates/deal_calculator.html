@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deal Split Calculator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding-top: 2rem;
+            background-color: #f8f9fa;
+        }
+        .calculator-card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            background-color: white;
+        }
+        .card-header {
+            background-color: #4472c4;
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+            padding: 1rem;
+        }
+        .calculator-icon {
+            font-size: 4rem;
+            color: #4472c4;
+            margin-bottom: 1rem;
+        }
+        .container-fluid {
+            padding: 2rem;
+        }
+        .btn-primary {
+            background-color: #4472c4;
+            border-color: #4472c4;
+        }
+        .btn-primary:hover {
+            background-color: #365aa1;
+            border-color: #365aa1;
+        }
+        .btn-outline-primary {
+            color: #4472c4;
+            border-color: #4472c4;
+        }
+        .btn-outline-primary:hover {
+            background-color: #4472c4;
+            border-color: #4472c4;
+        }
+        .alert {
+            margin-top: 1rem;
+        }
+        .add-row-btn {
+            width: 100%;
+            margin-top: 10px;
+        }
+        .numeric-input {
+            text-align: right;
+        }
+        .results-table th, .results-table td {
+            text-align: center;
+        }
+        .variety-cell {
+            min-width: 200px;
+        }
+        .nav-tabs .nav-link {
+            color: #4472c4;
+        }
+        .nav-tabs .nav-link.active {
+            color: #4472c4;
+            font-weight: bold;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #4472c4;
+            box-shadow: 0 0 0 0.25rem rgba(68, 114, 196, 0.25);
+        }
+        #statusMessage {
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 15px;
+            display: none;
+        }
+        .table-responsive {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .scenario-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .nav-link {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card calculator-card">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h2 class="mb-0">Deal Split Calculator</h2>
+                            <a href="{{ url_for('index') }}" class="btn btn-outline-light">Back to Home</a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <ul class="nav nav-tabs mb-4" id="calculatorTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link active" id="calculator-tab" data-bs-toggle="tab" data-bs-target="#calculator" type="button" role="tab" aria-controls="calculator" aria-selected="true">Calculator</a>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link" id="scenarios-tab" data-bs-toggle="tab" data-bs-target="#scenarios" type="button" role="tab" aria-controls="scenarios" aria-selected="false">Saved Scenarios</a>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link" id="help-tab" data-bs-toggle="tab" data-bs-target="#help" type="button" role="tab" aria-controls="help" aria-selected="false">Help</a>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content" id="calculatorTabContent">
+                            <!-- Calculator Tab -->
+                            <div class="tab-pane fade show active" id="calculator" role="tabpanel" aria-labelledby="calculator-tab">
+                                <div class="row mb-4">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="desiredTotal" class="form-label">Desired Total Order Quantity:</label>
+                                        <input type="number" class="form-control numeric-input" id="desiredTotal" min="1" placeholder="Enter total quantity">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="scenarioName" class="form-label">Save as Scenario (Optional):</label>
+                                        <input type="text" class="form-control" id="scenarioName" placeholder="Enter scenario name">
+                                    </div>
+                                </div>
+
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-bordered" id="varietiesTable">
+                                        <thead class="table-primary">
+                                            <tr>
+                                                <th class="variety-cell">Variety</th>
+                                                <th>Annual Sales</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="varietiesTableBody">
+                                            <!-- Rows will be added here dynamically -->
+                                            <tr>
+                                                <td><input type="text" class="form-control variety-input" placeholder="Enter variety name"></td>
+                                                <td><input type="number" class="form-control numeric-input annual-sales-input" placeholder="Enter sales quantity"></td>
+                                                <td class="text-center">
+                                                    <button class="btn btn-danger btn-sm delete-row">Remove</button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <button id="addRowBtn" class="btn btn-secondary add-row-btn">+ Add Another Variety</button>
+
+                                <div class="row mt-4">
+                                    <div class="col-md-6 mb-3">
+                                        <button id="calculateBtn" class="btn btn-primary w-100">Calculate Split</button>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="btn-group w-100" role="group">
+                                            <button id="saveScenarioBtn" class="btn btn-outline-primary">Save Scenario</button>
+                                            <button id="generateReportBtn" class="btn btn-success">Generate Excel Report</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="statusMessage" class="mt-3"></div>
+
+                                <div id="resultsContainer" class="mt-4" style="display: none;">
+                                    <h4>Calculation Results</h4>
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-bordered results-table">
+                                            <thead class="table-primary">
+                                                <tr>
+                                                    <th class="variety-cell">Variety</th>
+                                                    <th>Annual Sales</th>
+                                                    <th>Calculated Split</th>
+                                                    <th>Rounded Split</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="resultsTableBody">
+                                                <!-- Results will be inserted here -->
+                                            </tbody>
+                                            <tfoot class="table-secondary">
+                                                <tr>
+                                                    <th>Total</th>
+                                                    <th id="totalAnnualSales">0</th>
+                                                    <th id="totalCalculatedSplit">0</th>
+                                                    <th id="totalRoundedSplit">0</th>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Scenarios Tab -->
+                            <div class="tab-pane fade" id="scenarios" role="tabpanel" aria-labelledby="scenarios-tab">
+                                <div class="row">
+                                    <div class="col-md-5">
+                                        <h4>Saved Scenarios</h4>
+                                        <div class="list-group scenario-list" id="scenariosList">
+                                            {% if scenarios %}
+                                                {% for name in scenarios %}
+                                                    <button type="button" class="list-group-item list-group-item-action scenario-item" data-name="{{ name }}">
+                                                        {{ name }}
+                                                    </button>
+                                                {% endfor %}
+                                            {% else %}
+                                                <div class="list-group-item text-muted">No saved scenarios</div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <div id="scenarioDetails" class="card" style="display: none;">
+                                            <div class="card-header bg-light">
+                                                <h5 class="mb-0" id="scenarioDetailName">Scenario Name</h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="table-responsive">
+                                                    <table class="table table-sm table-bordered table-striped">
+                                                        <thead class="table-light">
+                                                            <tr>
+                                                                <th>Variety</th>
+                                                                <th>Annual Sales</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody id="scenarioDetailsBody">
+                                                            <!-- Scenario details will be loaded here -->
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                <div class="mt-3">
+                                                    <button id="loadScenarioBtn" class="btn btn-primary">Load to Calculator</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Help Tab -->
+                            <div class="tab-pane fade" id="help" role="tabpanel" aria-labelledby="help-tab">
+                                <h4>How to Use the Deal Split Calculator</h4>
+                                <ol>
+                                    <li class="mb-2">
+                                        <strong>Enter Variety Information</strong>
+                                        <p>Enter each product variety name and its annual sales quantity. Add more rows as needed using the "Add Another Variety" button.</p>
+                                    </li>
+                                    <li class="mb-2">
+                                        <strong>Specify Desired Total Order</strong>
+                                        <p>Enter the total number of units you want to order in the "Desired Total Order Quantity" field.</p>
+                                    </li>
+                                    <li class="mb-2">
+                                        <strong>Calculate Split</strong>
+                                        <p>Click the "Calculate Split" button to see how the total order should be distributed based on the sales proportions of each variety.</p>
+                                    </li>
+                                    <li class="mb-2">
+                                        <strong>Review Results</strong>
+                                        <p>The calculator will show both the mathematically precise split and a rounded version that ensures the total matches your desired quantity.</p>
+                                    </li>
+                                    <li class="mb-2">
+                                        <strong>Save Scenarios (Optional)</strong>
+                                        <p>Enter a name in the "Save as Scenario" field and click "Save Scenario" to store this setup for future use.</p>
+                                    </li>
+                                    <li class="mb-2">
+                                        <strong>Generate Excel Report</strong>
+                                        <p>Click "Generate Excel Report" to download an Excel file with the calculation results.</p>
+                                    </li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const addRowBtn = document.getElementById('addRowBtn');
+            const calculateBtn = document.getElementById('calculateBtn');
+            const saveScenarioBtn = document.getElementById('saveScenarioBtn');
+            const generateReportBtn = document.getElementById('generateReportBtn');
+            const varietiesTableBody = document.getElementById('varietiesTableBody');
+            const resultsTableBody = document.getElementById('resultsTableBody');
+            const resultsContainer = document.getElementById('resultsContainer');
+            const totalAnnualSales = document.getElementById('totalAnnualSales');
+            const totalRoundedSplit = document.getElementById('totalRoundedSplit');
+            const desiredTotal = document.getElementById('desiredTotal');
+            const scenarioName = document.getElementById('scenarioName');
+            const statusMessage = document.getElementById('statusMessage');
+            const scenariosList = document.getElementById('scenariosList');
+            const scenarioDetails = document.getElementById('scenarioDetails');
+            const scenarioDetailName = document.getElementById('scenarioDetailName');
+            const scenarioDetailsBody = document.getElementById('scenarioDetailsBody');
+            const loadScenarioBtn = document.getElementById('loadScenarioBtn');
+
+            let selectedScenario = null;
+
+            // Add a new row to the varieties table
+            function addRow() {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><input type="text" class="form-control variety-input" placeholder="Enter variety name"></td>
+                    <td><input type="number" class="form-control numeric-input annual-sales-input" placeholder="Enter sales quantity"></td>
+                    <td class="text-center">
+                        <button class="btn btn-danger btn-sm delete-row">Remove</button>
+                    </td>
+                `;
+                varietiesTableBody.appendChild(row);
+
+                // Add event listener to the new delete button
+                row.querySelector('.delete-row').addEventListener('click', function() {
+                    varietiesTableBody.removeChild(row);
+                });
+
+                // Focus on the new variety input field
+                const varietyInput = row.querySelector('.variety-input');
+                varietyInput.focus();
+
+                // Scroll the row into view so it's fully visible
+                row.scrollIntoView({behavior: 'smooth', block: 'center'});
+            }
+
+            // Add event listener to the Add Row button
+            addRowBtn.addEventListener('click', addRow);
+
+            // Add event listeners to initial delete buttons
+            document.querySelectorAll('.delete-row').forEach(button => {
+                button.addEventListener('click', function() {
+                    if (varietiesTableBody.children.length > 1) {
+                        varietiesTableBody.removeChild(this.closest('tr'));
+                    } else {
+                        showStatusMessage('Cannot remove the last row', 'warning');
+                    }
+                });
+            });
+
+            // Collect data from the varieties table
+            function collectVarietyData() {
+                const varieties = [];
+                const rows = varietiesTableBody.querySelectorAll('tr');
+
+                rows.forEach(row => {
+                    const varietyInput = row.querySelector('.variety-input');
+                    const annualSalesInput = row.querySelector('.annual-sales-input');
+
+                    if (varietyInput && annualSalesInput) {
+                        varieties.push({
+                            variety: varietyInput.value.trim(),
+                            annual_sales: annualSalesInput.value ? parseInt(annualSalesInput.value) : 0
+                        });
+                    }
+                });
+
+                return varieties;
+            }
+
+            // Validate inputs
+            function validateInputs() {
+                const desiredTotalValue = desiredTotal.value.trim();
+                if (!desiredTotalValue || isNaN(parseInt(desiredTotalValue)) || parseInt(desiredTotalValue) <= 0) {
+                    showStatusMessage('Please enter a valid desired total order quantity', 'danger');
+                    return false;
+                }
+
+                const varieties = collectVarietyData();
+                let hasValidData = false;
+
+                for (const variety of varieties) {
+                    if (variety.variety && variety.annual_sales > 0) {
+                        hasValidData = true;
+                        break;
+                    }
+                }
+
+                if (!hasValidData) {
+                    showStatusMessage('Please enter at least one variety with annual sales', 'danger');
+                    return false;
+                }
+
+                return true;
+            }
+
+            // Display status message
+            function showStatusMessage(message, type = 'success') {
+                statusMessage.textContent = message;
+                statusMessage.className = 'alert alert-' + type;
+                statusMessage.style.display = 'block';
+
+                // Hide message after 5 seconds
+                setTimeout(() => {
+                    statusMessage.style.display = 'none';
+                }, 5000);
+            }
+
+            // Calculate split
+            calculateBtn.addEventListener('click', function() {
+                if (!validateInputs()) return;
+
+                const varieties = collectVarietyData();
+                const desiredTotalValue = parseInt(desiredTotal.value);
+
+                // Send API request
+                fetch('/api/calculate-deal', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        varieties: varieties,
+                        desired_total: desiredTotalValue
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Display results
+                        displayResults(data.results, data.total_annual_sales, data.total_rounded_split);
+                    } else {
+                        showStatusMessage('Error: ' + data.error, 'danger');
+                    }
+                })
+                .catch(error => {
+                    showStatusMessage('Error: ' + error.message, 'danger');
+                });
+            });
+
+            // Display results
+            function displayResults(results, totalSales, totalSplit) {
+                // Clear previous results
+                resultsTableBody.innerHTML = '';
+
+                // Add rows for each result
+                results.forEach(result => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${result.variety}</td>
+                        <td>${result.annual_sales}</td>
+                        <td>${parseFloat(result.calculated_split).toFixed(2)}</td>
+                        <td>${result.rounded_split}</td>
+                    `;
+                    resultsTableBody.appendChild(row);
+                });
+
+                // Update totals
+                totalAnnualSales.textContent = totalSales;
+                totalRoundedSplit.textContent = totalSplit;
+
+                // Show results container
+                resultsContainer.style.display = 'block';
+
+                // Show status message
+                const desiredTotalValue = parseInt(desiredTotal.value);
+                if (totalSplit === desiredTotalValue) {
+                    showStatusMessage('Perfect! The rounded split matches your desired total.', 'success');
+                } else {
+                    showStatusMessage(`Warning: The rounded split (${totalSplit}) doesn't match your desired total (${desiredTotalValue}).`, 'warning');
+                }
+            }
+
+            // Save scenario
+            saveScenarioBtn.addEventListener('click', function() {
+                const name = scenarioName.value.trim();
+                if (!name) {
+                    showStatusMessage('Please enter a scenario name', 'danger');
+                    return;
+                }
+
+                const varieties = collectVarietyData();
+                if (varieties.length === 0) {
+                    showStatusMessage('No data to save', 'danger');
+                    return;
+                }
+
+                // Send API request
+                fetch('/api/save-scenario', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: name,
+                        varieties: varieties
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showStatusMessage('Scenario saved successfully', 'success');
+                        // Add to the scenarios list
+                        if (!document.querySelector(`.scenario-item[data-name="${name}"]`)) {
+                            const button = document.createElement('button');
+                            button.type = 'button';
+                            button.className = 'list-group-item list-group-item-action scenario-item';
+                            button.setAttribute('data-name', name);
+                            button.textContent = name;
+                            button.addEventListener('click', onScenarioItemClick);
+
+                            // Remove "No saved scenarios" message if it exists
+                            const noScenariosMsg = scenariosList.querySelector('.text-muted');
+                            if (noScenariosMsg) {
+                                scenariosList.removeChild(noScenariosMsg);
+                            }
+
+                            scenariosList.appendChild(button);
+                        }
+                    } else {
+                        showStatusMessage('Error: ' + data.error, 'danger');
+                    }
+                })
+                .catch(error => {
+                    showStatusMessage('Error: ' + error.message, 'danger');
+                });
+            });
+
+            // Generate Excel report
+            generateReportBtn.addEventListener('click', function() {
+                if (!validateInputs()) return;
+
+                const varieties = collectVarietyData();
+                const desiredTotalValue = parseInt(desiredTotal.value);
+
+                // Send API request
+                fetch('/api/generate-deal-report', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        varieties: varieties,
+                        desired_total: desiredTotalValue
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showStatusMessage('Report generated successfully', 'success');
+                        // Redirect to download
+                        window.location.href = data.download_url;
+                    } else {
+                        showStatusMessage('Error: ' + data.error, 'danger');
+                    }
+                })
+                .catch(error => {
+                    showStatusMessage('Error: ' + error.message, 'danger');
+                });
+            });
+
+            // Scenario item click handler
+            function onScenarioItemClick() {
+                // Remove active class from all items
+                document.querySelectorAll('.scenario-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+
+                // Add active class to clicked item
+                this.classList.add('active');
+
+                const name = this.getAttribute('data-name');
+                selectedScenario = name;
+
+                // Fetch scenario details
+                fetch(`/api/get-scenario/${encodeURIComponent(name)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            displayScenarioDetails(name, data.scenario);
+                        } else {
+                            showStatusMessage('Error: ' + data.error, 'danger');
+                        }
+                    })
+                    .catch(error => {
+                        showStatusMessage('Error: ' + error.message, 'danger');
+                    });
+            }
+
+            // Display scenario details
+            function displayScenarioDetails(name, scenario) {
+                scenarioDetailName.textContent = name;
+                scenarioDetailsBody.innerHTML = '';
+
+                scenario.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.variety}</td>
+                        <td>${item.annual_sales}</td>
+                    `;
+                    scenarioDetailsBody.appendChild(row);
+                });
+
+                scenarioDetails.style.display = 'block';
+            }
+
+            // Load scenario to calculator
+            loadScenarioBtn.addEventListener('click', function() {
+                if (!selectedScenario) {
+                    showStatusMessage('No scenario selected', 'warning');
+                    return;
+                }
+
+                fetch(`/api/get-scenario/${encodeURIComponent(selectedScenario)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            loadScenarioToCalculator(data.scenario);
+                            // Switch to calculator tab
+                            document.getElementById('calculator-tab').click();
+                        } else {
+                            showStatusMessage('Error: ' + data.error, 'danger');
+                        }
+                    })
+                    .catch(error => {
+                        showStatusMessage('Error: ' + error.message, 'danger');
+                    });
+            });
+
+            // Load scenario data to calculator
+            function loadScenarioToCalculator(scenario) {
+                // Clear existing rows
+                varietiesTableBody.innerHTML = '';
+
+                // Add rows for each variety
+                scenario.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td><input type="text" class="form-control variety-input" value="${item.variety}" placeholder="Enter variety name"></td>
+                        <td><input type="number" class="form-control numeric-input annual-sales-input" value="${item.annual_sales}" placeholder="Enter sales quantity"></td>
+                        <td class="text-center">
+                            <button class="btn btn-danger btn-sm delete-row">Remove</button>
+                        </td>
+                    `;
+                    varietiesTableBody.appendChild(row);
+
+                    // Add event listener to the delete button
+                    row.querySelector('.delete-row').addEventListener('click', function() {
+                        varietiesTableBody.removeChild(row);
+                    });
+                });
+
+                // If no rows were added (empty scenario), add an empty row
+                if (varietiesTableBody.children.length === 0) {
+                    addRow();
+                }
+
+                // Set scenario name
+                scenarioName.value = selectedScenario;
+
+                showStatusMessage('Scenario loaded successfully', 'success');
+            }
+
+            // Add event listeners to scenario items
+            document.querySelectorAll('.scenario-item').forEach(item => {
+                item.addEventListener('click', onScenarioItemClick);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+{
+    "Cuervo": [
+        {
+            "variety": "Cuervo 50 mL",
+            "annual_sales": 400
+        },
+        {
+            "variety": "Cuervo 100 mL",
+            "annual_sales": 240
+        },
+        {
+            "variety": "Cuervo 200 mL",
+            "annual_sales": 150
+        },
+        {
+            "variety": "Cuervo 375 mL",
+            "annual_sales": 50
+        },
+        {
+            "variety": "Cuervo 750 mL",
+            "annual_sales": 500
+        },
+        {
+            "variety": "Cuervo 1.75 L",
+            "annual_sales": 48
+        }
+    ]
+}

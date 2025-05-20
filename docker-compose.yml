@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  cheers-business-tools:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./uploads:/app/uploads
+      - ./reports:/app/reports
+      - ./scenarios.json:/app/scenarios.json
+    restart: unless-stopped

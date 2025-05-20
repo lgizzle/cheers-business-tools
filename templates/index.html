@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cheers Business Tools</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding-top: 2rem;
+            background-color: #f8f9fa;
+        }
+        .report-card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            background-color: white;
+        }
+        .card-header {
+            background-color: #4472c4;
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+            padding: 1rem;
+        }
+        .report-icon {
+            font-size: 4rem;
+            color: #4472c4;
+            margin-bottom: 1rem;
+        }
+        .upload-container {
+            padding: 2rem;
+            text-align: center;
+        }
+        .btn-primary {
+            background-color: #4472c4;
+            border-color: #4472c4;
+        }
+        .btn-primary:hover {
+            background-color: #365aa1;
+            border-color: #365aa1;
+        }
+        .alert {
+            margin-top: 1rem;
+        }
+        .tool-card {
+            height: 100%;
+            transition: transform 0.3s ease;
+        }
+        .tool-card:hover {
+            transform: translateY(-5px);
+        }
+        .page-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="page-header">
+            <h1>Cheers Liquor Mart Business Tools</h1>
+        </div>
+
+        <div class="row">
+            <!-- AP Weekly Report Generator -->
+            <div class="col-md-4 mb-4">
+                <div class="card report-card tool-card">
+                    <div class="card-header">
+                        <h2 class="text-center mb-0">AP Weekly Report Generator</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="upload-container">
+                            <div class="report-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V9H3V2a1 1 0 0 1 1-1h5.5v2zM3 12v-2h2v2H3zm0 1h2v2H4a1 1 0 0 1-1-1v-1zm3 2v-2h3v2H6zm4 0v-2h3v1a1 1 0 0 1-1 1h-2zm3-3h-3v-2h3v2zm-7 0v-2h3v2H6z"/>
+                                </svg>
+                            </div>
+                            <h4 class="mb-4">Upload AP Aging Report Excel File</h4>
+
+                            {% with messages = get_flashed_messages() %}
+                                {% if messages %}
+                                    {% for message in messages %}
+                                        <div class="alert alert-danger" role="alert">
+                                            {{ message }}
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            {% endwith %}
+
+                            <form action="{{ url_for('upload_file') }}" method="post" enctype="multipart/form-data" class="mt-4">
+                                <div class="mb-3">
+                                    <input class="form-control" type="file" id="file" name="file" accept=".xlsx,.xls" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-lg">Generate Weekly Report</button>
+                            </form>
+
+                            <div class="mt-4">
+                                <p class="text-muted">Generate weekly payment reports from AP Aging data</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Deal Split Calculator -->
+            <div class="col-md-4 mb-4">
+                <div class="card report-card tool-card">
+                    <div class="card-header">
+                        <h2 class="text-center mb-0">Deal Split Calculator</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="upload-container">
+                            <div class="report-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M12.136.326A1.5 1.5 0 0 1 14 1.78V3h.5A1.5 1.5 0 0 1 16 4.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 13.5v-9a1.5 1.5 0 0 1 1.432-1.499L12.136.326zM5.562 3H13V1.78a.5.5 0 0 0-.621-.484L5.562 3zM1.5 4a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-13z"/>
+                                    <path d="M7 5.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm-1.496-.854a.5.5 0 0 1 .707 0l1.5 1.5a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.707-.708l1.146-1.147-1.146-1.146a.5.5 0 0 1 0-.707zM7 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm-1.496-.854a.5.5 0 0 1 .707 0l1.5 1.5a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.707-.708l1.146-1.147-1.146-1.146a.5.5 0 0 1 0-.707z"/>
+                                </svg>
+                            </div>
+                            <h4 class="mb-4">Calculate Product Deal Splits</h4>
+                            <p>Calculate how to distribute order quantities based on annual sales proportions</p>
+                            <a href="{{ url_for('deal_calculator_page') }}" class="btn btn-primary btn-lg mt-4">Open Deal Calculator</a>
+
+                            <div class="mt-4">
+                                <p class="text-muted">Save scenarios and generate distribution reports</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Single Deal Calculator -->
+            <div class="col-md-4 mb-4">
+                <div class="card report-card tool-card">
+                    <div class="card-header">
+                        <h2 class="text-center mb-0">Single Deal Calculator</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="upload-container">
+                            <div class="report-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M1.5 2A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13zm1 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1h-3zm0 2a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1h-6zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1h-3zm0 2a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5zm7 0a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1h-3z"/>
+                                    <path d="M8 8a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0v-3A.5.5 0 0 1 8 8zm3 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0v-3A.5.5 0 0 1 11 8z"/>
+                                </svg>
+                            </div>
+                            <h4 class="mb-4">Evaluate Bulk Purchase Deals</h4>
+                            <p>Calculate whether bulk discount purchasing is worth the cash investment</p>
+                            <a href="{{ url_for('single_deal_calculator_page') }}" class="btn btn-primary btn-lg mt-4">Open Deal Evaluator</a>
+
+                            <div class="mt-4">
+                                <p class="text-muted">Compare ROI and cash flow impact of deal options</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card report-card">
+                    <div class="card-header">
+                        <h4 class="mb-0">Instructions</h4>
+                    </div>
+                    <div class="card-body">
+                        <h5>AP Weekly Report Generator</h5>
+                        <ol class="mb-4">
+                            <li>Upload your AP Aging Excel report (must be in .xlsx or .xls format)</li>
+                            <li>The application will process the report and create the following sheets:
+                                <ul>
+                                    <li>Weekly Summary</li>
+                                    <li>Weekly Bill Report</li>
+                                    <li>Vendor Subtotals</li>
+                                </ul>
+                            </li>
+                            <li>A download link will appear once processing is complete</li>
+                            <li>The original data will be preserved in the RawData sheet</li>
+                        </ol>
+
+                        <h5>Deal Split Calculator</h5>
+                        <ol class="mb-4">
+                            <li>Enter product variety names and their annual sales quantities</li>
+                            <li>Specify your desired total order quantity</li>
+                            <li>The calculator will distribute quantities proportionally based on sales data</li>
+                            <li>Save scenarios for future use or generate Excel reports</li>
+                        </ol>
+
+                        <h5>Single Deal Calculator</h5>
+                        <ol class="mb-0">
+                            <li>Enter deal parameters: quantities, prices, and vendor terms</li>
+                            <li>View ROI and cash flow analysis to determine if the bulk deal is worthwhile</li>
+                            <li>Get tailored recommendations based on financial impact and terms</li>
+                            <li>Generate Excel reports for purchasing decisions</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
