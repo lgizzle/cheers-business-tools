@@ -300,8 +300,29 @@
                     // Set scenario name
                     document.getElementById('scenarioName').value = name;
 
-                    // Switch to calculator tab
-                    document.getElementById('calculator-tab').click();
+                    // Switch to calculator tab - try multiple methods for compatibility
+                    const calculatorTab = document.getElementById('calculator-tab');
+                    // Method 1: Direct click
+                    calculatorTab.click();
+
+                    // Method 2: Bootstrap tab activation
+                    const bsTab = new bootstrap.Tab(calculatorTab);
+                    bsTab.show();
+
+                    // Method 3: Force display of calculator tab content
+                    document.getElementById('calculator').classList.add('show', 'active');
+                    document.getElementById('scenarios').classList.remove('show', 'active');
+                    document.getElementById('help').classList.remove('show', 'active');
+
+                    // Method 4: Update aria attributes
+                    calculatorTab.setAttribute('aria-selected', 'true');
+                    document.getElementById('scenarios-tab').setAttribute('aria-selected', 'false');
+                    document.getElementById('help-tab').setAttribute('aria-selected', 'false');
+
+                    // Add active class to calculator tab
+                    calculatorTab.classList.add('active');
+                    document.getElementById('scenarios-tab').classList.remove('active');
+                    document.getElementById('help-tab').classList.remove('active');
 
                     showStatusMessage('Scenario loaded successfully!', 'success');
                 } else {
