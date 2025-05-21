@@ -157,10 +157,7 @@
                             </div>
                         </div>
                         <div class="col-md-4 d-flex align-items-end">
-                            <div class="btn-group w-100">
-                                <button class="btn btn-primary" id="saveScenario">Save Scenario</button>
-                                <button class="btn btn-info" id="loadScenario">Load Scenario</button>
-                            </div>
+                            <button class="btn btn-info w-100" id="loadScenario">Load Selected Scenario</button>
                         </div>
                     </div>
                 </div>
@@ -217,9 +214,16 @@
             </div>
 
             <!-- Actions Section -->
-            <div class="text-center mt-4 mb-4">
-                <button class="btn btn-primary btn-lg" id="calculateBtn">Calculate</button>
-                <button class="btn btn-success btn-lg" id="generateReportBtn" disabled>Generate Report</button>
+            <div class="row mt-4 mb-4">
+                <div class="col-md-6 mb-3">
+                    <button id="calculateBtn" class="btn btn-primary w-100">Calculate</button>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="btn-group w-100" role="group">
+                        <button id="saveScenario" class="btn btn-outline-primary">Save Scenario</button>
+                        <button id="generateReportBtn" class="btn btn-success" disabled>Generate Excel Report</button>
+                    </div>
+                </div>
             </div>
 
             <!-- Results Section (initially hidden) -->
@@ -325,6 +329,27 @@
         // Add first product row by default
         addProductRow();
 
+        // Add statusMessage div after the action buttons
+        const actionsSection = document.querySelector('.row.mt-4.mb-4');
+        const statusMessage = document.createElement('div');
+        statusMessage.id = 'statusMessage';
+        statusMessage.className = 'mt-3';
+        statusMessage.style.display = 'none';
+        actionsSection.after(statusMessage);
+
+        // Display status message function
+        function showStatusMessage(message, type = 'success') {
+            const statusMessage = document.getElementById('statusMessage');
+            statusMessage.textContent = message;
+            statusMessage.className = 'alert alert-' + type;
+            statusMessage.style.display = 'block';
+
+            // Hide message after 5 seconds
+            setTimeout(() => {
+                statusMessage.style.display = 'none';
+            }, 5000);
+        }
+
         // Event Listeners
         document.getElementById('addProductRow').addEventListener('click', addProductRow);
         document.getElementById('clearProducts').addEventListener('click', clearProducts);
@@ -335,7 +360,7 @@
         document.getElementById('deleteScenario').addEventListener('click', function() {
             const scenarioName = document.getElementById('scenarioSelect').value;
             if (!scenarioName) {
-                alert('Please select a scenario to delete.');
+                showStatusMessage('Please select a scenario to delete.', 'warning');
                 return;
             }
 
@@ -414,7 +439,7 @@
         function calculateResults() {
             const products = collectProductData();
             if (products.length === 0) {
-                alert('Please add at least one product with data.');
+                showStatusMessage('Please add at least one product with data.', 'warning');
                 return;
             }
 
@@ -442,10 +467,11 @@
                 displayResults(data);
                 document.getElementById('generateReportBtn').disabled = false;
                 document.getElementById('resultsSection').style.display = 'block';
+                showStatusMessage('Calculation completed successfully!', 'success');
             })
             .catch(error => {
                 console.error('Error calculating results:', error);
-                alert('Error calculating results. Please check the console for details.');
+                showStatusMessage('Error calculating results: ' + error.message, 'danger');
             });
         }
 
@@ -627,7 +653,7 @@
 
         function generateReport() {
             if (!calculationResults) {
-                alert('Please calculate results first.');
+                showStatusMessage('Please calculate results first.', 'warning');
                 return;
             }
 
@@ -653,26 +679,27 @@
             .then(data => {
                 if (data.filename) {
                     window.location.href = '/download/' + data.filename;
+                    showStatusMessage('Report generated successfully!', 'success');
                 } else {
-                    alert('Error generating report: ' + data.error);
+                    showStatusMessage('Error generating report: ' + data.error, 'danger');
                 }
             })
             .catch(error => {
                 console.error('Error generating report:', error);
-                alert('Error generating report. Please check the console for details.');
+                showStatusMessage('Error generating report: ' + error.message, 'danger');
             });
         }
 
         function saveScenario() {
             const scenarioName = document.getElementById('scenarioName').value.trim();
             if (!scenarioName) {
-                alert('Please enter a scenario name.');
+                showStatusMessage('Please enter a scenario name.', 'warning');
                 return;
             }
 
             const products = collectProductData();
             if (products.length === 0) {
-                alert('Please add at least one product with data.');
+                showStatusMessage('Please add at least one product with data.', 'warning');
                 return;
             }
 
@@ -698,15 +725,15 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('Scenario saved successfully.');
+                    showStatusMessage('Scenario saved successfully!', 'success');
                     loadScenarioList();
                 } else {
-                    alert('Error saving scenario: ' + data.error);
+                    showStatusMessage('Error saving scenario: ' + data.error, 'danger');
                 }
             })
             .catch(error => {
                 console.error('Error saving scenario:', error);
-                alert('Error saving scenario. Please check the console for details.');
+                showStatusMessage('Error saving scenario: ' + error.message, 'danger');
             });
         }
 
@@ -740,7 +767,7 @@
         function loadSelectedScenario() {
             const scenarioName = document.getElementById('scenarioSelect').value;
             if (!scenarioName) {
-                alert('Please select a scenario to load.');
+                showStatusMessage('Please select a scenario to load.', 'warning');
                 return;
             }
 
@@ -756,7 +783,7 @@
                 .then(data => {
                     if (data.error) {
                         console.error('Error loading scenario:', data.error);
-                        alert('Error loading scenario: ' + data.error);
+                        showStatusMessage('Error loading scenario: ' + data.error, 'danger');
                         return;
                     }
 
@@ -808,15 +835,15 @@
                             tbody.appendChild(newRow);
                         });
 
-                        alert('Scenario loaded successfully.');
+                        showStatusMessage('Scenario loaded successfully!', 'success');
                     } catch (e) {
                         console.error('Error processing scenario data:', e);
-                        alert('Error processing scenario data: ' + e.message);
+                        showStatusMessage('Error processing scenario data: ' + e.message, 'danger');
                     }
                 })
                 .catch(error => {
                     console.error('Error loading scenario:', error);
-                    alert('Error loading scenario: ' + error.message + '\nPlease check the console for details.');
+                    showStatusMessage('Error loading scenario: ' + error.message, 'danger');
                 });
         }
 
@@ -827,7 +854,7 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert(`Scenario "${scenarioName}" deleted successfully.`);
+                    showStatusMessage(`Scenario "${scenarioName}" deleted successfully.`, 'success');
 
                     // Reload the scenario list
                     loadScenarioList();
@@ -838,12 +865,12 @@
                         nameField.value = '';
                     }
                 } else {
-                    alert('Error deleting scenario: ' + data.error);
+                    showStatusMessage('Error deleting scenario: ' + data.error, 'danger');
                 }
             })
             .catch(error => {
                 console.error('Error deleting scenario:', error);
-                alert('Error deleting scenario. Please check the console for details.');
+                showStatusMessage('Error deleting scenario: ' + error.message, 'danger');
             });
         }
 
