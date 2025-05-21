@@ -7,6 +7,7 @@ from deal_split_processor import DealSplitCalculator
 from single_deal_calculator import SingleDealCalculator
 from sales_tax_calculator import SalesTaxCalculator
 from multi_product_calculator import MultiProductBuyingCalculator
+from margin_calculator import MarginCalculator
 import json
 import shutil
 from pathlib import Path
@@ -27,6 +28,7 @@ os.makedirs(app.config['REPORT_FOLDER'], exist_ok=True)
 deal_calculator = DealSplitCalculator()
 single_deal_calculator = SingleDealCalculator()
 sales_tax_calculator = SalesTaxCalculator()
+margin_calculator = MarginCalculator()
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
@@ -528,6 +530,76 @@ def get_multi_product_scenario(scenario_name):
         logging.error(f"Error loading scenario: {str(e)}")
         logging.error(traceback.format_exc())
         return jsonify({"error": f"Error loading scenario: {str(e)}"})
+
+# Margin/Markup Calculator routes
+@app.route('/margin-calculator')
+def margin_calculator_page():
+    """Render the margin calculator page."""
+    return render_template('margin_calculator.html')
+
+@app.route('/api/generate-margin-report', methods=['POST'])
+def generate_margin_report():
+    """Generate a margin analysis report."""
+    try:
+        data = request.json
+
+        # Validate required parameters
+        if 'cost' not in data or not data['cost']:
+            return jsonify({"success": False, "error": "Product cost is required"})
+
+        # Set margin range if provided
+        if 'min_margin' in data and 'max_margin' in data:
+            margin_calculator.set_margin_range(data['min_margin'], data['max_margin'])
+
+        # Calculate price at target margin
+        price_at_target_margin = margin_calculator.calculate_price_from_margin(
+            data['cost'], data['target_margin']
+        )
+
+        # Generate sensitivity data if needed
+        sensitivity_data = margin_calculator.perform_sensitivity_analysis(
+            data['cost'], data.get('current_price')
+        )
+
+        # Calculate current margin if current price is provided
+        current_margin = None
+        current_markup = None
+        if 'current_price' in data and data['current_price']:
+            current_margin = margin_calculator.calculate_margin_from_price(
+                data['cost'], data['current_price']
+            )
+            current_markup = margin_calculator.calculate_markup_from_price(
+                data['cost'], data['current_price']
+            )
+
+        # Prepare report data
+        report_data = {
+            'product_name': data.get('product_name', 'Unnamed Product'),
+            'cost': data['cost'],
+            'target_margin': data['target_margin'],
+            'price_at_target_margin': price_at_target_margin,
+            'current_price': data.get('current_price'),
+            'current_margin': current_margin,
+            'current_markup': current_markup,
+            'sensitivity_data': sensitivity_data
+        }
+
+        # Generate a filename
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"margin_analysis_{timestamp}.xlsx"
+        file_path = os.path.join(app.config['REPORT_FOLDER'], filename)
+
+        # Generate the report
+        margin_calculator.generate_report(report_data, file_path)
+
+        return jsonify({
+            "success": True,
+            "filename": filename,
+            "download_url": url_for('download_file', filename=filename)
+        })
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({"success": False, "error": str(e)})
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8080)

@@ -177,6 +177,25 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Sixth tool card (Margin/Markup Calculator) -->
+            <div class="col-lg-6 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h2 class="text-center mb-0">Margin/Markup Calculator</h2>
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <h4 class="mb-4">Optimize Product Pricing & Margins</h4>
+                        <p class="mb-4">
+                            Calculate optimal selling prices based on cost and target margin, or analyze existing prices.
+                            Includes sensitivity analysis and visualization of the "sweet spot" margin range for maximum profitability.
+                        </p>
+                        <div class="mt-auto">
+                            <a href="{{ url_for('margin_calculator_page') }}" class="btn btn-primary btn-lg">Open Calculator</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="row">
@@ -217,11 +236,20 @@
                         </ol>
 
                         <h5>Sales Tax Calculator</h5>
-                        <ol class="mb-0">
+                        <ol class="mb-4">
                             <li>Enter collected tax amounts by jurisdiction from your POS system</li>
                             <li>The calculator works backwards to determine actual sales amounts</li>
                             <li>View tax distribution by authority (city, county, state)</li>
                             <li>Generate complete tax reports with calculations and reference data</li>
+                        </ol>
+
+                        <h5>Margin/Markup Calculator</h5>
+                        <ol class="mb-0">
+                            <li>Enter product cost and optional current price</li>
+                            <li>Set your target margin and range for sensitivity analysis</li>
+                            <li>View optimal pricing options with profit calculations</li>
+                            <li>See highlighted "sweet spot" margin ranges for best profitability</li>
+                            <li>Export detailed reports with charts and pricing tables</li>
                         </ol>
                     </div>
                 </div>

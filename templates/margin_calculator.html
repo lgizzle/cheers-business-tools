@@ -1,0 +1,346 @@
+{% extends "base.html" %}
+
+{% block title %}Margin/Markup Calculator - Cheers Liquor Mart{% endblock %}
+
+{% block header_title %}Margin/Markup Calculator{% endblock %}
+
+{% block additional_style %}
+<style>
+    .result-section {
+        background-color: #f8f9fa;
+        padding: 1rem;
+        border-radius: 5px;
+        margin-top: 1rem;
+    }
+    .chart-container {
+        max-width: 100%;
+        margin-top: 1.5rem;
+    }
+    .sweet-spot {
+        background-color: #E2EFDA;
+    }
+    .sweet-spot td {
+        background-color: #E2EFDA;
+    }
+    .current-price {
+        background-color: #FFEB9C;
+    }
+    .current-price td {
+        background-color: #FFEB9C;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<p class="lead">Calculate optimal selling price based on cost and desired margin, or analyze current pricing to determine margins and markup.</p>
+
+<form id="margin-calc-form">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5 class="mb-0">Product Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="product_name" class="form-label">Product Name</label>
+                        <input type="text" class="form-control" id="product_name" placeholder="Example: Tito's Vodka 750ml">
+                    </div>
+                    <div class="mb-3">
+                        <label for="cost" class="form-label">Product Cost ($)</label>
+                        <input type="number" step="0.01" class="form-control" id="cost" placeholder="Enter product cost" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="current_price" class="form-label">Current Price ($, Optional)</label>
+                        <input type="number" step="0.01" class="form-control" id="current_price" placeholder="Enter current price (if any)">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5 class="mb-0">Calculation Settings</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="target_margin" class="form-label">Target Margin (%)</label>
+                        <input type="number" step="0.1" class="form-control" id="target_margin" placeholder="Enter target margin" value="30">
+                        <div class="form-text">Recommended: 28-32% for optimal pricing</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Sensitivity Analysis Range</label>
+                        <div class="row">
+                            <div class="col">
+                                <label for="min_margin" class="form-label">Min %</label>
+                                <input type="number" step="1" class="form-control" id="min_margin" value="23">
+                            </div>
+                            <div class="col">
+                                <label for="max_margin" class="form-label">Max %</label>
+                                <input type="number" step="1" class="form-control" id="max_margin" value="35">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mt-3 mb-4">
+        <button type="button" id="calculate-btn" class="btn btn-primary btn-lg">Calculate</button>
+        <button type="button" id="export-btn" class="btn btn-outline-primary btn-lg ms-2">Export to Excel</button>
+    </div>
+</form>
+
+<div id="results-container" class="d-none">
+    <div class="card mb-4">
+        <div class="card-header bg-success text-white">
+            <h4 class="mb-0">Calculation Results</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Price at Target Margin</h5>
+                    <div class="result-section">
+                        <div class="row mb-3">
+                            <div class="col-6">Target Margin:</div>
+                            <div class="col-6 text-end fw-bold" id="result-target-margin">30.0%</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-6">Price at Target Margin:</div>
+                            <div class="col-6 text-end fw-bold" id="result-target-price">$0.00</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-6">Profit per Unit:</div>
+                            <div class="col-6 text-end fw-bold" id="result-target-profit">$0.00</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">Equivalent Markup:</div>
+                            <div class="col-6 text-end fw-bold" id="result-target-markup">0.0%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6" id="current-price-results">
+                    <h5>Current Price Analysis</h5>
+                    <div class="result-section">
+                        <div class="row mb-3">
+                            <div class="col-6">Current Margin:</div>
+                            <div class="col-6 text-end fw-bold" id="result-current-margin">0.0%</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-6">Current Price:</div>
+                            <div class="col-6 text-end fw-bold" id="result-current-price">$0.00</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-6">Current Profit:</div>
+                            <div class="col-6 text-end fw-bold" id="result-current-profit">$0.00</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">Profit Difference:</div>
+                            <div class="col-6 text-end fw-bold" id="result-profit-diff">$0.00</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h4 class="mb-0">Sensitivity Analysis</h4>
+        </div>
+        <div class="card-body">
+            <p>The table below shows pricing at different margin levels. The "sweet spot" range (28-32%) is highlighted in green.</p>
+            <div class="table-responsive">
+                <table class="table table-striped table-hover" id="sensitivity-table">
+                    <thead>
+                        <tr>
+                            <th>Margin %</th>
+                            <th>Markup %</th>
+                            <th>Price</th>
+                            <th>Profit</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sensitivity-body">
+                        <!-- Filled by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const calculateBtn = document.getElementById('calculate-btn');
+        const exportBtn = document.getElementById('export-btn');
+        const resultsContainer = document.getElementById('results-container');
+        const currentPriceResults = document.getElementById('current-price-results');
+
+        calculateBtn.addEventListener('click', function() {
+            // Get input values
+            const productName = document.getElementById('product_name').value || 'Unnamed Product';
+            const cost = parseFloat(document.getElementById('cost').value);
+            const currentPrice = document.getElementById('current_price').value ?
+                                parseFloat(document.getElementById('current_price').value) : null;
+            const targetMargin = parseFloat(document.getElementById('target_margin').value) / 100;
+            const minMargin = parseFloat(document.getElementById('min_margin').value) / 100;
+            const maxMargin = parseFloat(document.getElementById('max_margin').value) / 100;
+
+            if (isNaN(cost) || cost <= 0) {
+                alert('Please enter a valid product cost');
+                return;
+            }
+
+            // Calculate price at target margin
+            const priceAtTargetMargin = cost / (1 - targetMargin);
+            const profitAtTargetMargin = priceAtTargetMargin - cost;
+            const markupAtTargetMargin = targetMargin / (1 - targetMargin);
+
+            // Update result display
+            document.getElementById('result-target-margin').textContent = (targetMargin * 100).toFixed(1) + '%';
+            document.getElementById('result-target-price').textContent = '$' + priceAtTargetMargin.toFixed(2);
+            document.getElementById('result-target-profit').textContent = '$' + profitAtTargetMargin.toFixed(2);
+            document.getElementById('result-target-markup').textContent = (markupAtTargetMargin * 100).toFixed(1) + '%';
+
+            // Show or hide current price analysis
+            if (currentPrice) {
+                const currentMargin = (currentPrice - cost) / currentPrice;
+                const currentProfit = currentPrice - cost;
+                const profitDiff = profitAtTargetMargin - currentProfit;
+
+                document.getElementById('result-current-margin').textContent = (currentMargin * 100).toFixed(1) + '%';
+                document.getElementById('result-current-price').textContent = '$' + currentPrice.toFixed(2);
+                document.getElementById('result-current-profit').textContent = '$' + currentProfit.toFixed(2);
+
+                const profitDiffElem = document.getElementById('result-profit-diff');
+                profitDiffElem.textContent = '$' + Math.abs(profitDiff).toFixed(2) + (profitDiff >= 0 ? ' more' : ' less');
+                profitDiffElem.classList.remove('text-success', 'text-danger');
+                profitDiffElem.classList.add(profitDiff >= 0 ? 'text-success' : 'text-danger');
+
+                currentPriceResults.classList.remove('d-none');
+            } else {
+                currentPriceResults.classList.add('d-none');
+            }
+
+            // Generate sensitivity analysis
+            generateSensitivityTable(cost, currentPrice, minMargin, maxMargin);
+
+            // Show results
+            resultsContainer.classList.remove('d-none');
+        });
+
+        // Sensitivity analysis table generator
+        function generateSensitivityTable(cost, currentPrice, minMargin, maxMargin) {
+            const tableBody = document.getElementById('sensitivity-body');
+            tableBody.innerHTML = '';
+
+            // Generate margin range with 1% steps
+            const steps = Math.floor((maxMargin - minMargin) * 100) + 1;
+            const step = (maxMargin - minMargin) / (steps - 1);
+
+            for (let i = 0; i < steps; i++) {
+                const margin = minMargin + (i * step);
+                const price = cost / (1 - margin);
+                const profit = price - cost;
+                const markup = margin / (1 - margin);
+
+                const row = document.createElement('tr');
+
+                // Determine if this is current price or sweet spot
+                const isCurrentPrice = currentPrice && Math.abs(price - currentPrice) < 0.01;
+                const isSweetSpot = margin >= 0.28 && margin <= 0.32;
+
+                if (isCurrentPrice) {
+                    row.classList.add('current-price');
+                } else if (isSweetSpot) {
+                    row.classList.add('sweet-spot');
+                }
+
+                // Margin
+                const marginCell = document.createElement('td');
+                marginCell.textContent = (margin * 100).toFixed(1) + '%';
+                row.appendChild(marginCell);
+
+                // Markup
+                const markupCell = document.createElement('td');
+                markupCell.textContent = (markup * 100).toFixed(1) + '%';
+                row.appendChild(markupCell);
+
+                // Price
+                const priceCell = document.createElement('td');
+                priceCell.textContent = '$' + price.toFixed(2);
+                row.appendChild(priceCell);
+
+                // Profit
+                const profitCell = document.createElement('td');
+                profitCell.textContent = '$' + profit.toFixed(2);
+                row.appendChild(profitCell);
+
+                // Notes
+                const notesCell = document.createElement('td');
+                const notes = [];
+                if (isCurrentPrice) notes.push('Current Price');
+                if (isSweetSpot) notes.push('Sweet Spot');
+                notesCell.textContent = notes.join(', ');
+                row.appendChild(notesCell);
+
+                tableBody.appendChild(row);
+            }
+        }
+
+        // Export to Excel
+        exportBtn.addEventListener('click', function() {
+            const productName = document.getElementById('product_name').value || 'Unnamed Product';
+            const cost = parseFloat(document.getElementById('cost').value);
+            const currentPrice = document.getElementById('current_price').value ?
+                               parseFloat(document.getElementById('current_price').value) : null;
+            const targetMargin = parseFloat(document.getElementById('target_margin').value) / 100;
+            const minMargin = parseFloat(document.getElementById('min_margin').value) / 100;
+            const maxMargin = parseFloat(document.getElementById('max_margin').value) / 100;
+
+            if (isNaN(cost) || cost <= 0) {
+                alert('Please enter a valid product cost');
+                return;
+            }
+
+            // Prepare data for API request
+            const data = {
+                product_name: productName,
+                cost: cost,
+                current_price: currentPrice,
+                target_margin: targetMargin,
+                min_margin: minMargin,
+                max_margin: maxMargin
+            };
+
+            // Send request to generate the report
+            fetch('/api/generate-margin-report', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Navigate to the download URL
+                    window.location.href = data.download_url;
+                } else {
+                    alert('Error generating report: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to generate report. Please try again.');
+            });
+        });
+    });
+</script>
+{% endblock %}
