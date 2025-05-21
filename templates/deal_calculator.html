@@ -141,12 +141,17 @@
                     {% if scenarios %}
                         {% for name in scenarios %}
                             <div class="list-group-item d-flex justify-content-between align-items-center">
-                                <button type="button" class="btn btn-outline-primary scenario-item text-start" onclick="loadScenarioDetails('{{ name }}')" data-name="{{ name }}" style="width:85%;">
+                                <button type="button" class="btn btn-outline-primary scenario-item text-start" onclick="loadScenarioDetails('{{ name }}')" data-name="{{ name }}" style="width:60%;">
                                     {{ name }}
                                 </button>
-                                <button type="button" class="btn btn-sm btn-danger delete-scenario" onclick="confirmDeleteScenario('{{ name }}')" data-name="{{ name }}">
-                                    <i class="fas fa-trash"></i> Delete
-                                </button>
+                                <div class="btn-group" role="group" style="width:38%;">
+                                    <button type="button" class="btn btn-sm btn-success" onclick="loadScenarioToCalculator('{{ name }}')">
+                                        <i class="fas fa-upload"></i> Load
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-danger delete-scenario" onclick="confirmDeleteScenario('{{ name }}')" data-name="{{ name }}">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </div>
                             </div>
                         {% endfor %}
                     {% else %}
@@ -175,7 +180,7 @@
                             </table>
                         </div>
                         <div class="mt-3">
-                            <button id="loadScenarioBtn" class="btn btn-primary">Load to Calculator</button>
+                            <button id="loadScenarioBtn" class="btn btn-primary" onclick="loadScenarioToCalculator(document.getElementById('scenarioDetailName').textContent)">Load to Calculator</button>
                         </div>
                     </div>
                 </div>
@@ -220,7 +225,7 @@
 <script>
     // Global functions for button onclick attributes
     function loadScenarioDetails(name) {
-        console.log("Loading scenario:", name);
+        console.log("Loading scenario details:", name);
         fetch('/api/get-scenario/' + encodeURIComponent(name))
             .then(response => response.json())
             .then(data => {
@@ -251,6 +256,60 @@
             })
             .catch(error => {
                 console.error("Error loading scenario:", error);
+                showStatusMessage('Error: ' + error.message, 'danger');
+            });
+    }
+
+    // Function to load a scenario directly to the calculator tab
+    function loadScenarioToCalculator(name) {
+        console.log("Loading scenario to calculator:", name);
+        fetch('/api/get-scenario/' + encodeURIComponent(name))
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Set desired total
+                    document.getElementById('desiredTotal').value = data.scenario.desired_total;
+
+                    // Clear existing rows
+                    const varietiesTableBody = document.getElementById('varietiesTableBody');
+                    varietiesTableBody.innerHTML = '';
+
+                    // Add rows for each variety
+                    data.scenario.varieties.forEach(variety => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td><input type="text" class="form-control variety-input" value="${variety.variety}" placeholder="Enter variety name"></td>
+                            <td><input type="number" class="form-control numeric-input annual-sales-input" value="${variety.annual_sales}" placeholder="Enter sales quantity"></td>
+                            <td><input type="number" class="form-control numeric-input inventory-on-hand-input" value="${variety.inventory_on_hand || 0}" placeholder="Current inventory"></td>
+                            <td class="text-center">
+                                <button class="btn btn-danger btn-sm delete-row">Remove</button>
+                            </td>
+                        `;
+                        varietiesTableBody.appendChild(row);
+
+                        // Add event listener to delete button
+                        row.querySelector('.delete-row').addEventListener('click', function() {
+                            if (varietiesTableBody.children.length > 1) {
+                                varietiesTableBody.removeChild(row);
+                            } else {
+                                showStatusMessage('Cannot remove the last row', 'warning');
+                            }
+                        });
+                    });
+
+                    // Set scenario name
+                    document.getElementById('scenarioName').value = name;
+
+                    // Switch to calculator tab
+                    document.getElementById('calculator-tab').click();
+
+                    showStatusMessage('Scenario loaded successfully!', 'success');
+                } else {
+                    showStatusMessage('Error: ' + data.error, 'danger');
+                }
+            })
+            .catch(error => {
+                console.error("Error loading scenario to calculator:", error);
                 showStatusMessage('Error: ' + error.message, 'danger');
             });
     }
@@ -334,7 +393,6 @@
         const scenarioDetails = document.getElementById('scenarioDetails');
         const scenarioDetailName = document.getElementById('scenarioDetailName');
         const scenarioDetailsBody = document.getElementById('scenarioDetailsBody');
-        const loadScenarioBtn = document.getElementById('loadScenarioBtn');
 
         let selectedScenario = null;
 
@@ -561,12 +619,17 @@
                         const newScenario = document.createElement('div');
                         newScenario.className = 'list-group-item d-flex justify-content-between align-items-center';
                         newScenario.innerHTML = `
-                            <button type="button" class="btn btn-outline-primary scenario-item text-start" onclick="loadScenarioDetails('${scenarioNameValue}')" data-name="${scenarioNameValue}" style="width:85%;">
+                            <button type="button" class="btn btn-outline-primary scenario-item text-start" onclick="loadScenarioDetails('${scenarioNameValue}')" data-name="${scenarioNameValue}" style="width:60%;">
                                 ${scenarioNameValue}
                             </button>
-                            <button type="button" class="btn btn-sm btn-danger delete-scenario" onclick="confirmDeleteScenario('${scenarioNameValue}')" data-name="${scenarioNameValue}">
-                                <i class="fas fa-trash"></i> Delete
-                            </button>
+                            <div class="btn-group" role="group" style="width:38%;">
+                                <button type="button" class="btn btn-sm btn-success" onclick="loadScenarioToCalculator('${scenarioNameValue}')">
+                                    <i class="fas fa-upload"></i> Load
+                                </button>
+                                <button type="button" class="btn btn-sm btn-danger delete-scenario" onclick="confirmDeleteScenario('${scenarioNameValue}')" data-name="${scenarioNameValue}">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </div>
                         `;
 
                         scenariosList.appendChild(newScenario);
@@ -609,51 +672,6 @@
             .catch(error => {
                 showStatusMessage('Error: ' + error.message, 'danger');
             });
-        });
-
-        // Load scenario into calculator
-        loadScenarioBtn.addEventListener('click', function() {
-            if (!window.selectedScenario) {
-                showStatusMessage('No scenario selected', 'warning');
-                return;
-            }
-
-            // Set desired total
-            desiredTotal.value = window.selectedScenario.desired_total;
-
-            // Clear existing rows
-            varietiesTableBody.innerHTML = '';
-
-            // Add rows for each variety
-            window.selectedScenario.varieties.forEach(variety => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td><input type="text" class="form-control variety-input" value="${variety.variety}" placeholder="Enter variety name"></td>
-                    <td><input type="number" class="form-control numeric-input annual-sales-input" value="${variety.annual_sales}" placeholder="Enter sales quantity"></td>
-                    <td><input type="number" class="form-control numeric-input inventory-on-hand-input" value="${variety.inventory_on_hand || 0}" placeholder="Current inventory"></td>
-                    <td class="text-center">
-                        <button class="btn btn-danger btn-sm delete-row">Remove</button>
-                    </td>
-                `;
-                varietiesTableBody.appendChild(row);
-
-                // Add event listener to delete button
-                row.querySelector('.delete-row').addEventListener('click', function() {
-                    if (varietiesTableBody.children.length > 1) {
-                        varietiesTableBody.removeChild(row);
-                    } else {
-                        showStatusMessage('Cannot remove the last row', 'warning');
-                    }
-                });
-            });
-
-            // Set scenario name
-            scenarioName.value = window.selectedScenario.name;
-
-            // Switch to calculator tab
-            document.getElementById('calculator-tab').click();
-
-            showStatusMessage('Scenario loaded successfully!', 'success');
         });
     });
 </script>
