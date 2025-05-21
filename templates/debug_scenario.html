@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Scenario Loading</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        button { padding: 10px; margin: 5px; cursor: pointer; }
+        pre { background: #f0f0f0; padding: 10px; border-radius: 5px; }
+        .success { color: green; }
+        .error { color: red; }
+        #results { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Debug Scenario Loading</h1>
+
+    <div>
+        <h2>Available Scenarios</h2>
+        <button id="listScenarios">List All Scenarios</button>
+        <div id="scenarioList"></div>
+    </div>
+
+    <div>
+        <h2>Load Specific Scenario</h2>
+        <p>Click a scenario to load it:</p>
+        <button data-scenario="Cuervo">Load Cuervo</button>
+        <button data-scenario="Tequila Test">Load Tequila Test</button>
+        <button data-scenario="Whiskey Test">Load Whiskey Test</button>
+    </div>
+
+    <div id="results">
+        <h2>Results</h2>
+        <pre id="responseData"></pre>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get DOM elements
+            const listScenariosBtn = document.getElementById('listScenarios');
+            const scenarioListDiv = document.getElementById('scenarioList');
+            const responseDataPre = document.getElementById('responseData');
+
+            // Function to display data in the results area
+            function displayResults(data, isError = false) {
+                responseDataPre.textContent = JSON.stringify(data, null, 2);
+                responseDataPre.className = isError ? 'error' : 'success';
+            }
+
+            // List all scenarios
+            listScenariosBtn.addEventListener('click', function() {
+                responseDataPre.textContent = 'Loading scenarios...';
+
+                fetch('/api/get-all-scenarios')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        displayResults(data);
+
+                        // Display scenarios as clickable buttons
+                        if (data.success && data.scenarios) {
+                            scenarioListDiv.innerHTML = '';
+                            Object.keys(data.scenarios).forEach(name => {
+                                const btn = document.createElement('button');
+                                btn.textContent = name;
+                                btn.dataset.scenario = name;
+                                scenarioListDiv.appendChild(btn);
+
+                                btn.addEventListener('click', function() {
+                                    loadScenario(name);
+                                });
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        displayResults(`Error: ${error.message}`, true);
+                    });
+            });
+
+            // Load a specific scenario
+            function loadScenario(name) {
+                responseDataPre.textContent = `Loading scenario "${name}"...`;
+
+                fetch(`/api/get-scenario/${encodeURIComponent(name)}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        displayResults(data);
+                    })
+                    .catch(error => {
+                        displayResults(`Error: ${error.message}`, true);
+                    });
+            }
+
+            // Add click handlers to scenario buttons
+            document.querySelectorAll('button[data-scenario]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    loadScenario(this.dataset.scenario);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

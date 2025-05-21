@@ -264,34 +264,50 @@
     function loadScenarioToCalculator(name) {
         alert("Debug: Loading scenario " + name);
         console.log("Loading scenario directly to calculator:", name);
+        console.log("Full fetch URL:", '/api/get-scenario/' + encodeURIComponent(name));
 
         // Direct API call approach instead of page redirection
         fetch('/api/get-scenario/' + encodeURIComponent(name))
             .then(response => {
+                console.log("Response status:", response.status);
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
                 return response.json();
             })
             .then(data => {
+                console.log("Response data:", data);
                 if (data.success) {
                     console.log("Successfully fetched scenario data:", data.scenario);
 
                     // 1. Switch to calculator tab first
                     const calculatorTab = document.getElementById('calculator-tab');
                     calculatorTab.click();
+                    console.log("Calculator tab clicked");
 
                     // Wait a moment for the tab to activate
                     setTimeout(() => {
                         // 2. Set desired total
-                        document.getElementById('desiredTotal').value = data.scenario.desired_total;
+                        const desiredTotal = document.getElementById('desiredTotal');
+                        console.log("Setting desired total to:", data.scenario.desired_total || 120);
+                        desiredTotal.value = data.scenario.desired_total || 120;
 
                         // 3. Clear existing rows
                         const varietiesTableBody = document.getElementById('varietiesTableBody');
+                        console.log("Clearing existing rows");
                         varietiesTableBody.innerHTML = '';
 
                         // 4. Add rows for each variety
-                        data.scenario.varieties.forEach(variety => {
+                        console.log("Adding rows for varieties:", data.scenario);
+
+                        // Check if scenario is an array or an object with a varieties property
+                        let varieties = Array.isArray(data.scenario) ? data.scenario :
+                                        (data.scenario.varieties || []);
+
+                        console.log("Varieties to add:", varieties);
+
+                        varieties.forEach(variety => {
+                            console.log("Adding variety:", variety);
                             const row = document.createElement('tr');
                             row.innerHTML = `
                                 <td><input type="text" class="form-control variety-input" value="${variety.variety}" placeholder="Enter variety name"></td>

@@ -37,6 +37,12 @@ def index():
     print("DEBUG: Will render index.html")
     return render_template('index.html')
 
+@app.route('/debug-scenario')
+def debug_scenario():
+    """Debug page for scenario loading issues"""
+    print("DEBUG: Scenario debug page requested")
+    return render_template('debug_scenario.html')
+
 @app.route('/upload', methods=['POST'])
 def upload_file():
     if 'file' not in request.files:
