@@ -1,0 +1,42 @@
+{
+  "parameters": {
+    "small_deal_minimum": 30,
+    "bulk_deal_minimum": 60,
+    "payment_terms": 30
+  },
+  "products": [
+    {
+      "product_name": "prod a",
+      "current_price": 22.4,
+      "bulk_price": 20.0,
+      "cases_on_hand": 3,
+      "cases_per_year": 50,
+      "bottles_per_case": 6,
+      "bulk_quantity": 20,
+      "daily_cases": 0.136986301369863,
+      "monthly_cases": 4.166666666666667
+    },
+    {
+      "product_name": "prod b",
+      "current_price": 11.0,
+      "bulk_price": 10.0,
+      "cases_on_hand": 2,
+      "cases_per_year": 40,
+      "bottles_per_case": 6,
+      "bulk_quantity": 10,
+      "daily_cases": 0.1095890410958904,
+      "monthly_cases": 3.3333333333333335
+    },
+    {
+      "product_name": "prod c",
+      "current_price": 5.0,
+      "bulk_price": 4.5,
+      "cases_on_hand": 2,
+      "cases_per_year": 100,
+      "bottles_per_case": 6,
+      "bulk_quantity": 30,
+      "daily_cases": 0.273972602739726,
+      "monthly_cases": 8.333333333333334
+    }
+  ]
+}

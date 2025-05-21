@@ -140,9 +140,14 @@
                 <div class="list-group scenario-list" id="scenariosList">
                     {% if scenarios %}
                         {% for name in scenarios %}
-                            <button type="button" class="list-group-item list-group-item-action scenario-item" data-name="{{ name }}">
-                                {{ name }}
-                            </button>
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <button type="button" class="btn scenario-item text-start" style="border:none; background:none; width:85%;" data-name="{{ name }}">
+                                    {{ name }}
+                                </button>
+                                <button type="button" class="btn btn-sm btn-danger delete-scenario" data-name="{{ name }}">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </div>
                         {% endfor %}
                     {% else %}
                         <div class="list-group-item text-muted">No saved scenarios</div>
@@ -470,14 +475,27 @@
                         }
 
                         // Add new scenario to list
-                        const newScenario = document.createElement('button');
-                        newScenario.className = 'list-group-item list-group-item-action scenario-item';
-                        newScenario.setAttribute('data-name', scenarioNameValue);
-                        newScenario.textContent = scenarioNameValue;
+                        const newScenario = document.createElement('div');
+                        newScenario.className = 'list-group-item d-flex justify-content-between align-items-center';
+                        newScenario.innerHTML = `
+                            <button type="button" class="btn scenario-item text-start" style="border:none; background:none; width:85%;" data-name="${scenarioNameValue}">
+                                ${scenarioNameValue}
+                            </button>
+                            <button type="button" class="btn btn-sm btn-danger delete-scenario" data-name="${scenarioNameValue}">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        `;
 
-                        // Add event listener
-                        newScenario.addEventListener('click', function() {
+                        // Add event listeners
+                        newScenario.querySelector('.scenario-item').addEventListener('click', function() {
                             loadScenarioDetails(scenarioNameValue);
+                        });
+                        newScenario.querySelector('.delete-scenario').addEventListener('click', function(e) {
+                            e.stopPropagation(); // Prevent triggering parent element's click
+                            const scenarioName = this.getAttribute('data-name');
+                            if (confirm(`Are you sure you want to delete the scenario "${scenarioName}"?`)) {
+                                deleteScenario(scenarioName);
+                            }
                         });
 
                         scenariosList.appendChild(newScenario);
@@ -530,6 +548,17 @@
             });
         });
 
+        // Add event listeners to delete scenario buttons
+        document.querySelectorAll('.delete-scenario').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.stopPropagation(); // Prevent triggering parent element's click
+                const scenarioName = this.getAttribute('data-name');
+                if (confirm(`Are you sure you want to delete the scenario "${scenarioName}"?`)) {
+                    deleteScenario(scenarioName);
+                }
+            });
+        });
+
         // Function to load scenario details
         function loadScenarioDetails(name) {
             fetch('/api/get-scenario/' + encodeURIComponent(name))
@@ -563,6 +592,47 @@
                 .catch(error => {
                     showStatusMessage('Error: ' + error.message, 'danger');
                 });
+        }
+
+        // Function to delete a scenario
+        function deleteScenario(name) {
+            fetch('/api/delete-scenario/' + encodeURIComponent(name), {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showStatusMessage(`Scenario "${name}" deleted successfully.`, 'success');
+
+                    // Remove the scenario from the list
+                    const scenarioItems = scenariosList.querySelectorAll('.list-group-item');
+                    scenarioItems.forEach(item => {
+                        const scenarioBtn = item.querySelector('.scenario-item');
+                        if (scenarioBtn && scenarioBtn.getAttribute('data-name') === name) {
+                            scenariosList.removeChild(item);
+                        }
+                    });
+
+                    // If no scenarios left, show "No saved scenarios" message
+                    if (scenariosList.children.length === 0) {
+                        const noScenariosMsg = document.createElement('div');
+                        noScenariosMsg.className = 'list-group-item text-muted';
+                        noScenariosMsg.textContent = 'No saved scenarios';
+                        scenariosList.appendChild(noScenariosMsg);
+                    }
+
+                    // Clear scenario details if the deleted scenario was selected
+                    if (selectedScenario && selectedScenario.name === name) {
+                        scenarioDetails.style.display = 'none';
+                        selectedScenario = null;
+                    }
+                } else {
+                    showStatusMessage('Error: ' + data.error, 'danger');
+                }
+            })
+            .catch(error => {
+                showStatusMessage('Error: ' + error.message, 'danger');
+            });
         }
 
         // Load scenario into calculator

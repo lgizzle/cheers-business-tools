@@ -150,6 +150,11 @@
                                     <!-- Scenarios will be populated here -->
                                 </select>
                             </div>
+                            <div id="scenarioActions" class="mt-2" style="display: none;">
+                                <button class="btn btn-sm btn-danger" id="deleteScenario">
+                                    <i class="fas fa-trash"></i> Delete Selected Scenario
+                                </button>
+                            </div>
                         </div>
                         <div class="col-md-4 d-flex align-items-end">
                             <div class="btn-group w-100">
@@ -327,6 +332,25 @@
         document.getElementById('generateReportBtn').addEventListener('click', generateReport);
         document.getElementById('saveScenario').addEventListener('click', saveScenario);
         document.getElementById('loadScenario').addEventListener('click', loadSelectedScenario);
+        document.getElementById('deleteScenario').addEventListener('click', function() {
+            const scenarioName = document.getElementById('scenarioSelect').value;
+            if (!scenarioName) {
+                alert('Please select a scenario to delete.');
+                return;
+            }
+
+            if (confirm(`Are you sure you want to delete the scenario "${scenarioName}"?`)) {
+                deleteScenario(scenarioName);
+            }
+        });
+        document.getElementById('scenarioSelect').addEventListener('change', function() {
+            const scenarioActions = document.getElementById('scenarioActions');
+            if (this.value) {
+                scenarioActions.style.display = 'block';
+            } else {
+                scenarioActions.style.display = 'none';
+            }
+        });
 
         // Load scenarios on page load
         loadScenarioList();
@@ -704,6 +728,9 @@
                         option.textContent = scenario;
                         select.appendChild(option);
                     });
+
+                    // Hide the delete button by default
+                    document.getElementById('scenarioActions').style.display = 'none';
                 })
                 .catch(error => {
                     console.error('Error loading scenarios:', error);
@@ -791,6 +818,33 @@
                     console.error('Error loading scenario:', error);
                     alert('Error loading scenario: ' + error.message + '\nPlease check the console for details.');
                 });
+        }
+
+        function deleteScenario(scenarioName) {
+            fetch('/api/delete-multi-product-scenario/' + encodeURIComponent(scenarioName), {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(`Scenario "${scenarioName}" deleted successfully.`);
+
+                    // Reload the scenario list
+                    loadScenarioList();
+
+                    // Clear scenario name field if it matches the deleted scenario
+                    const nameField = document.getElementById('scenarioName');
+                    if (nameField.value === scenarioName) {
+                        nameField.value = '';
+                    }
+                } else {
+                    alert('Error deleting scenario: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error deleting scenario:', error);
+                alert('Error deleting scenario. Please check the console for details.');
+            });
         }
 
         // Utility functions
