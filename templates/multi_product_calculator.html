@@ -2,6 +2,46 @@
 
 {% block title %}Multi-Product Buying Calculator{% endblock %}
 
+{% block additional_style %}
+<style>
+    /* Improve header legibility */
+    .card-header.bg-light {
+        background-color: #e9ecef !important;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .card-header.bg-light h4 {
+        color: #212529;
+        font-weight: 600;
+    }
+
+    /* Make table headers more readable */
+    .thead-light th {
+        background-color: #e9ecef !important;
+        color: #212529;
+        font-weight: 600;
+        border-bottom: 2px solid #dee2e6;
+    }
+
+    /* Section heading styles */
+    .card .card-header {
+        padding: 0.75rem 1.25rem;
+    }
+
+    /* Improve form label contrast */
+    label {
+        color: #212529;
+        font-weight: 500;
+    }
+
+    /* Table header text */
+    .table th {
+        font-weight: 600;
+        color: #212529;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container mt-4">
     <div class="card shadow-sm">
