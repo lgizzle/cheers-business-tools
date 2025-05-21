@@ -64,13 +64,21 @@ body {
 }
 
 .btn-success {
-    background-color: #5cb85c;
-    border-color: #4cae4c;
+    background-color: #28a745;
+    border-color: #218838;
+    color: white;
 }
 
 .btn-success:hover {
-    background-color: #4cae4c;
-    border-color: #409a40;
+    background-color: #218838;
+    border-color: #1e7e34;
+    color: white;
+}
+
+.btn-success:disabled,
+.btn-success.disabled {
+    background-color: #74c687;
+    border-color: #61bd76;
 }
 
 .btn-info {
