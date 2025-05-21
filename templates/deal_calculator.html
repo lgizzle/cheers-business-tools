@@ -266,7 +266,7 @@
 
         // Use a redirection approach with a query parameter
         // This will reload the page but should be more reliable
-        window.location.href = "/?load_scenario=" + encodeURIComponent(name) + "#calculator";
+        window.location.href = "/deal-calculator?load_scenario=" + encodeURIComponent(name) + "#calculator";
     }
 
     function confirmDeleteScenario(name) {
@@ -327,6 +327,27 @@
         }, 5000);
     }
 
+    // Direct script execution for URL parameter handling
+    (function() {
+        // Check for load_scenario parameter in URL on immediate page load
+        const urlParams = new URLSearchParams(window.location.search);
+        const scenarioToLoad = urlParams.get('load_scenario');
+
+        if (scenarioToLoad) {
+            console.log("IMMEDIATE: Detected scenario to load from URL:", scenarioToLoad);
+            // Ensure we're on the calculator tab - direct DOM manipulation
+            console.log("IMMEDIATE: Activating calculator tab");
+
+            // Set a flag to indicate we want to load a scenario
+            window.scenarioToLoadOnStartup = scenarioToLoad;
+
+            // Click on the calculator tab immediately
+            setTimeout(function() {
+                document.getElementById('calculator-tab').click();
+            }, 0);
+        }
+    })();
+
     document.addEventListener('DOMContentLoaded', function() {
         // DOM Elements
         const addRowBtn = document.getElementById('addRowBtn');
@@ -349,20 +370,30 @@
         const scenarioDetailName = document.getElementById('scenarioDetailName');
         const scenarioDetailsBody = document.getElementById('scenarioDetailsBody');
 
-        // Check for load_scenario parameter in URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const scenarioToLoad = urlParams.get('load_scenario');
+        let selectedScenario = null;
+
+        // Handle scenario loading from URL parameter or from the startup flag
+        const scenarioToLoad = window.scenarioToLoadOnStartup || new URLSearchParams(window.location.search).get('load_scenario');
 
         if (scenarioToLoad) {
-            console.log("Detected scenario to load from URL:", scenarioToLoad);
-            // Force calculator tab activation
-            document.getElementById('calculator-tab').click();
+            console.log("DOM Ready: Loading scenario data for:", scenarioToLoad);
 
-            // Load the scenario data
+            // Force calculator tab to be active
+            const calculatorTab = document.getElementById('calculator-tab');
+            calculatorTab.classList.add('active');
+            document.getElementById('calculator').classList.add('show', 'active');
+            document.getElementById('scenarios-tab').classList.remove('active');
+            document.getElementById('scenarios').classList.remove('show', 'active');
+            document.getElementById('help-tab').classList.remove('active');
+            document.getElementById('help').classList.remove('show', 'active');
+
+            // Now fetch and load the data
             fetch('/api/get-scenario/' + encodeURIComponent(scenarioToLoad))
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
+                        console.log("Scenario data fetched successfully:", data.scenario);
+
                         // Set desired total
                         desiredTotal.value = data.scenario.desired_total;
 
@@ -398,18 +429,16 @@
                         showStatusMessage('Scenario loaded successfully!', 'success');
 
                         // Clean up URL to avoid reloading on refresh
-                        window.history.replaceState({}, document.title, window.location.pathname + window.location.hash);
+                        window.history.replaceState({}, document.title, window.location.pathname);
                     } else {
-                        showStatusMessage('Error: ' + data.error, 'danger');
+                        showStatusMessage('Error loading scenario: ' + data.error, 'danger');
                     }
                 })
                 .catch(error => {
-                    console.error("Error loading scenario from URL parameter:", error);
+                    console.error("Error loading scenario data:", error);
                     showStatusMessage('Error: ' + error.message, 'danger');
                 });
         }
-
-        let selectedScenario = null;
 
         // Add a new row to the varieties table
         function addRow() {
