@@ -64,13 +64,13 @@ body {
 }
 
 .btn-success {
-    background-color: var(--cheers-secondary);
-    border-color: var(--cheers-secondary-dark);
+    background-color: #28a745;
+    border-color: #218838;
 }
 
 .btn-success:hover {
-    background-color: var(--cheers-secondary-dark);
-    border-color: var(--cheers-secondary-dark);
+    background-color: #218838;
+    border-color: #1e7e34;
 }
 
 .btn-info {
