@@ -1,0 +1,136 @@
+/* Cheers Liquor Mart Theme - Centralized CSS */
+
+:root {
+    --cheers-primary: #D10000;
+    --cheers-primary-dark: #B00000;
+    --cheers-primary-light: rgba(209, 0, 0, 0.1);
+    --cheers-secondary: #212529;
+    --cheers-secondary-dark: #000000;
+    --cheers-light-bg: #f8f9fa;
+    --cheers-light-section: #f2f2f2;
+    --cheers-border: #dee2e6;
+}
+
+/* Common styles for all tools */
+body {
+    padding-top: 2rem;
+    background-color: var(--cheers-light-bg);
+}
+
+.calculator-card, .report-card {
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    background-color: white;
+}
+
+.card-header {
+    background-color: var(--cheers-primary) !important;
+    color: white;
+    border-radius: 10px 10px 0 0 !important;
+    padding: 1rem;
+}
+
+.calculator-icon, .report-icon {
+    font-size: 4rem;
+    color: var(--cheers-primary);
+    margin-bottom: 1rem;
+}
+
+.container-fluid {
+    padding: 2rem;
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: var(--cheers-primary);
+    border-color: var(--cheers-primary-dark);
+}
+
+.btn-primary:hover {
+    background-color: var(--cheers-primary-dark);
+    border-color: #900000;
+}
+
+.btn-outline-primary {
+    color: var(--cheers-primary);
+    border-color: var(--cheers-primary);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--cheers-primary);
+    border-color: var(--cheers-primary-dark);
+    color: white;
+}
+
+.btn-success {
+    background-color: var(--cheers-secondary);
+    border-color: var(--cheers-secondary-dark);
+}
+
+.btn-success:hover {
+    background-color: var(--cheers-secondary-dark);
+    border-color: var(--cheers-secondary-dark);
+}
+
+.btn-info {
+    background-color: #444444;
+    border-color: #333333;
+    color: white;
+}
+
+.btn-info:hover {
+    background-color: #333333;
+    border-color: #222222;
+    color: white;
+}
+
+/* Form elements */
+.form-control:focus, .form-select:focus {
+    border-color: var(--cheers-primary);
+    box-shadow: 0 0 0 0.25rem rgba(209, 0, 0, 0.25);
+}
+
+/* Navigation */
+.nav-link.active, .nav-pills .nav-link.active {
+    background-color: var(--cheers-primary) !important;
+    color: white !important;
+}
+
+.nav-tabs .nav-link {
+    color: var(--cheers-primary);
+}
+
+.nav-tabs .nav-link.active {
+    color: var(--cheers-primary);
+    font-weight: bold;
+}
+
+/* Tables */
+.table-primary {
+    background-color: var(--cheers-primary-light) !important;
+}
+
+.bg-primary {
+    background-color: var(--cheers-primary) !important;
+}
+
+.numeric-input {
+    text-align: right;
+}
+
+.results-table th, .results-table td {
+    text-align: center;
+}
+
+/* Other common elements */
+.alert {
+    margin-top: 1rem;
+}
+
+.section-header {
+    background-color: var(--cheers-light-section);
+    padding: 0.5rem 1rem;
+    margin-bottom: 1rem;
+    border-radius: 5px;
+}

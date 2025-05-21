@@ -745,41 +745,39 @@
                         document.getElementById('scenarioName').value = scenarioName;
                         clearProducts();
 
-                        // Add products
-                        const tbody = document.getElementById('productsTableBody');
-                        tbody.innerHTML = ''; // Clear all rows including template
-                        tbody.appendChild(document.getElementById('productRowTemplate')); // Re-add template
-
+                        // Add products by cloning template and creating actual DOM elements
                         console.log(`Adding ${data.products.length} products from scenario`);
+                        const tbody = document.getElementById('productsTableBody');
+                        const template = document.getElementById('productRowTemplate');
+
+                        // Clear the tbody except for the template
+                        while (tbody.children.length > 1) {
+                            tbody.removeChild(tbody.children[1]);
+                        }
+
                         data.products.forEach((product, index) => {
                             console.log(`Adding product ${index + 1}:`, product.product_name);
-                            const template = document.getElementById('productRowTemplate');
+
+                            // Clone the template
                             const newRow = template.cloneNode(true);
+                            newRow.id = 'product-' + Date.now() + index;
                             newRow.style.display = '';
-                            newRow.id = 'product-' + Date.now() + Math.random();
 
-                            // Try-catch for each field to prevent one error from stopping the whole process
-                            try {
-                                newRow.querySelector('.product-name').value = product.product_name || '';
-                                newRow.querySelector('.product-current-price').value = product.current_price || 0;
-                                newRow.querySelector('.product-bulk-price').value = product.bulk_price || 0;
-                                newRow.querySelector('.product-cases-on-hand').value = product.cases_on_hand || 0;
-                                newRow.querySelector('.product-cases-per-year').value = product.cases_per_year || 0;
-                                newRow.querySelector('.product-bottles-per-case').value = product.bottles_per_case || 0;
-                                newRow.querySelector('.product-bulk-quantity').value = product.bulk_quantity || 0;
-                            } catch (e) {
-                                console.error(`Error setting values for product ${product.product_name}:`, e);
-                            }
+                            // Set values
+                            newRow.querySelector('.product-name').value = product.product_name || '';
+                            newRow.querySelector('.product-current-price').value = product.current_price || 0;
+                            newRow.querySelector('.product-bulk-price').value = product.bulk_price || 0;
+                            newRow.querySelector('.product-cases-on-hand').value = product.cases_on_hand || 0;
+                            newRow.querySelector('.product-cases-per-year').value = product.cases_per_year || 0;
+                            newRow.querySelector('.product-bottles-per-case').value = product.bottles_per_case || 0;
+                            newRow.querySelector('.product-bulk-quantity').value = product.bulk_quantity || 0;
 
-                            // Add event listener to remove button
-                            try {
-                                newRow.querySelector('.remove-product').addEventListener('click', function() {
-                                    tbody.removeChild(newRow);
-                                });
-                            } catch (e) {
-                                console.error('Error setting up remove button:', e);
-                            }
+                            // Add event listener for remove button
+                            newRow.querySelector('.remove-product').addEventListener('click', function() {
+                                tbody.removeChild(newRow);
+                            });
 
+                            // Append to tbody
                             tbody.appendChild(newRow);
                         });
 

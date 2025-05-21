@@ -13,7 +13,7 @@ from pathlib import Path
 import traceback
 import logging
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static')
 app.config['SECRET_KEY'] = 'your-secret-key'
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['REPORT_FOLDER'] = 'reports'
