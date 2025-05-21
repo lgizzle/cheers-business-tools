@@ -141,10 +141,10 @@
                     {% if scenarios %}
                         {% for name in scenarios %}
                             <div class="list-group-item d-flex justify-content-between align-items-center">
-                                <button type="button" class="btn scenario-item text-start" style="border:none; padding:8px 15px; cursor:pointer; width:85%; color: var(--cheers-primary); text-decoration: none;" data-name="{{ name }}">
+                                <button type="button" class="btn btn-outline-primary scenario-item text-start" onclick="loadScenarioDetails('{{ name }}')" data-name="{{ name }}" style="width:85%;">
                                     {{ name }}
                                 </button>
-                                <button type="button" class="btn btn-sm btn-danger delete-scenario" data-name="{{ name }}">
+                                <button type="button" class="btn btn-sm btn-danger delete-scenario" onclick="confirmDeleteScenario('{{ name }}')" data-name="{{ name }}">
                                     <i class="fas fa-trash"></i> Delete
                                 </button>
                             </div>
@@ -218,6 +218,101 @@
 
 {% block scripts %}
 <script>
+    // Global functions for button onclick attributes
+    function loadScenarioDetails(name) {
+        console.log("Loading scenario:", name);
+        fetch('/api/get-scenario/' + encodeURIComponent(name))
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Show scenario details
+                    document.getElementById('scenarioDetailName').textContent = name;
+                    window.selectedScenario = data.scenario;
+
+                    // Clear existing details
+                    document.getElementById('scenarioDetailsBody').innerHTML = '';
+
+                    // Add rows for each variety
+                    data.scenario.varieties.forEach(variety => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${variety.variety}</td>
+                            <td>${variety.annual_sales}</td>
+                            <td>${variety.inventory_on_hand || 0}</td>
+                        `;
+                        document.getElementById('scenarioDetailsBody').appendChild(row);
+                    });
+
+                    // Show details card
+                    document.getElementById('scenarioDetails').style.display = 'block';
+                } else {
+                    showStatusMessage('Error: ' + data.error, 'danger');
+                }
+            })
+            .catch(error => {
+                console.error("Error loading scenario:", error);
+                showStatusMessage('Error: ' + error.message, 'danger');
+            });
+    }
+
+    function confirmDeleteScenario(name) {
+        if (confirm(`Are you sure you want to delete the scenario "${name}"?`)) {
+            deleteScenario(name);
+        }
+    }
+
+    function deleteScenario(name) {
+        fetch('/api/delete-scenario/' + encodeURIComponent(name), {
+            method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showStatusMessage(`Scenario "${name}" deleted successfully.`, 'success');
+
+                // Remove the scenario from the list
+                const scenarioItems = document.querySelectorAll('.list-group-item');
+                scenarioItems.forEach(item => {
+                    const scenarioBtn = item.querySelector('.scenario-item');
+                    if (scenarioBtn && scenarioBtn.getAttribute('data-name') === name) {
+                        document.getElementById('scenariosList').removeChild(item);
+                    }
+                });
+
+                // If no scenarios left, show "No saved scenarios" message
+                if (document.getElementById('scenariosList').children.length === 0) {
+                    const noScenariosMsg = document.createElement('div');
+                    noScenariosMsg.className = 'list-group-item text-muted';
+                    noScenariosMsg.textContent = 'No saved scenarios';
+                    document.getElementById('scenariosList').appendChild(noScenariosMsg);
+                }
+
+                // Clear scenario details if the deleted scenario was selected
+                if (window.selectedScenario && window.selectedScenario.name === name) {
+                    document.getElementById('scenarioDetails').style.display = 'none';
+                    window.selectedScenario = null;
+                }
+            } else {
+                showStatusMessage('Error: ' + data.error, 'danger');
+            }
+        })
+        .catch(error => {
+            showStatusMessage('Error: ' + error.message, 'danger');
+        });
+    }
+
+    function showStatusMessage(message, type = 'success') {
+        const statusMessage = document.getElementById('statusMessage');
+        statusMessage.textContent = message;
+        statusMessage.className = 'alert alert-' + type;
+        statusMessage.style.display = 'block';
+
+        // Hide message after 5 seconds
+        setTimeout(() => {
+            statusMessage.style.display = 'none';
+        }, 5000);
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         // DOM Elements
         const addRowBtn = document.getElementById('addRowBtn');
@@ -329,18 +424,6 @@
             }
 
             return true;
-        }
-
-        // Display status message
-        function showStatusMessage(message, type = 'success') {
-            statusMessage.textContent = message;
-            statusMessage.className = 'alert alert-' + type;
-            statusMessage.style.display = 'block';
-
-            // Hide message after 5 seconds
-            setTimeout(() => {
-                statusMessage.style.display = 'none';
-            }, 5000);
         }
 
         // Calculate split
@@ -478,25 +561,13 @@
                         const newScenario = document.createElement('div');
                         newScenario.className = 'list-group-item d-flex justify-content-between align-items-center';
                         newScenario.innerHTML = `
-                            <button type="button" class="btn scenario-item text-start" style="border:none; padding:8px 15px; cursor:pointer; width:85%; color: var(--cheers-primary); text-decoration: none;" data-name="${scenarioNameValue}">
+                            <button type="button" class="btn btn-outline-primary scenario-item text-start" onclick="loadScenarioDetails('${scenarioNameValue}')" data-name="${scenarioNameValue}" style="width:85%;">
                                 ${scenarioNameValue}
                             </button>
-                            <button type="button" class="btn btn-sm btn-danger delete-scenario" data-name="${scenarioNameValue}">
+                            <button type="button" class="btn btn-sm btn-danger delete-scenario" onclick="confirmDeleteScenario('${scenarioNameValue}')" data-name="${scenarioNameValue}">
                                 <i class="fas fa-trash"></i> Delete
                             </button>
                         `;
-
-                        // Add event listeners
-                        newScenario.querySelector('.scenario-item').addEventListener('click', function() {
-                            loadScenarioDetails(scenarioNameValue);
-                        });
-                        newScenario.querySelector('.delete-scenario').addEventListener('click', function(e) {
-                            e.stopPropagation(); // Prevent triggering parent element's click
-                            const scenarioName = this.getAttribute('data-name');
-                            if (confirm(`Are you sure you want to delete the scenario "${scenarioName}"?`)) {
-                                deleteScenario(scenarioName);
-                            }
-                        });
 
                         scenariosList.appendChild(newScenario);
                     }
@@ -540,113 +611,21 @@
             });
         });
 
-        // Load scenario details when clicked
-        document.querySelectorAll('.scenario-item').forEach(item => {
-            item.addEventListener('click', function() {
-                const scenarioName = this.getAttribute('data-name');
-                loadScenarioDetails(scenarioName);
-            });
-        });
-
-        // Add event listeners to delete scenario buttons
-        document.querySelectorAll('.delete-scenario').forEach(button => {
-            button.addEventListener('click', function(e) {
-                e.stopPropagation(); // Prevent triggering parent element's click
-                const scenarioName = this.getAttribute('data-name');
-                if (confirm(`Are you sure you want to delete the scenario "${scenarioName}"?`)) {
-                    deleteScenario(scenarioName);
-                }
-            });
-        });
-
-        // Function to load scenario details
-        function loadScenarioDetails(name) {
-            fetch('/api/get-scenario/' + encodeURIComponent(name))
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Show scenario details
-                        scenarioDetailName.textContent = name;
-                        selectedScenario = data.scenario;
-
-                        // Clear existing details
-                        scenarioDetailsBody.innerHTML = '';
-
-                        // Add rows for each variety
-                        data.scenario.varieties.forEach(variety => {
-                            const row = document.createElement('tr');
-                            row.innerHTML = `
-                                <td>${variety.variety}</td>
-                                <td>${variety.annual_sales}</td>
-                                <td>${variety.inventory_on_hand || 0}</td>
-                            `;
-                            scenarioDetailsBody.appendChild(row);
-                        });
-
-                        // Show details card
-                        scenarioDetails.style.display = 'block';
-                    } else {
-                        showStatusMessage('Error: ' + data.error, 'danger');
-                    }
-                })
-                .catch(error => {
-                    showStatusMessage('Error: ' + error.message, 'danger');
-                });
-        }
-
-        // Function to delete a scenario
-        function deleteScenario(name) {
-            fetch('/api/delete-scenario/' + encodeURIComponent(name), {
-                method: 'DELETE'
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    showStatusMessage(`Scenario "${name}" deleted successfully.`, 'success');
-
-                    // Remove the scenario from the list
-                    const scenarioItems = scenariosList.querySelectorAll('.list-group-item');
-                    scenarioItems.forEach(item => {
-                        const scenarioBtn = item.querySelector('.scenario-item');
-                        if (scenarioBtn && scenarioBtn.getAttribute('data-name') === name) {
-                            scenariosList.removeChild(item);
-                        }
-                    });
-
-                    // If no scenarios left, show "No saved scenarios" message
-                    if (scenariosList.children.length === 0) {
-                        const noScenariosMsg = document.createElement('div');
-                        noScenariosMsg.className = 'list-group-item text-muted';
-                        noScenariosMsg.textContent = 'No saved scenarios';
-                        scenariosList.appendChild(noScenariosMsg);
-                    }
-
-                    // Clear scenario details if the deleted scenario was selected
-                    if (selectedScenario && selectedScenario.name === name) {
-                        scenarioDetails.style.display = 'none';
-                        selectedScenario = null;
-                    }
-                } else {
-                    showStatusMessage('Error: ' + data.error, 'danger');
-                }
-            })
-            .catch(error => {
-                showStatusMessage('Error: ' + error.message, 'danger');
-            });
-        }
-
         // Load scenario into calculator
         loadScenarioBtn.addEventListener('click', function() {
-            if (!selectedScenario) return;
+            if (!window.selectedScenario) {
+                showStatusMessage('No scenario selected', 'warning');
+                return;
+            }
 
             // Set desired total
-            desiredTotal.value = selectedScenario.desired_total;
+            desiredTotal.value = window.selectedScenario.desired_total;
 
             // Clear existing rows
             varietiesTableBody.innerHTML = '';
 
             // Add rows for each variety
-            selectedScenario.varieties.forEach(variety => {
+            window.selectedScenario.varieties.forEach(variety => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td><input type="text" class="form-control variety-input" value="${variety.variety}" placeholder="Enter variety name"></td>
@@ -669,7 +648,7 @@
             });
 
             // Set scenario name
-            scenarioName.value = selectedScenario.name;
+            scenarioName.value = window.selectedScenario.name;
 
             // Switch to calculator tab
             document.getElementById('calculator-tab').click();
