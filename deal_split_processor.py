@@ -152,6 +152,14 @@ class DealSplitCalculator:
         """
         return self.scenarios.get(name)
 
+    def delete_scenario(self, name):
+        """Delete a scenario by name"""
+        if name in self.scenarios:
+            del self.scenarios[name]
+            self.save_scenarios()
+            return True
+        return False
+
     def get_all_scenarios(self):
         """Return all saved scenarios"""
         return self.scenarios

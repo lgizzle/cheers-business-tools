@@ -167,6 +167,20 @@ def get_all_scenarios():
     except Exception as e:
         return jsonify({"success": False, "error": str(e)})
 
+@app.route('/api/delete-scenario/<n>', methods=['DELETE'])
+def delete_scenario(n):
+    """Delete a saved scenario by name."""
+    try:
+        print(f"Attempting to delete scenario: {n}")
+        success = deal_calculator.delete_scenario(n)
+        if success:
+            return jsonify({"success": True})
+        else:
+            return jsonify({"success": False, "error": "Scenario not found or could not be deleted"})
+    except Exception as e:
+        print(f"Error deleting scenario: {str(e)}")
+        return jsonify({"success": False, "error": str(e)})
+
 @app.route('/api/generate-deal-report', methods=['POST'])
 def generate_deal_report():
     try:
