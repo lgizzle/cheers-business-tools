@@ -1,0 +1,31 @@
+{
+  "name": "Whiskey Test",
+  "desired_total": 180,
+  "varieties": [
+    {
+      "variety": "Bourbon",
+      "annual_sales": 7200,
+      "inventory_on_hand": 85
+    },
+    {
+      "variety": "Scotch",
+      "annual_sales": 4800,
+      "inventory_on_hand": 60
+    },
+    {
+      "variety": "Irish",
+      "annual_sales": 3600,
+      "inventory_on_hand": 42
+    },
+    {
+      "variety": "Rye",
+      "annual_sales": 2400,
+      "inventory_on_hand": 30
+    },
+    {
+      "variety": "Tennessee",
+      "annual_sales": 5400,
+      "inventory_on_hand": 65
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "name": "Tequila Test",
+  "desired_total": 120,
+  "varieties": [
+    {
+      "variety": "Reposado",
+      "annual_sales": 3500,
+      "inventory_on_hand": 48
+    },
+    {
+      "variety": "Silver",
+      "annual_sales": 5200,
+      "inventory_on_hand": 62
+    },
+    {
+      "variety": "Añejo",
+      "annual_sales": 1800,
+      "inventory_on_hand": 24
+    },
+    {
+      "variety": "Gold",
+      "annual_sales": 2900,
+      "inventory_on_hand": 36
+    }
+  ]
+}

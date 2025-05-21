@@ -262,6 +262,7 @@
 
     // Function to load a scenario directly to the calculator tab
     function loadScenarioToCalculator(name) {
+        alert("Debug: Loading scenario " + name);
         console.log("Loading scenario directly to calculator:", name);
 
         // Direct API call approach instead of page redirection
@@ -331,6 +332,7 @@
     function confirmDeleteScenario(name) {
         console.log("Confirming scenario deletion:", name);
         if (confirm(`Are you sure you want to delete the scenario "${name}"?`)) {
+            alert("Debug: Deleting scenario " + name);
             deleteScenario(name);
         }
     }
