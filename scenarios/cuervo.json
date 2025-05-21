@@ -1,0 +1,75 @@
+{
+  "parameters": {
+    "small_deal_minimum": 30,
+    "bulk_deal_minimum": 60,
+    "payment_terms": 30
+  },
+  "products": [
+    {
+      "product_name": "750 Cuervo",
+      "current_price": 10.0,
+      "bulk_price": 9.5,
+      "cases_on_hand": 0,
+      "cases_per_year": 100,
+      "bottles_per_case": 12,
+      "bulk_quantity": 30,
+      "daily_cases": 0.2739726027397261,
+      "monthly_cases": 8.33333333333333
+    },
+    {
+      "product_name": "1.75 Cuervo",
+      "current_price": 22.0,
+      "bulk_price": 21.0,
+      "cases_on_hand": 0,
+      "cases_per_year": 150,
+      "bottles_per_case": 12,
+      "bulk_quantity": 30,
+      "daily_cases": 0.4109589041095891,
+      "monthly_cases": 12.5
+    },
+    {
+      "product_name": "375 Cuervo",
+      "current_price": 8.0,
+      "bulk_price": 7.25,
+      "cases_on_hand": 0,
+      "cases_per_year": 150,
+      "bottles_per_case": 12,
+      "bulk_quantity": 0,
+      "daily_cases": 0.4109589041095891,
+      "monthly_cases": 12.5
+    },
+    {
+      "product_name": "200 Cuervo",
+      "current_price": 5.0,
+      "bulk_price": 4.5,
+      "cases_on_hand": 0,
+      "cases_per_year": 200,
+      "bottles_per_case": 12,
+      "bulk_quantity": 0,
+      "daily_cases": 0.5479452054794521,
+      "monthly_cases": 16.666666666666668
+    },
+    {
+      "product_name": "100 Cuervo",
+      "current_price": 3.0,
+      "bulk_price": 3.0,
+      "cases_on_hand": 0,
+      "cases_per_year": 175,
+      "bottles_per_case": 24,
+      "bulk_quantity": 0,
+      "daily_cases": 0.4794520547945205,
+      "monthly_cases": 14.583333333333334
+    },
+    {
+      "product_name": "50 Cuervo",
+      "current_price": 1.0,
+      "bulk_price": 1.0,
+      "cases_on_hand": 0,
+      "cases_per_year": 200,
+      "bottles_per_case": 24,
+      "bulk_quantity": 0,
+      "daily_cases": 0.5479452054794521,
+      "monthly_cases": 16.666666666666668
+    }
+  ]
+}

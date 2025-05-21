@@ -6,6 +6,7 @@ from report_processor import APReportProcessor
 from deal_split_processor import DealSplitCalculator
 from single_deal_calculator import SingleDealCalculator
 from sales_tax_calculator import SalesTaxCalculator
+from multi_product_calculator import MultiProductBuyingCalculator
 import json
 import shutil
 from pathlib import Path
@@ -347,6 +348,125 @@ def view_sample_report():
     except Exception as e:
         flash(f'Error processing sample file: {str(e)}')
         return redirect(url_for('index'))
+
+# Multi-Product Buying Calculator routes
+@app.route('/multi-product-calculator')
+def multi_product_calculator():
+    """Render the multi-product buying calculator page."""
+    return render_template('multi_product_calculator.html')
+
+@app.route('/api/calculate-multi-product-deal', methods=['POST'])
+def calculate_multi_product_deal():
+    """Calculate multi-product deal metrics."""
+    data = request.get_json()
+
+    # Initialize calculator
+    calculator = MultiProductBuyingCalculator()
+
+    # Set parameters
+    calculator.set_parameters(
+        data['parameters']['small_deal_minimum'],
+        data['parameters']['bulk_deal_minimum'],
+        data['parameters']['payment_terms']
+    )
+
+    # Add products
+    for product in data['products']:
+        calculator.add_product(
+            product['product_name'],
+            product['current_price'],
+            product['bulk_price'],
+            product['cases_on_hand'],
+            product['cases_per_year'],
+            product['bottles_per_case'],
+            product['bulk_quantity']
+        )
+
+    # Calculate results
+    results = calculator.calculate()
+
+    return jsonify(results)
+
+@app.route('/api/generate-multi-product-deal-report', methods=['POST'])
+def generate_multi_product_deal_report():
+    """Generate Excel report for multi-product deal."""
+    data = request.get_json()
+
+    # Initialize calculator
+    calculator = MultiProductBuyingCalculator()
+
+    # Set parameters
+    calculator.set_parameters(
+        data['parameters']['small_deal_minimum'],
+        data['parameters']['bulk_deal_minimum'],
+        data['parameters']['payment_terms']
+    )
+
+    # Generate report
+    try:
+        filename = calculator.generate_report(data['results'])
+        return jsonify({"filename": filename})
+    except Exception as e:
+        return jsonify({"error": str(e)})
+
+@app.route('/api/save-multi-product-scenario', methods=['POST'])
+def save_multi_product_scenario():
+    """Save a multi-product scenario."""
+    data = request.get_json()
+
+    # Initialize calculator
+    calculator = MultiProductBuyingCalculator()
+
+    # Set parameters
+    calculator.set_parameters(
+        data['parameters']['small_deal_minimum'],
+        data['parameters']['bulk_deal_minimum'],
+        data['parameters']['payment_terms']
+    )
+
+    # Add products
+    for product in data['products']:
+        calculator.add_product(
+            product['product_name'],
+            product['current_price'],
+            product['bulk_price'],
+            product['cases_on_hand'],
+            product['cases_per_year'],
+            product['bottles_per_case'],
+            product['bulk_quantity']
+        )
+
+    # Save scenario
+    try:
+        filename = calculator.save_scenario(data['name'])
+        return jsonify({"success": True, "filename": filename})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)})
+
+@app.route('/api/list-multi-product-scenarios')
+def list_multi_product_scenarios():
+    """List all saved multi-product scenarios."""
+    calculator = MultiProductBuyingCalculator()
+    scenarios = calculator.list_scenarios()
+    return jsonify({"scenarios": scenarios})
+
+@app.route('/api/get-multi-product-scenario/<scenario_name>')
+def get_multi_product_scenario(scenario_name):
+    """Get a specific multi-product scenario."""
+    calculator = MultiProductBuyingCalculator()
+
+    success = calculator.load_scenario(scenario_name)
+    if not success:
+        return jsonify({"error": "Scenario not found"})
+
+    return jsonify({
+        "parameters": {
+            "small_deal_minimum": calculator.small_deal_minimum,
+            "bulk_deal_minimum": calculator.bulk_deal_minimum,
+            "payment_terms": calculator.payment_terms
+        },
+        "products": calculator.products
+    })
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8080)

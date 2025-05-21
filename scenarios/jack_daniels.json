@@ -1,0 +1,53 @@
+{
+  "parameters": {
+    "small_deal_minimum": 30,
+    "bulk_deal_minimum": 60,
+    "payment_terms": 30
+  },
+  "products": [
+    {
+      "product_name": "750 Jack Daniels",
+      "current_price": 25.0,
+      "bulk_price": 23.5,
+      "cases_on_hand": 5,
+      "cases_per_year": 120,
+      "bottles_per_case": 12,
+      "bulk_quantity": 30,
+      "daily_cases": 0.3287671232876712,
+      "monthly_cases": 10.0
+    },
+    {
+      "product_name": "1.75 Jack Daniels",
+      "current_price": 45.0,
+      "bulk_price": 42.0,
+      "cases_on_hand": 2,
+      "cases_per_year": 80,
+      "bottles_per_case": 6,
+      "bulk_quantity": 20,
+      "daily_cases": 0.2191780821917808,
+      "monthly_cases": 6.666666666666667
+    },
+    {
+      "product_name": "375 Jack Daniels",
+      "current_price": 14.0,
+      "bulk_price": 13.0,
+      "cases_on_hand": 0,
+      "cases_per_year": 60,
+      "bottles_per_case": 24,
+      "bulk_quantity": 15,
+      "daily_cases": 0.16438356164383562,
+      "monthly_cases": 5.0
+    },
+    {
+      "product_name": "Jack Daniels Honey 750",
+      "current_price": 27.0,
+      "bulk_price": 25.5,
+      "cases_on_hand": 0,
+      "cases_per_year": 90,
+      "bottles_per_case": 12,
+      "bulk_quantity": 20,
+      "daily_cases": 0.2465753424657534,
+      "monthly_cases": 7.5
+    }
+  ]
+}
