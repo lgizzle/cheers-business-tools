@@ -689,55 +689,81 @@
                 return;
             }
 
+            console.log(`Attempting to load scenario: ${scenarioName}`);
+
             fetch('/api/get-multi-product-scenario/' + encodeURIComponent(scenarioName))
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     if (data.error) {
+                        console.error('Error loading scenario:', data.error);
                         alert('Error loading scenario: ' + data.error);
                         return;
                     }
 
-                    // Set parameters
-                    document.getElementById('smallDealMinimum').value = data.parameters.small_deal_minimum;
-                    document.getElementById('bulkDealMinimum').value = data.parameters.bulk_deal_minimum;
-                    document.getElementById('paymentTerms').value = data.parameters.payment_terms;
+                    console.log('Scenario data received:', data);
 
-                    // Clear existing products and set scenario name
-                    document.getElementById('scenarioName').value = scenarioName;
-                    clearProducts();
+                    try {
+                        // Set parameters
+                        document.getElementById('smallDealMinimum').value = data.parameters.small_deal_minimum;
+                        document.getElementById('bulkDealMinimum').value = data.parameters.bulk_deal_minimum;
+                        document.getElementById('paymentTerms').value = data.parameters.payment_terms;
 
-                    // Add products
-                    const tbody = document.getElementById('productsTableBody');
-                    tbody.innerHTML = ''; // Clear all rows including template
-                    tbody.appendChild(document.getElementById('productRowTemplate')); // Re-add template
+                        // Clear existing products and set scenario name
+                        document.getElementById('scenarioName').value = scenarioName;
+                        clearProducts();
 
-                    data.products.forEach(product => {
-                        const template = document.getElementById('productRowTemplate');
-                        const newRow = template.cloneNode(true);
-                        newRow.style.display = '';
-                        newRow.id = 'product-' + Date.now() + Math.random();
+                        // Add products
+                        const tbody = document.getElementById('productsTableBody');
+                        tbody.innerHTML = ''; // Clear all rows including template
+                        tbody.appendChild(document.getElementById('productRowTemplate')); // Re-add template
 
-                        newRow.querySelector('.product-name').value = product.product_name;
-                        newRow.querySelector('.product-current-price').value = product.current_price;
-                        newRow.querySelector('.product-bulk-price').value = product.bulk_price;
-                        newRow.querySelector('.product-cases-on-hand').value = product.cases_on_hand;
-                        newRow.querySelector('.product-cases-per-year').value = product.cases_per_year;
-                        newRow.querySelector('.product-bottles-per-case').value = product.bottles_per_case;
-                        newRow.querySelector('.product-bulk-quantity').value = product.bulk_quantity;
+                        console.log(`Adding ${data.products.length} products from scenario`);
+                        data.products.forEach((product, index) => {
+                            console.log(`Adding product ${index + 1}:`, product.product_name);
+                            const template = document.getElementById('productRowTemplate');
+                            const newRow = template.cloneNode(true);
+                            newRow.style.display = '';
+                            newRow.id = 'product-' + Date.now() + Math.random();
 
-                        // Add event listener to remove button
-                        newRow.querySelector('.remove-product').addEventListener('click', function() {
-                            tbody.removeChild(newRow);
+                            // Try-catch for each field to prevent one error from stopping the whole process
+                            try {
+                                newRow.querySelector('.product-name').value = product.product_name || '';
+                                newRow.querySelector('.product-current-price').value = product.current_price || 0;
+                                newRow.querySelector('.product-bulk-price').value = product.bulk_price || 0;
+                                newRow.querySelector('.product-cases-on-hand').value = product.cases_on_hand || 0;
+                                newRow.querySelector('.product-cases-per-year').value = product.cases_per_year || 0;
+                                newRow.querySelector('.product-bottles-per-case').value = product.bottles_per_case || 0;
+                                newRow.querySelector('.product-bulk-quantity').value = product.bulk_quantity || 0;
+                            } catch (e) {
+                                console.error(`Error setting values for product ${product.product_name}:`, e);
+                            }
+
+                            // Add event listener to remove button
+                            try {
+                                newRow.querySelector('.remove-product').addEventListener('click', function() {
+                                    tbody.removeChild(newRow);
+                                });
+                            } catch (e) {
+                                console.error('Error setting up remove button:', e);
+                            }
+
+                            tbody.appendChild(newRow);
                         });
 
-                        tbody.appendChild(newRow);
-                    });
-
-                    alert('Scenario loaded successfully.');
+                        alert('Scenario loaded successfully.');
+                    } catch (e) {
+                        console.error('Error processing scenario data:', e);
+                        alert('Error processing scenario data: ' + e.message);
+                    }
                 })
                 .catch(error => {
                     console.error('Error loading scenario:', error);
-                    alert('Error loading scenario. Please check the console for details.');
+                    alert('Error loading scenario: ' + error.message + '\nPlease check the console for details.');
                 });
         }
 

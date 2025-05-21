@@ -7,6 +7,7 @@ from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 from openpyxl.chart import LineChart, Reference, BarChart
+import logging
 
 
 class MultiProductBuyingCalculator:
@@ -204,36 +205,87 @@ class MultiProductBuyingCalculator:
 
     def load_scenario(self, scenario_name):
         """Load a scenario from a file."""
-        filename = f"{self.scenarios_dir}/{scenario_name.lower().replace(' ', '_')}.json"
+        logging.basicConfig(filename='logs/calculator.log', level=logging.DEBUG)
+        logging.info(f"Attempting to load scenario: '{scenario_name}'")
 
-        if not os.path.exists(filename):
+        # Handle both formats: direct name or case-sensitive conversion
+        potential_filenames = [
+            # Direct filename from parameter (original)
+            f"{self.scenarios_dir}/{scenario_name.lower().replace(' ', '_')}.json",
+            # Try capitalized words format
+            f"{self.scenarios_dir}/{scenario_name.replace(' ', '_')}.json",
+            # Try exact case format
+            f"{self.scenarios_dir}/{scenario_name}.json"
+        ]
+
+        # Find the first matching filename
+        filename = None
+        for potential_file in potential_filenames:
+            if os.path.exists(potential_file):
+                filename = potential_file
+                logging.info(f"Found scenario file: {filename}")
+                break
+
+        # If no file found, try direct listing of directory
+        if not filename:
+            logging.warning(f"No scenario file found with standard naming patterns")
+            # List all files in scenarios dir and check for case-insensitive match
+            scenario_name_lower = scenario_name.lower()
+            for file in os.listdir(self.scenarios_dir):
+                if file.lower().endswith('.json'):
+                    basename = os.path.splitext(file)[0]
+                    if basename.lower().replace('_', ' ') == scenario_name_lower.replace('_', ' '):
+                        filename = f"{self.scenarios_dir}/{file}"
+                        logging.info(f"Found scenario file via directory listing: {filename}")
+                        break
+
+        if not filename or not os.path.exists(filename):
+            logging.error(f"No scenario file found for: {scenario_name}")
+            logging.error(f"Attempted paths: {potential_filenames}")
+            logging.error(f"Directory contents: {os.listdir(self.scenarios_dir)}")
             return False
 
-        with open(filename, 'r') as f:
-            scenario = json.load(f)
+        try:
+            with open(filename, 'r') as f:
+                scenario = json.load(f)
 
-        # Load parameters
-        self.set_parameters(
-            scenario["parameters"]["small_deal_minimum"],
-            scenario["parameters"]["bulk_deal_minimum"],
-            scenario["parameters"]["payment_terms"]
-        )
+            # Load parameters
+            self.set_parameters(
+                scenario["parameters"]["small_deal_minimum"],
+                scenario["parameters"]["bulk_deal_minimum"],
+                scenario["parameters"]["payment_terms"]
+            )
 
-        # Load products
-        self.products = scenario["products"]
-
-        return True
+            # Load products
+            self.products = scenario["products"]
+            logging.info(f"Successfully loaded scenario from {filename}")
+            return True
+        except Exception as e:
+            logging.error(f"Error loading scenario: {str(e)}")
+            import traceback
+            logging.error(traceback.format_exc())
+            return False
 
     def list_scenarios(self):
         """List all available scenarios."""
+        logging.basicConfig(filename='logs/calculator.log', level=logging.DEBUG)
+
         scenarios = []
+        try:
+            logging.info(f"Listing scenarios from directory: {self.scenarios_dir}")
+            for filename in os.listdir(self.scenarios_dir):
+                if filename.endswith(".json"):
+                    # Extract name and convert to readable format
+                    scenario_name = filename[:-5].replace("_", " ").title()
+                    scenarios.append(scenario_name)
+                    logging.info(f"Found scenario: {scenario_name} from file {filename}")
 
-        for filename in os.listdir(self.scenarios_dir):
-            if filename.endswith(".json"):
-                scenario_name = filename[:-5].replace("_", " ").title()
-                scenarios.append(scenario_name)
-
-        return scenarios
+            return scenarios
+        except Exception as e:
+            logging.error(f"Error listing scenarios: {str(e)}")
+            import traceback
+            logging.error(traceback.format_exc())
+            return []
 
     def generate_report(self, results):
         """Generate an Excel report for the current calculation."""

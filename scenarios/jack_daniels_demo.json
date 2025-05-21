@@ -1,0 +1,54 @@
+{
+  "parameters": {
+    "small_deal_minimum": 30,
+    "bulk_deal_minimum": 60,
+    "payment_terms": 30
+  },
+  "products": [
+    {
+      "product_name": "Jack Daniels 750ml",
+      "current_price": 25.0,
+      "bulk_price": 23.5,
+      "cases_on_hand": 5,
+      "cases_per_year": 120,
+      "bottles_per_case": 12,
+      "bulk_quantity": 30
+    },
+    {
+      "product_name": "Jack Daniels 1.75L",
+      "current_price": 45.0,
+      "bulk_price": 42.0,
+      "cases_on_hand": 2,
+      "cases_per_year": 80,
+      "bottles_per_case": 6,
+      "bulk_quantity": 20
+    },
+    {
+      "product_name": "Jack Daniels 375ml",
+      "current_price": 14.0,
+      "bulk_price": 13.0,
+      "cases_on_hand": 0,
+      "cases_per_year": 60,
+      "bottles_per_case": 24,
+      "bulk_quantity": 15
+    },
+    {
+      "product_name": "Jack Daniels Honey 750ml",
+      "current_price": 27.0,
+      "bulk_price": 25.5,
+      "cases_on_hand": 0,
+      "cases_per_year": 90,
+      "bottles_per_case": 12,
+      "bulk_quantity": 20
+    },
+    {
+      "product_name": "Gentleman Jack 750ml",
+      "current_price": 32.0,
+      "bulk_price": 30.0,
+      "cases_on_hand": 1,
+      "cases_per_year": 40,
+      "bottles_per_case": 12,
+      "bulk_quantity": 10
+    }
+  ]
+}

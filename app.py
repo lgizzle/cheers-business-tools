@@ -10,6 +10,8 @@ from multi_product_calculator import MultiProductBuyingCalculator
 import json
 import shutil
 from pathlib import Path
+import traceback
+import logging
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your-secret-key'
@@ -303,7 +305,6 @@ def calculate_sales_tax():
             }
         })
     except Exception as e:
-        import traceback
         traceback.print_exc()
         return jsonify({"success": False, "error": str(e)})
 
@@ -330,7 +331,6 @@ def generate_sales_tax_report():
             "download_url": url_for('download_file', filename=filename)
         })
     except Exception as e:
-        import traceback
         traceback.print_exc()
         return jsonify({"success": False, "error": str(e)})
 
@@ -467,20 +467,47 @@ def list_multi_product_scenarios():
 @app.route('/api/get-multi-product-scenario/<scenario_name>')
 def get_multi_product_scenario(scenario_name):
     """Get a specific multi-product scenario."""
+    logging.basicConfig(filename='logs/app.log', level=logging.DEBUG)
+    logging.info(f"Attempting to load scenario: {scenario_name}")
+
     calculator = MultiProductBuyingCalculator()
 
-    success = calculator.load_scenario(scenario_name)
-    if not success:
-        return jsonify({"error": "Scenario not found"})
+    try:
+        # Log available scenarios
+        available_scenarios = calculator.list_scenarios()
+        logging.info(f"Available scenarios: {available_scenarios}")
 
-    return jsonify({
-        "parameters": {
-            "small_deal_minimum": calculator.small_deal_minimum,
-            "bulk_deal_minimum": calculator.bulk_deal_minimum,
-            "payment_terms": calculator.payment_terms
-        },
-        "products": calculator.products
-    })
+        # Check if scenario name matches any available scenario (case-insensitive)
+        scenario_name_lower = scenario_name.lower()
+        matching_scenarios = [s for s in available_scenarios if s.lower() == scenario_name_lower]
+        if matching_scenarios:
+            logging.info(f"Found matching scenario: {matching_scenarios[0]}")
+            scenario_name = matching_scenarios[0]  # Use the exact case from available scenarios
+
+        # Try to load the scenario
+        success = calculator.load_scenario(scenario_name)
+
+        if not success:
+            # Check if file exists
+            import os
+            filename = f"scenarios/{scenario_name.lower().replace(' ', '_')}.json"
+            logging.error(f"Failed to load scenario. File exists: {os.path.exists(filename)}")
+            return jsonify({"error": f"Scenario not found: {scenario_name}"})
+
+        logging.info(f"Successfully loaded scenario: {scenario_name}")
+
+        return jsonify({
+            "parameters": {
+                "small_deal_minimum": calculator.small_deal_minimum,
+                "bulk_deal_minimum": calculator.bulk_deal_minimum,
+                "payment_terms": calculator.payment_terms
+            },
+            "products": calculator.products
+        })
+    except Exception as e:
+        logging.error(f"Error loading scenario: {str(e)}")
+        logging.error(traceback.format_exc())
+        return jsonify({"error": f"Error loading scenario: {str(e)}"})
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8080)
