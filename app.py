@@ -85,7 +85,11 @@ def calculate_deal():
 
         # Filter out empty rows
         filtered_data = [
-            {"variety": item.get('variety', ''), "annual_sales": int(item.get('annual_sales', 0))}
+            {
+                "variety": item.get('variety', ''),
+                "annual_sales": int(item.get('annual_sales', 0)),
+                "inventory_on_hand": int(item.get('inventory_on_hand', 0))
+            }
             for item in varieties_data
             if item.get('variety') and item.get('annual_sales')
         ]
@@ -98,12 +102,14 @@ def calculate_deal():
 
         # Convert NumPy types to standard Python types
         total_annual_sales = int(results_df['annual_sales'].sum())
+        total_inventory_on_hand = int(results_df['inventory_on_hand'].sum())
         total_rounded_split = int(results_df['rounded_split'].sum())
 
         return jsonify({
             "success": True,
             "results": results,
             "total_annual_sales": total_annual_sales,
+            "total_inventory_on_hand": total_inventory_on_hand,
             "total_rounded_split": total_rounded_split
         })
     except Exception as e:
@@ -118,7 +124,11 @@ def save_scenario():
 
         # Filter out empty rows
         filtered_data = [
-            {"variety": item.get('variety', ''), "annual_sales": int(item.get('annual_sales', 0))}
+            {
+                "variety": item.get('variety', ''),
+                "annual_sales": int(item.get('annual_sales', 0)),
+                "inventory_on_hand": int(item.get('inventory_on_hand', 0))
+            }
             for item in varieties_data
             if item.get('variety') and item.get('annual_sales')
         ]
@@ -158,7 +168,11 @@ def generate_deal_report():
 
         # Filter out empty rows
         filtered_data = [
-            {"variety": item.get('variety', ''), "annual_sales": int(item.get('annual_sales', 0))}
+            {
+                "variety": item.get('variety', ''),
+                "annual_sales": int(item.get('annual_sales', 0)),
+                "inventory_on_hand": int(item.get('inventory_on_hand', 0))
+            }
             for item in varieties_data
             if item.get('variety') and item.get('annual_sales')
         ]

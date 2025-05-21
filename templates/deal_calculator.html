@@ -136,6 +136,7 @@
                                             <tr>
                                                 <th class="variety-cell">Variety</th>
                                                 <th>Annual Sales</th>
+                                                <th>Inventory on Hand</th>
                                                 <th>Actions</th>
                                             </tr>
                                         </thead>
@@ -144,6 +145,7 @@
                                             <tr>
                                                 <td><input type="text" class="form-control variety-input" placeholder="Enter variety name"></td>
                                                 <td><input type="number" class="form-control numeric-input annual-sales-input" placeholder="Enter sales quantity"></td>
+                                                <td><input type="number" class="form-control numeric-input inventory-on-hand-input" placeholder="Current inventory" value="0"></td>
                                                 <td class="text-center">
                                                     <button class="btn btn-danger btn-sm delete-row">Remove</button>
                                                 </td>
@@ -176,8 +178,10 @@
                                                 <tr>
                                                     <th class="variety-cell">Variety</th>
                                                     <th>Annual Sales</th>
+                                                    <th>Inventory on Hand</th>
                                                     <th>Calculated Split</th>
                                                     <th>Rounded Split</th>
+                                                    <th>Days to Sell</th>
                                                 </tr>
                                             </thead>
                                             <tbody id="resultsTableBody">
@@ -187,8 +191,10 @@
                                                 <tr>
                                                     <th>Total</th>
                                                     <th id="totalAnnualSales">0</th>
+                                                    <th id="totalInventoryOnHand">0</th>
                                                     <th id="totalCalculatedSplit">0</th>
                                                     <th id="totalRoundedSplit">0</th>
+                                                    <th id="totalDaysToSell">0</th>
                                                 </tr>
                                             </tfoot>
                                         </table>
@@ -290,7 +296,10 @@
             const resultsTableBody = document.getElementById('resultsTableBody');
             const resultsContainer = document.getElementById('resultsContainer');
             const totalAnnualSales = document.getElementById('totalAnnualSales');
+            const totalInventoryOnHand = document.getElementById('totalInventoryOnHand');
+            const totalCalculatedSplit = document.getElementById('totalCalculatedSplit');
             const totalRoundedSplit = document.getElementById('totalRoundedSplit');
+            const totalDaysToSell = document.getElementById('totalDaysToSell');
             const desiredTotal = document.getElementById('desiredTotal');
             const scenarioName = document.getElementById('scenarioName');
             const statusMessage = document.getElementById('statusMessage');
@@ -308,6 +317,7 @@
                 row.innerHTML = `
                     <td><input type="text" class="form-control variety-input" placeholder="Enter variety name"></td>
                     <td><input type="number" class="form-control numeric-input annual-sales-input" placeholder="Enter sales quantity"></td>
+                    <td><input type="number" class="form-control numeric-input inventory-on-hand-input" placeholder="Current inventory" value="0"></td>
                     <td class="text-center">
                         <button class="btn btn-danger btn-sm delete-row">Remove</button>
                     </td>
@@ -349,11 +359,13 @@
                 rows.forEach(row => {
                     const varietyInput = row.querySelector('.variety-input');
                     const annualSalesInput = row.querySelector('.annual-sales-input');
+                    const inventoryOnHandInput = row.querySelector('.inventory-on-hand-input');
 
                     if (varietyInput && annualSalesInput) {
                         varieties.push({
                             variety: varietyInput.value.trim(),
-                            annual_sales: annualSalesInput.value ? parseInt(annualSalesInput.value) : 0
+                            annual_sales: annualSalesInput.value ? parseInt(annualSalesInput.value) : 0,
+                            inventory_on_hand: inventoryOnHandInput && inventoryOnHandInput.value ? parseInt(inventoryOnHandInput.value) : 0
                         });
                     }
                 });
@@ -438,19 +450,28 @@
 
                 // Add rows for each result
                 results.forEach(result => {
+                    // Calculate days to sell - divide by 365 to get daily rate
+                    const dailySalesRate = result.annual_sales / 365;
+                    const daysToSell = dailySalesRate > 0 ? Math.round(result.rounded_split / dailySalesRate) : 0;
+
                     const row = document.createElement('tr');
                     row.innerHTML = `
                         <td>${result.variety}</td>
                         <td>${result.annual_sales}</td>
+                        <td>${result.inventory_on_hand || 0}</td>
                         <td>${parseFloat(result.calculated_split).toFixed(2)}</td>
                         <td>${result.rounded_split}</td>
+                        <td>${daysToSell} days</td>
                     `;
                     resultsTableBody.appendChild(row);
                 });
 
                 // Update totals
                 totalAnnualSales.textContent = totalSales;
+                totalInventoryOnHand.textContent = totalSales;
+                totalCalculatedSplit.textContent = totalSplit;
                 totalRoundedSplit.textContent = totalSplit;
+                totalDaysToSell.textContent = totalSales;
 
                 // Show results container
                 resultsContainer.style.display = 'block';
@@ -631,6 +652,7 @@
                     row.innerHTML = `
                         <td><input type="text" class="form-control variety-input" value="${item.variety}" placeholder="Enter variety name"></td>
                         <td><input type="number" class="form-control numeric-input annual-sales-input" value="${item.annual_sales}" placeholder="Enter sales quantity"></td>
+                        <td><input type="number" class="form-control numeric-input inventory-on-hand-input" value="${item.inventory_on_hand}" placeholder="Current inventory"></td>
                         <td class="text-center">
                             <button class="btn btn-danger btn-sm delete-row">Remove</button>
                         </td>
