@@ -141,7 +141,7 @@
                     {% if scenarios %}
                         {% for name in scenarios %}
                             <div class="list-group-item d-flex justify-content-between align-items-center">
-                                <button type="button" class="btn scenario-item text-start" style="border:none; background:none; width:85%;" data-name="{{ name }}">
+                                <button type="button" class="btn scenario-item text-start" style="border:none; padding:8px 15px; cursor:pointer; width:85%; color: var(--cheers-primary); text-decoration: none;" data-name="{{ name }}">
                                     {{ name }}
                                 </button>
                                 <button type="button" class="btn btn-sm btn-danger delete-scenario" data-name="{{ name }}">
@@ -478,7 +478,7 @@
                         const newScenario = document.createElement('div');
                         newScenario.className = 'list-group-item d-flex justify-content-between align-items-center';
                         newScenario.innerHTML = `
-                            <button type="button" class="btn scenario-item text-start" style="border:none; background:none; width:85%;" data-name="${scenarioNameValue}">
+                            <button type="button" class="btn scenario-item text-start" style="border:none; padding:8px 15px; cursor:pointer; width:85%; color: var(--cheers-primary); text-decoration: none;" data-name="${scenarioNameValue}">
                                 ${scenarioNameValue}
                             </button>
                             <button type="button" class="btn btn-sm btn-danger delete-scenario" data-name="${scenarioNameValue}">

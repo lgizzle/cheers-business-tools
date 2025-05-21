@@ -596,7 +596,10 @@
 
         // Helper function to format numbers with commas and 2 decimal places
         function formatNumber(number) {
-            return number.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            if (number === undefined || number === null) {
+                return "0.00";
+            }
+            return parseFloat(number).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }
     });
 </script>
