@@ -262,77 +262,11 @@
 
     // Function to load a scenario directly to the calculator tab
     function loadScenarioToCalculator(name) {
-        console.log("Loading scenario to calculator:", name);
-        fetch('/api/get-scenario/' + encodeURIComponent(name))
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Set desired total
-                    document.getElementById('desiredTotal').value = data.scenario.desired_total;
+        console.log("Loading scenario to calculator using redirect method:", name);
 
-                    // Clear existing rows
-                    const varietiesTableBody = document.getElementById('varietiesTableBody');
-                    varietiesTableBody.innerHTML = '';
-
-                    // Add rows for each variety
-                    data.scenario.varieties.forEach(variety => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td><input type="text" class="form-control variety-input" value="${variety.variety}" placeholder="Enter variety name"></td>
-                            <td><input type="number" class="form-control numeric-input annual-sales-input" value="${variety.annual_sales}" placeholder="Enter sales quantity"></td>
-                            <td><input type="number" class="form-control numeric-input inventory-on-hand-input" value="${variety.inventory_on_hand || 0}" placeholder="Current inventory"></td>
-                            <td class="text-center">
-                                <button class="btn btn-danger btn-sm delete-row">Remove</button>
-                            </td>
-                        `;
-                        varietiesTableBody.appendChild(row);
-
-                        // Add event listener to delete button
-                        row.querySelector('.delete-row').addEventListener('click', function() {
-                            if (varietiesTableBody.children.length > 1) {
-                                varietiesTableBody.removeChild(row);
-                            } else {
-                                showStatusMessage('Cannot remove the last row', 'warning');
-                            }
-                        });
-                    });
-
-                    // Set scenario name
-                    document.getElementById('scenarioName').value = name;
-
-                    // Switch to calculator tab - try multiple methods for compatibility
-                    const calculatorTab = document.getElementById('calculator-tab');
-                    // Method 1: Direct click
-                    calculatorTab.click();
-
-                    // Method 2: Bootstrap tab activation
-                    const bsTab = new bootstrap.Tab(calculatorTab);
-                    bsTab.show();
-
-                    // Method 3: Force display of calculator tab content
-                    document.getElementById('calculator').classList.add('show', 'active');
-                    document.getElementById('scenarios').classList.remove('show', 'active');
-                    document.getElementById('help').classList.remove('show', 'active');
-
-                    // Method 4: Update aria attributes
-                    calculatorTab.setAttribute('aria-selected', 'true');
-                    document.getElementById('scenarios-tab').setAttribute('aria-selected', 'false');
-                    document.getElementById('help-tab').setAttribute('aria-selected', 'false');
-
-                    // Add active class to calculator tab
-                    calculatorTab.classList.add('active');
-                    document.getElementById('scenarios-tab').classList.remove('active');
-                    document.getElementById('help-tab').classList.remove('active');
-
-                    showStatusMessage('Scenario loaded successfully!', 'success');
-                } else {
-                    showStatusMessage('Error: ' + data.error, 'danger');
-                }
-            })
-            .catch(error => {
-                console.error("Error loading scenario to calculator:", error);
-                showStatusMessage('Error: ' + error.message, 'danger');
-            });
+        // Use a redirection approach with a query parameter
+        // This will reload the page but should be more reliable
+        window.location.href = "/?load_scenario=" + encodeURIComponent(name) + "#calculator";
     }
 
     function confirmDeleteScenario(name) {
@@ -414,6 +348,66 @@
         const scenarioDetails = document.getElementById('scenarioDetails');
         const scenarioDetailName = document.getElementById('scenarioDetailName');
         const scenarioDetailsBody = document.getElementById('scenarioDetailsBody');
+
+        // Check for load_scenario parameter in URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const scenarioToLoad = urlParams.get('load_scenario');
+
+        if (scenarioToLoad) {
+            console.log("Detected scenario to load from URL:", scenarioToLoad);
+            // Force calculator tab activation
+            document.getElementById('calculator-tab').click();
+
+            // Load the scenario data
+            fetch('/api/get-scenario/' + encodeURIComponent(scenarioToLoad))
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Set desired total
+                        desiredTotal.value = data.scenario.desired_total;
+
+                        // Clear existing rows
+                        varietiesTableBody.innerHTML = '';
+
+                        // Add rows for each variety
+                        data.scenario.varieties.forEach(variety => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td><input type="text" class="form-control variety-input" value="${variety.variety}" placeholder="Enter variety name"></td>
+                                <td><input type="number" class="form-control numeric-input annual-sales-input" value="${variety.annual_sales}" placeholder="Enter sales quantity"></td>
+                                <td><input type="number" class="form-control numeric-input inventory-on-hand-input" value="${variety.inventory_on_hand || 0}" placeholder="Current inventory"></td>
+                                <td class="text-center">
+                                    <button class="btn btn-danger btn-sm delete-row">Remove</button>
+                                </td>
+                            `;
+                            varietiesTableBody.appendChild(row);
+
+                            // Add event listener to delete button
+                            row.querySelector('.delete-row').addEventListener('click', function() {
+                                if (varietiesTableBody.children.length > 1) {
+                                    varietiesTableBody.removeChild(row);
+                                } else {
+                                    showStatusMessage('Cannot remove the last row', 'warning');
+                                }
+                            });
+                        });
+
+                        // Set scenario name
+                        scenarioName.value = scenarioToLoad;
+
+                        showStatusMessage('Scenario loaded successfully!', 'success');
+
+                        // Clean up URL to avoid reloading on refresh
+                        window.history.replaceState({}, document.title, window.location.pathname + window.location.hash);
+                    } else {
+                        showStatusMessage('Error: ' + data.error, 'danger');
+                    }
+                })
+                .catch(error => {
+                    console.error("Error loading scenario from URL parameter:", error);
+                    showStatusMessage('Error: ' + error.message, 'danger');
+                });
+        }
 
         let selectedScenario = null;
 
