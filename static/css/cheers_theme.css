@@ -64,13 +64,13 @@ body {
 }
 
 .btn-success {
-    background-color: #1a9431;
-    border-color: #158129;
+    background-color: #5cb85c;
+    border-color: #4cae4c;
 }
 
 .btn-success:hover {
-    background-color: #158129;
-    border-color: #0f6b21;
+    background-color: #4cae4c;
+    border-color: #409a40;
 }
 
 .btn-info {
@@ -108,7 +108,14 @@ body {
 
 /* Tables */
 .table-primary {
-    background-color: var(--cheers-primary-light) !important;
+    background-color: rgba(209, 0, 0, 0.05) !important;
+}
+
+.table-primary > th,
+.table-primary > td,
+thead.table-primary th {
+    background-color: rgba(209, 0, 0, 0.1) !important;
+    color: var(--cheers-secondary) !important;
 }
 
 .bg-primary {
