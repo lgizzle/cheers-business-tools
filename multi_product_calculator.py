@@ -1,12 +1,10 @@
-import pandas as pd
-import numpy as np
 from datetime import datetime
 import os
 import json
 from openpyxl import Workbook
-from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+from openpyxl.styles import Font, PatternFill
 from openpyxl.utils import get_column_letter
-from openpyxl.chart import LineChart, Reference, BarChart
+from openpyxl.chart import Reference, BarChart
 import logging
 
 
@@ -29,6 +27,9 @@ class MultiProductBuyingCalculator:
         self.scenarios_dir = "scenarios"
         if not os.path.exists(self.scenarios_dir):
             os.makedirs(self.scenarios_dir)
+
+        # Ensure log directory exists
+        os.makedirs('logs', exist_ok=True)
 
     def add_product(self, product_name, current_price, bulk_price, cases_on_hand,
                     cases_per_year, bottles_per_case, bulk_quantity=0):
@@ -287,6 +288,14 @@ class MultiProductBuyingCalculator:
             logging.error(traceback.format_exc())
             return []
 
+    def delete_scenario(self, scenario_name):
+        """Delete a saved scenario by name."""
+        filename = f"{self.scenarios_dir}/{scenario_name.lower().replace(' ', '_')}.json"
+        if os.path.exists(filename):
+            os.remove(filename)
+            return True
+        return False
+
     def generate_report(self, results):
         """Generate an Excel report for the current calculation."""
         wb = Workbook()
@@ -354,7 +363,7 @@ class MultiProductBuyingCalculator:
         self._create_product_details_sheet(product_sheet, results["products"], header_fill, money_format, percent_format)
 
         # Charts sheet
-        self._create_charts_sheet(chart_sheet, results["products"], wb)
+        self._create_charts_sheet(chart_sheet, results["products"])
 
         # Set column widths
         for sheet in [summary_sheet, product_sheet, chart_sheet]:
@@ -415,7 +424,7 @@ class MultiProductBuyingCalculator:
                 sheet.cell(row=row, column=18, value=product["annualized_roi"]).number_format = percent_format
                 sheet.cell(row=row, column=19, value=product["holding_time_days"])
 
-    def _create_charts_sheet(self, sheet, products, workbook):
+    def _create_charts_sheet(self, sheet, products):
         """Create charts to visualize the data."""
         # ROI chart
         roi_chart = BarChart()

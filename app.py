@@ -23,6 +23,7 @@ app.config['ALLOWED_EXTENSIONS'] = {'xlsx', 'xls'}
 # Create directories if they don't exist
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 os.makedirs(app.config['REPORT_FOLDER'], exist_ok=True)
+os.makedirs('logs', exist_ok=True)
 
 # Initialize calculators
 deal_calculator = DealSplitCalculator()
@@ -530,6 +531,13 @@ def get_multi_product_scenario(scenario_name):
         logging.error(f"Error loading scenario: {str(e)}")
         logging.error(traceback.format_exc())
         return jsonify({"error": f"Error loading scenario: {str(e)}"})
+
+# Route to delete a saved multi-product scenario
+@app.route('/api/delete-multi-product-scenario/<scenario_name>', methods=['DELETE'])
+def delete_multi_product_scenario(scenario_name):
+    calculator = MultiProductBuyingCalculator()
+    success = calculator.delete_scenario(scenario_name)
+    return jsonify({"success": success})
 
 # Margin/Markup Calculator routes
 @app.route('/margin-calculator')
