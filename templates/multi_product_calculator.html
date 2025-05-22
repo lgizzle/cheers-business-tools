@@ -326,8 +326,8 @@
         let calculationResults = null;
         let charts = {};
 
-        // Add first product row by default
-        addProductRow();
+        // Add first product row by default - BUT DON'T TRIGGER CLEAR
+        addProductRowSilent();
 
         // Add statusMessage div after the action buttons
         const actionsSection = document.querySelector('.row.mt-4.mb-4');
@@ -345,7 +345,7 @@
             statusMessage.style.display = 'block';
 
             // Hide message after 5 seconds
-            setTimeout(() => {
+           setTimeout(() => {
                 statusMessage.style.display = 'none';
             }, 5000);
         }
@@ -366,7 +366,7 @@
 
             if (confirm(`Are you sure you want to delete the scenario "${scenarioName}"?`)) {
                 deleteScenario(scenarioName);
-            }
+           }
         });
         document.getElementById('scenarioSelect').addEventListener('change', function() {
             const scenarioActions = document.getElementById('scenarioActions');
@@ -397,7 +397,25 @@
             tbody.appendChild(newRow);
         }
 
+        // Silent version that doesn't show any dialogs
+        function addProductRowSilent() {
+            const template = document.getElementById('productRowTemplate');
+            const tbody = document.getElementById('productsTableBody');
+
+            const newRow = template.cloneNode(true);
+            newRow.style.display = '';
+            newRow.id = 'product-' + Date.now();
+
+            // Add event listener to remove button
+            newRow.querySelector('.remove-product').addEventListener('click', function() {
+                tbody.removeChild(newRow);
+            });
+
+            tbody.appendChild(newRow);
+        }
+
         function clearProducts() {
+            // Show confirmation dialog only when manually triggered
             if (confirm('Are you sure you want to clear all products?')) {
                 const tbody = document.getElementById('productsTableBody');
                 // Remove all rows except template
@@ -408,7 +426,7 @@
                 });
 
                 // Add one empty row
-                addProductRow();
+                addProductRowSilent();
             }
         }
 
@@ -443,7 +461,7 @@
                 return;
             }
 
-            // Get parameters
+           // Get parameters
             const params = {
                 small_deal_minimum: parseInt(document.getElementById('smallDealMinimum').value) || 30,
                 bulk_deal_minimum: parseInt(document.getElementById('bulkDealMinimum').value) || 60,
@@ -468,7 +486,7 @@
                 document.getElementById('generateReportBtn').disabled = false;
                 document.getElementById('resultsSection').style.display = 'block';
                 showStatusMessage('Calculation completed successfully!', 'success');
-            })
+           })
             .catch(error => {
                 console.error('Error calculating results:', error);
                 showStatusMessage('Error calculating results: ' + error.message, 'danger');
@@ -476,7 +494,7 @@
         }
 
         function displayResults(data) {
-            // Display summary results
+           // Display summary results
             document.getElementById('peakInvestment').textContent = formatCurrency(data.summary.peak_additional_investment);
             document.getElementById('averageInvestment').textContent = formatCurrency(data.summary.average_additional_investment);
             document.getElementById('totalSavings').textContent = formatCurrency(data.summary.total_savings);
@@ -504,7 +522,7 @@
                 tbody.appendChild(row);
             });
 
-            // Create charts
+           // Create charts
             createCharts(data);
         }
 
@@ -512,7 +530,7 @@
             // Destroy existing charts to prevent duplicates
             Object.values(charts).forEach(chart => {
                 if (chart) chart.destroy();
-            });
+           });
 
             // Prepare data for charts
             const productNames = data.products.map(p => p.product_name);
@@ -614,7 +632,7 @@
             // Summary chart (Investment vs Savings)
             const summaryCtx = document.getElementById('summaryChart').getContext('2d');
             charts.summary = new Chart(summaryCtx, {
-                type: 'pie',
+               type: 'pie',
                 data: {
                     labels: ['Peak Investment', 'Total Savings'],
                     datasets: [{
@@ -703,14 +721,14 @@
                 return;
             }
 
-            // Get parameters
+           // Get parameters
             const params = {
                 small_deal_minimum: parseInt(document.getElementById('smallDealMinimum').value) || 30,
                 bulk_deal_minimum: parseInt(document.getElementById('bulkDealMinimum').value) || 60,
                 payment_terms: parseInt(document.getElementById('paymentTerms').value) || 30
             };
 
-            // Send data to server for saving
+           // Send data to server for saving
             fetch('/api/save-multi-product-scenario', {
                 method: 'POST',
                 headers: {
@@ -797,17 +815,16 @@
 
                         // Clear existing products and set scenario name
                         document.getElementById('scenarioName').value = scenarioName;
-                        clearProducts();
-
-                        // Add products by cloning template and creating actual DOM elements
-                        console.log(`Adding ${data.products.length} products from scenario`);
+                        
+                        // Clear products without triggering dialog
                         const tbody = document.getElementById('productsTableBody');
-                        const template = document.getElementById('productRowTemplate');
-
-                        // Clear the tbody except for the template
                         while (tbody.children.length > 1) {
                             tbody.removeChild(tbody.children[1]);
                         }
+
+                        // Add products by cloning template and creating actual DOM elements
+                        console.log(`Adding ${data.products.length} products from scenario`);
+                        const template = document.getElementById('productRowTemplate');
 
                         data.products.forEach((product, index) => {
                             console.log(`Adding product ${index + 1}:`, product.product_name);
