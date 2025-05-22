@@ -17,6 +17,11 @@ A suite of web-based tools for Cheers Liquor Mart to help with everyday business
 - Save and load different scenarios
 - Generate Excel reports with perfect distribution
 
+### Multi-Product Buying Calculator
+- Evaluate ROI for purchasing multiple products in bulk
+- Save, load, and delete scenarios
+- Generate Excel summaries with charts
+
 ## Installation and Setup
 
 ### Requirements
@@ -44,6 +49,7 @@ A suite of web-based tools for Cheers Liquor Mart to help with everyday business
    ```
 
 4. Open your browser and navigate to `http://localhost:8080`
+5. Log files will be written to a newly created `logs/` directory
 
 ### Docker Deployment
 
@@ -59,6 +65,7 @@ A suite of web-based tools for Cheers Liquor Mart to help with everyday business
 - `app.py` - Main application file with Flask routes
 - `report_processor.py` - AP Aging report processing logic
 - `deal_split_processor.py` - Deal Split Calculator logic
+- `multi_product_calculator.py` - Multi-Product Buying Calculator logic
 - `templates/` - HTML templates for the web interface
 - `scenarios.json` - Stored Deal Split Calculator scenarios
 - `uploads/` - Temporary storage for uploaded files
@@ -76,6 +83,12 @@ A suite of web-based tools for Cheers Liquor Mart to help with everyday business
 2. Specify the desired total order quantity
 3. Calculate the optimal distribution
 4. Save scenarios for future use or generate Excel reports
+
+### Multi-Product Buying Calculator
+1. Add each product with current and bulk pricing
+2. Set deal parameters like minimum quantities and payment terms
+3. Calculate ROI and savings across all products
+4. Save scenarios, download reports, or delete them when no longer needed
 
 ## Development
 
