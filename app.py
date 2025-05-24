@@ -574,13 +574,6 @@ def get_multi_product_scenario(scenario_name):
             "error": str(e)
         })
 
-# Route to delete a saved multi-product scenario
-@app.route('/api/delete-multi-product-scenario/<scenario_name>', methods=['DELETE'])
-def delete_multi_product_scenario(scenario_name):
-    calculator = MultiProductBuyingCalculator()
-    success = calculator.delete_scenario(scenario_name)
-    return jsonify({"success": success})
-
 # Margin/Markup Calculator routes
 @app.route('/margin-calculator')
 def margin_calculator_page():
