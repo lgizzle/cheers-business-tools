@@ -1,36 +1,28 @@
 import pandas as pd
 import openpyxl
 from openpyxl.utils.dataframe import dataframe_to_rows
-from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.formatting.rule import CellIsRule
 import os
-import json
 from datetime import datetime
+from scenario_utils import load_all_scenarios, save_all_scenarios
+from logging_utils import setup_logging
+from excel_utils import get_title_font, get_header_font, get_header_fill, get_money_format, get_percent_format, apply_header_styles
+
+setup_logging('logs/deal_split.log')
 
 class DealSplitCalculator:
     def __init__(self):
         self.scenarios = {}
+        self.scenarios_file = os.path.join(os.path.dirname(__file__), 'scenarios.json')
         self.load_scenarios()
 
     def load_scenarios(self):
         """Load existing scenarios from a JSON file if it exists"""
-        scenarios_file = os.path.join(os.path.dirname(__file__), 'scenarios.json')
-        if os.path.exists(scenarios_file):
-            try:
-                with open(scenarios_file, 'r') as f:
-                    self.scenarios = json.load(f)
-            except Exception as e:
-                print(f"Error loading scenarios: {e}")
-                self.scenarios = {}
+        self.scenarios = load_all_scenarios(self.scenarios_file)
 
     def save_scenarios(self):
         """Save scenarios to a JSON file"""
-        scenarios_file = os.path.join(os.path.dirname(__file__), 'scenarios.json')
-        try:
-            with open(scenarios_file, 'w') as f:
-                json.dump(self.scenarios, f, indent=4)
-        except Exception as e:
-            print(f"Error saving scenarios: {e}")
+        save_all_scenarios(self.scenarios_file, self.scenarios)
 
     def calculate_split(self, data, desired_total):
         """
@@ -186,19 +178,16 @@ class DealSplitCalculator:
 
         # Add title
         ws['A1'] = "DEAL SPLIT CALCULATOR"
-        ws['A1'].font = Font(size=16, bold=True)
+        ws['A1'].font = get_title_font()
         ws.merge_cells('A1:G1')
-        ws['A1'].alignment = Alignment(horizontal='center')
+        ws['A1'].alignment = openpyxl.styles.Alignment(horizontal='center')
 
         # Add headers
         headers = ['Variety', 'Annual Sales', 'Inventory on Hand', 'Calculated Split', 'Rounded Split', 'Actual Order', 'Days to Sell']
         for col, header in enumerate(headers, 1):
             cell = ws.cell(row=3, column=col)
             cell.value = header
-            cell.font = Font(bold=True)
-            cell.fill = PatternFill(start_color="4472C4", end_color="4472C4", fill_type="solid")
-            cell.alignment = Alignment(horizontal='center')
-            cell.font = Font(bold=True, color="FFFFFF")
+        apply_header_styles(ws, row=3, start_col=1, end_col=len(headers))
 
         # Add data
         row_num = 4
@@ -207,7 +196,7 @@ class DealSplitCalculator:
             ws.cell(row=row_num, column=2).value = row['annual_sales']
             ws.cell(row=row_num, column=3).value = row['inventory_on_hand']
             ws.cell(row=row_num, column=4).value = row['calculated_split']
-            ws.cell(row=row_num, column=4).number_format = '0.00'
+            ws.cell(row=row_num, column=4).number_format = get_money_format()
             ws.cell(row=row_num, column=5).value = row['rounded_split']
             ws.cell(row=row_num, column=6).value = row['rounded_split']  # Default actual order to rounded
             ws.cell(row=row_num, column=7).value = row['days_to_sell']
@@ -216,7 +205,7 @@ class DealSplitCalculator:
         # Add totals row
         total_row = row_num
         ws.cell(row=total_row, column=1).value = "TOTAL"
-        ws.cell(row=total_row, column=1).font = Font(bold=True)
+        ws.cell(row=total_row, column=1).font = get_header_font()
 
         # Sum formulas
         ws.cell(row=total_row, column=2).value = f"=SUM(B4:B{total_row-1})"
@@ -230,12 +219,12 @@ class DealSplitCalculator:
 
         # Add desired total
         ws.cell(row=total_row+2, column=1).value = "Desired Total Order:"
-        ws.cell(row=total_row+2, column=1).font = Font(bold=True)
+        ws.cell(row=total_row+2, column=1).font = get_header_font()
         ws.cell(row=total_row+2, column=6).value = desired_total
 
         # Add status message
         ws.cell(row=total_row+4, column=1).value = "Status:"
-        ws.cell(row=total_row+4, column=1).font = Font(bold=True)
+        ws.cell(row=total_row+4, column=1).font = get_header_font()
         status_formula = (
             f'=IF(AND(F{total_row+2}=0,SUM(B4:B{total_row-1})=0),"Enter sales data and desired total to begin.",'
             f'IF(F{total_row}=F{total_row+2},"Perfect! Your order total matches your target.",'
@@ -263,7 +252,7 @@ class DealSplitCalculator:
         for row in range(4, total_row + 1):
             ws.cell(row=row, column=2).number_format = '#,##0'    # Annual Sales
             ws.cell(row=row, column=3).number_format = '#,##0'    # Inventory on Hand
-            ws.cell(row=row, column=4).number_format = '0.00'     # Calculated Split
+            ws.cell(row=row, column=4).number_format = get_money_format()     # Calculated Split
             ws.cell(row=row, column=5).number_format = '#,##0'    # Rounded Split
             ws.cell(row=row, column=6).number_format = '#,##0'    # Actual Order
             ws.cell(row=row, column=7).number_format = '#,##0'    # Days to Sell

@@ -4,6 +4,99 @@
 
 {% block additional_style %}
 <style>
+    /* Make container wider */
+    .container-fluid.mt-4 {
+        max-width: 98%;
+    }
+
+    /* Better table layout - wider pricing columns */
+    #productsTable {
+        table-layout: fixed;
+        width: 100%;
+        min-width: 1400px;
+    }
+
+    /* Fixed width for product name column */
+    #productsTable th:nth-child(1),
+    #productsTable td:nth-child(1) {
+        width: 160px;
+        max-width: 160px;
+        min-width: 160px;
+    }
+
+    /* WIDER Pricing columns - make them clearly visible */
+    #productsTable th:nth-child(2), #productsTable td:nth-child(2) {
+        width: 100px;
+        max-width: 100px;
+        background-color: #f8f9fa;
+        font-weight: 600;
+    }
+
+    #productsTable th:nth-child(3), #productsTable td:nth-child(3) {
+        width: 100px;
+        max-width: 100px;
+        background-color: #fff3cd;
+        border: 1px solid #ffc107;
+        font-weight: 700;
+    }
+
+    /* Cases columns */
+    #productsTable th:nth-child(4), #productsTable td:nth-child(4),
+    #productsTable th:nth-child(5), #productsTable td:nth-child(5),
+    #productsTable th:nth-child(6), #productsTable td:nth-child(6) {
+        width: 80px;
+        max-width: 80px;
+    }
+
+    /* Small Deal, Bulk Cases, Cases After Purchase */
+    #productsTable th:nth-child(7), #productsTable td:nth-child(7),
+    #productsTable th:nth-child(8), #productsTable td:nth-child(8),
+    #productsTable th:nth-child(9), #productsTable td:nth-child(9) {
+        width: 90px;
+        max-width: 90px;
+    }
+
+    /* ROI columns */
+    #productsTable th:nth-child(10), #productsTable td:nth-child(10),
+    #productsTable th:nth-child(11), #productsTable td:nth-child(11),
+    #productsTable th:nth-child(12), #productsTable td:nth-child(12) {
+        width: 100px;
+        max-width: 100px;
+    }
+
+    /* Action column */
+    #productsTable th:nth-child(13), #productsTable td:nth-child(13) {
+        width: 70px;
+        max-width: 70px;
+    }
+
+    /* Make bulk price column stand out more */
+    .product-bulk-price {
+        background-color: #fff3cd !important;
+        border: 2px solid #ffc107 !important;
+        font-weight: 700 !important;
+        font-size: 0.95rem !important;
+    }
+
+    /* Make small price column more visible */
+    .product-small-price {
+        background-color: #f8f9fa !important;
+        border: 1px solid #dee2e6 !important;
+        font-weight: 600 !important;
+        font-size: 0.95rem !important;
+    }
+
+    #productsTable .product-name {
+        white-space: normal;
+        word-wrap: break-word;
+    }
+
+    /* Auto-fit other columns */
+    #productsTable th:not(:first-child),
+    #productsTable td:not(:first-child) {
+        text-align: center;
+    }
+
     /* Improve header legibility */
     .card-header.bg-light {
         background-color: #f2f2f2 !important;
@@ -21,11 +114,17 @@
         color: #212529;
         font-weight: 600;
         border-bottom: 2px solid #dee2e6;
+        font-size: 0.85rem;
+        vertical-align: middle;
+        padding: 0.4rem 0.3rem;
     }
 
-    /* Section heading styles */
-    .card .card-header {
-        padding: 0.75rem 1.25rem;
+    /* Special styling for Pricing header row */
+    .thead-light th[colspan="2"] {
+        background-color: #e9ecef !important;
+        font-weight: 700;
+        border: 2px solid #6c757d;
+        font-size: 0.9rem;
     }
 
     /* Improve form label contrast */
@@ -34,279 +133,674 @@
         font-weight: 500;
     }
 
-    /* Table header text */
-    .table th {
-        font-weight: 600;
-        color: #212529;
+    /* Table cells alignment */
+    .table td.numeric {
+        text-align: right;
     }
 
-    /* Override Bootstrap button colors */
-    .btn-success {
-        background-color: #212529;
-        border-color: #000000;
+    /* Highlight positive ROI values */
+    .positive-roi {
+        color: #28a745;
+        font-weight: 600;
     }
-    .btn-success:hover {
-        background-color: #000000;
-        border-color: #000000;
+
+    /* Highlight negative ROI values */
+    .negative-roi {
+        color: #dc3545;
+        font-weight: 600;
     }
-    .btn-info {
-        background-color: #444444;
-        border-color: #333333;
-        color: white;
+
+    /* Input validation */
+    input:invalid {
+        border-color: #dc3545;
     }
-    .btn-info:hover {
-        background-color: #333333;
-        border-color: #222222;
-        color: white;
+
+    /* Show validation tooltip */
+    .invalid-feedback {
+        display: none;
     }
-    .btn-secondary {
-        background-color: #666666;
-        border-color: #555555;
+
+    input:invalid + .invalid-feedback {
+        display: block;
     }
-    .btn-secondary:hover {
-        background-color: #555555;
-        border-color: #444444;
+
+    /* Tooltip styling */
+    .tooltip-icon {
+        margin-left: 5px;
+        color: #6c757d;
+        cursor: help;
+    }
+
+    .tooltip-icon:hover {
+        color: #007bff;
+    }
+
+    /* Enable tooltips */
+    [data-toggle="tooltip"] {
+        cursor: help;
+    }
+
+    /* Scenario management styling */
+    .scenario-list {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .nav-link {
+        cursor: pointer;
+    }
+
+    /* Total row styling */
+    .total-row {
+        background-color: #f8f9fa;
+        font-weight: bold;
+    }
+
+    /* Better input field sizing */
+    .form-control {
+        padding: 0.3rem 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    /* Input fields for pricing - make them more prominent */
+    #productsTable .product-small-price,
+    #productsTable .product-bulk-price {
+        font-size: 0.95rem !important;
+        padding: 0.4rem 0.6rem !important;
+        text-align: center !important;
+        font-weight: 600 !important;
+    }
+
+    /* Compact view toggle functionality */
+    .detail-column {
+        display: table-cell;
+    }
+
+    .table.compact .detail-column {
+        display: none;
+    }
+
+    /* Ensure proper table layout in compact mode */
+    .table.compact {
+        table-layout: auto;
+        min-width: 900px;
+    }
+
+    .table.compact th,
+    .table.compact td {
+        text-align: center;
+        vertical-align: middle;
+        padding: 0.3rem 0.2rem;
+        font-size: 0.85rem;
+    }
+
+    /* Adjust product name column in compact mode */
+    .table.compact th:first-child,
+    .table.compact td:first-child {
+        text-align: left;
+        width: 200px;
+        max-width: 200px;
+    }
+
+    /* Pricing columns in compact mode - still need to be visible */
+    .table.compact th:nth-child(2), .table.compact td:nth-child(2) {
+        width: 110px;
+        max-width: 110px;
+    }
+
+    /* Grouped header styling */
+    .thead-light th[colspan] {
+        text-align: center;
+        font-weight: 700;
+        background-color: #e9ecef !important;
+    }
+
+    /* Toggle switch styling */
+    .compact-toggle {
+        margin-bottom: 1rem;
+    }
+
+    /* Portfolio summary row styling */
+    #totalRow {
+        background-color: #e9ecef !important;
+        border-top: 2px solid #007bff !important;
+    }
+
+    #totalRow td {
+        font-weight: 700 !important;
+        font-size: 0.95rem;
+    }
+
+    /* Validation styling */
+    .validation-error {
+        border-color: #dc3545 !important;
+        background-color: #f8d7da !important;
+    }
+
+    .validation-warning {
+        border-color: #ffc107 !important;
+        background-color: #fff3cd !important;
+    }
+
+    .validation-success {
+        border-color: #28a745 !important;
+        background-color: #d4edda !important;
+    }
+
+    .validation-message {
+        display: none;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+
+    .validation-message.error {
+        color: #dc3545;
+        display: block;
+    }
+
+    .validation-message.warning {
+        color: #856404;
+        display: block;
+    }
+
+    .validation-message.success {
+        color: #155724;
+        display: block;
+    }
+
+    /* Bulk cases total indicator */
+    .bulk-cases-total {
+        font-weight: bold;
+        padding: 0.5rem;
+        border-radius: 0.25rem;
+        margin-bottom: 1rem;
+        text-align: center;
+    }
+
+    .bulk-cases-total.valid {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+
+    .bulk-cases-total.invalid {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+
+    .bulk-cases-total.warning {
+        background-color: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffeaa7;
+    }
+
+    /* Bulk cases header indicator */
+    .bulk-cases-header-indicator {
+        margin-top: 0.25rem;
+        font-size: 0.75rem;
+    }
+
+    .bulk-cases-header-indicator.valid {
+        color: #155724;
+    }
+
+    .bulk-cases-header-indicator.invalid {
+        color: #721c24;
+        font-weight: bold;
+    }
+
+    .bulk-cases-header-indicator.warning {
+        color: #856404;
+        font-weight: bold;
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white">
-            <h2 class="text-center mb-0">Multi-Product Buying Calculator</h2>
-        </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-12">
-                    <p class="lead text-center">
-                        Analyze the ROI of purchasing multiple related products at bulk discount pricing
-                    </p>
-                </div>
-            </div>
-
-            <!-- Parameters Section -->
-            <div class="card mb-4">
-                <div class="card-header bg-light">
-                    <h4 class="mb-0">Parameters</h4>
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="text-center mb-0">Multi-Product Buying Calculator</h2>
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="smallDealMinimum">Small Deal Minimum</label>
-                                <div class="input-group">
-                                    <input type="number" class="form-control" id="smallDealMinimum" min="1" value="30">
-                                    <div class="input-group-append">
-                                        <span class="input-group-text">cases</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="bulkDealMinimum">Bulk Deal Minimum</label>
-                                <div class="input-group">
-                                    <input type="number" class="form-control" id="bulkDealMinimum" min="1" value="60">
-                                    <div class="input-group-append">
-                                        <span class="input-group-text">cases</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="paymentTerms">Payment Terms</label>
-                                <div class="input-group">
-                                    <input type="number" class="form-control" id="paymentTerms" min="1" value="30">
-                                    <div class="input-group-append">
-                                        <span class="input-group-text">days</span>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="col-md-12">
+                            <p class="lead text-center">
+                                Analyze the ROI of purchasing multiple related products at bulk discount pricing
+                            </p>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <!-- Scenario Management -->
-            <div class="card mb-4">
-                <div class="card-header bg-light">
-                    <h4 class="mb-0">Scenario Management</h4>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="scenarioName">Scenario Name</label>
-                                <input type="text" class="form-control" id="scenarioName" placeholder="e.g., Cuervo Deal">
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="scenarioSelect">Load Existing Scenario</label>
-                                <select class="form-control" id="scenarioSelect">
-                                    <option value="">-- Select Scenario --</option>
-                                    <!-- Scenarios will be populated here -->
-                                </select>
-                            </div>
-                            <div id="scenarioActions" class="mt-2" style="display: none;">
-                                <button class="btn btn-sm btn-danger" id="deleteScenario">
-                                    <i class="fas fa-trash"></i> Delete Selected Scenario
-                                </button>
-                            </div>
-                        </div>
-                        <div class="col-md-4 d-flex align-items-end">
-                            <button class="btn btn-info w-100" id="loadScenario">Load Selected Scenario</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                    <!-- Tab Navigation -->
+                    <ul class="nav nav-tabs mb-4" id="calculatorTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link active" id="calculator-tab" data-bs-toggle="tab" data-bs-target="#calculator" type="button" role="tab" aria-controls="calculator" aria-selected="true">Calculator</a>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link" id="scenarios-tab" data-bs-toggle="tab" data-bs-target="#scenarios" type="button" role="tab" aria-controls="scenarios" aria-selected="false">Saved Scenarios</a>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link" id="help-tab" data-bs-toggle="tab" data-bs-target="#help" type="button" role="tab" aria-controls="help" aria-selected="false">Help</a>
+                        </li>
+                    </ul>
 
-            <!-- Products Section -->
-            <div class="card mb-4">
-                <div class="card-header bg-light">
-                    <h4 class="mb-0">Products</h4>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-hover" id="productsTable">
-                            <thead class="thead-light">
-                                <tr>
-                                    <th>Product Name</th>
-                                    <th>Current Price</th>
-                                    <th>Bulk Price</th>
-                                    <th>Cases On Hand</th>
-                                    <th>Cases/Year</th>
-                                    <th>Bottles/Case</th>
-                                    <th>Bulk Quantity</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="productsTableBody">
-                                <!-- Products will be added here -->
-                                <tr id="productRowTemplate" style="display:none;">
-                                    <td><input type="text" class="form-control product-name"></td>
-                                    <td><input type="number" class="form-control product-current-price" min="0" step="0.01"></td>
-                                    <td><input type="number" class="form-control product-bulk-price" min="0" step="0.01"></td>
-                                    <td><input type="number" class="form-control product-cases-on-hand" min="0"></td>
-                                    <td><input type="number" class="form-control product-cases-per-year" min="0"></td>
-                                    <td><input type="number" class="form-control product-bottles-per-case" min="1"></td>
-                                    <td><input type="number" class="form-control product-bulk-quantity" min="0"></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-danger remove-product">
-                                            <i class="fas fa-trash"></i>
+                    <div class="tab-content" id="calculatorTabContent">
+                        <!-- Calculator Tab -->
+                        <div class="tab-pane fade show active" id="calculator" role="tabpanel" aria-labelledby="calculator-tab">
+                            <!-- Parameters Panel -->
+                            <div class="card mb-4">
+                                <div class="card-header bg-light">
+                                    <h4 class="mb-0">Parameters</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="dealSizeCases">Deal Size
+                                                    <i class="fas fa-info-circle tooltip-icon" data-toggle="tooltip"
+                                                       title="Total number of cases in the bulk deal"></i>
+                                                </label>
+                                                <div class="input-group">
+                                                    <input type="number" class="form-control" id="dealSizeCases" min="1" value="60" required>
+                                                    <div class="input-group-append">
+                                                        <span class="input-group-text">cases</span>
+                                                    </div>
+                                                    <div class="invalid-feedback">
+                                                        Deal size must be at least 1 case
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="minDaysStock">Minimum Days Stock
+                                                    <i class="fas fa-info-circle tooltip-icon" data-toggle="tooltip"
+                                                       title="Minimum number of days of stock required after allocation"></i>
+                                                </label>
+                                                <div class="input-group">
+                                                    <input type="number" class="form-control" id="minDaysStock" min="0" value="30" required>
+                                                    <div class="input-group-append">
+                                                        <span class="input-group-text">days</span>
+                                                    </div>
+                                                    <div class="invalid-feedback">
+                                                        Minimum days stock cannot be negative
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="paymentTermsDays">Payment Terms
+                                                    <i class="fas fa-info-circle tooltip-icon" data-toggle="tooltip"
+                                                       title="Number of days until payment is due"></i>
+                                                </label>
+                                                <div class="input-group">
+                                                    <input type="number" class="form-control" id="paymentTermsDays" min="0" value="30" required>
+                                                    <div class="input-group-append">
+                                                        <span class="input-group-text">days</span>
+                                                    </div>
+                                                    <div class="invalid-feedback">
+                                                        Payment terms cannot be negative
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="iterations">Optimization Iterations
+                                                    <i class="fas fa-info-circle tooltip-icon" data-toggle="tooltip"
+                                                       title="Number of optimization iterations to run"></i>
+                                                </label>
+                                                <select class="form-control" id="iterations">
+                                                    <option value="0">None (Proportional Only)</option>
+                                                    <option value="1">1 Iteration</option>
+                                                    <option value="5">5 Iterations</option>
+                                                    <option value="10">10 Iterations</option>
+                                                    <option value="auto" selected>Auto (Until Converged)</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Scenario Name (moved from separate panel to the products panel) -->
+                            <div class="row mb-3">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="scenarioName">Scenario Name (for saving)</label>
+                                        <input type="text" class="form-control" id="scenarioName" placeholder="e.g., Premium Spirits Portfolio">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Products Section -->
+                            <div class="card mb-4">
+                                <div class="card-header bg-light">
+                                    <h4 class="mb-0">Product Input</h4>
+                                </div>
+                                <div class="card-body">
+                                    <!-- Compact View Toggle -->
+                                    <div class="compact-toggle">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="compactViewToggle">
+                                            <label class="form-check-label" for="compactViewToggle">
+                                                Compact View (hides Cases On Hand, Annual Cases, Bottles/Case)
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <!-- INPUT TABLE -->
+                                    <div class="table-responsive mb-4">
+                                        <table class="table table-bordered table-hover" id="productsInputTable">
+                                            <thead class="thead-light">
+                                                <tr>
+                                                    <th>Product Name</th>
+                                                    <th>Small Price</th>
+                                                    <th>Bulk Price</th>
+                                                    <th class="detail-column">Cases On Hand</th>
+                                                    <th class="detail-column">Annual Cases</th>
+                                                    <th class="detail-column">Bottles/Case</th>
+                                                    <th>Bulk Cases
+                                                        <i class="fas fa-info-circle tooltip-icon" data-toggle="tooltip"
+                                                           title="Target bulk purchase quantity - can be manually set or auto-calculated"></i>
+                                                        <div id="bulkCasesHeaderIndicator" class="bulk-cases-header-indicator" style="display: none;">
+                                                            <small id="bulkCasesHeaderText" class="text-muted">(0/60)</small>
+                                                        </div>
+                                                    </th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="productsTableBody">
+                                                <tr id="productRowTemplate" style="display: none;">
+                                                    <td><input type="text" class="form-control product-name" placeholder="Product Name" required></td>
+                                                    <td><input type="number" class="form-control product-small-price" min="0.01" step="0.01" placeholder="$" required></td>
+                                                    <td><input type="number" class="form-control product-bulk-price" min="0.01" step="0.01" placeholder="$" required></td>
+                                                    <td class="detail-column"><input type="number" class="form-control product-cases-on-hand" min="0" placeholder="Cases" required></td>
+                                                    <td class="detail-column"><input type="number" class="form-control product-annual-cases" min="1" placeholder="Cases/Year" required></td>
+                                                    <td class="detail-column"><input type="number" class="form-control product-bottles-per-case" min="1" placeholder="Bottles" required></td>
+                                                    <td><input type="number" class="form-control product-bulk-cases" min="0" placeholder="Cases"></td>
+                                                    <td><button class="btn btn-sm btn-danger remove-product"><i class="fas fa-trash"></i></button></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <div class="mt-3">
+                                        <button class="btn btn-success" id="addProductRow">
+                                            <i class="fas fa-plus"></i> Add Product
                                         </button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="mt-3">
-                        <button class="btn btn-success" id="addProductRow">
-                            <i class="fas fa-plus"></i> Add Product
-                        </button>
-                        <button class="btn btn-secondary" id="clearProducts">
-                            <i class="fas fa-trash"></i> Clear All
-                        </button>
-                    </div>
-                </div>
-            </div>
+                                        <button class="btn btn-secondary" id="clearProducts">
+                                            <i class="fas fa-trash"></i> Clear All
+                                        </button>
+                                    </div>
 
-            <!-- Actions Section -->
-            <div class="row mt-4 mb-4">
-                <div class="col-md-6 mb-3">
-                    <button id="calculateBtn" class="btn btn-primary w-100">Calculate</button>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <div class="btn-group w-100" role="group">
-                        <button id="saveScenario" class="btn btn-outline-primary">Save Scenario</button>
-                        <button id="generateReportBtn" class="btn btn-success" disabled>Generate Excel Report</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Results Section (initially hidden) -->
-            <div id="resultsSection" style="display:none;">
-                <div class="card mb-4">
-                    <div class="card-header bg-light">
-                        <h4 class="mb-0">Summary Results</h4>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <table class="table table-bordered">
-                                    <tbody>
-                                        <tr>
-                                            <th>Peak Additional Investment</th>
-                                            <td id="peakInvestment"></td>
-                                        </tr>
-                                        <tr>
-                                            <th>Average Investment</th>
-                                            <td id="averageInvestment"></td>
-                                        </tr>
-                                        <tr>
-                                            <th>Total Savings</th>
-                                            <td id="totalSavings"></td>
-                                        </tr>
-                                        <tr>
-                                            <th>ROI</th>
-                                            <td id="roi"></td>
-                                        </tr>
-                                        <tr>
-                                            <th>Annualized ROI</th>
-                                            <td id="annualizedRoi"></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                    <!-- Bulk Cases Validation Indicator - MOVED HERE for better UX positioning -->
+                                    <div id="bulkCasesIndicator" class="bulk-cases-total mt-3 mb-2" style="display: none;">
+                                        <span id="bulkCasesIndicatorText">Bulk Cases: 0 / 60 (Available: 60)</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-md-6">
-                                <canvas id="summaryChart" width="400" height="300"></canvas>
+
+                            <!-- RESULTS TABLE SECTION -->
+                            <div class="card mb-4" id="resultsTableSection" style="display: none;">
+                                <div class="card-header bg-light">
+                                    <h4 class="mb-0">Calculation Results</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-striped" id="productsResultsTable">
+                                            <thead class="thead-light">
+                                                <tr>
+                                                    <th>Product Name</th>
+                                                    <th>Small Deal</th>
+                                                    <th>Bulk Cases</th>
+                                                    <th>Cases After Purchase</th>
+                                                    <th>ROI</th>
+                                                    <th>After-Terms ROI Multiplier</th>
+                                                    <th>Ann. ROI</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="resultsTableBody">
+                                                <!-- Results populated by JavaScript -->
+                                                <tr id="resultsTotalRow" class="table-secondary font-weight-bold">
+                                                    <td>TOTALS</td>
+                                                    <td id="totalSmallDealCases">0</td>
+                                                    <td id="totalBulkCases">0</td>
+                                                    <td id="totalCasesAfterPurchase">0</td>
+                                                    <td id="portfolioROI">-</td>
+                                                    <td id="portfolioTurns">-</td>
+                                                    <td id="portfolioAnnROI">-</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Actions Section -->
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <button id="calculateBtn" class="btn btn-primary w-100">
+                                        <i class="fas fa-calculator"></i> Calculate Results
+                                    </button>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="btn-group w-100">
+                                        <button id="autoAllocationBtn" class="btn btn-outline-secondary">
+                                            <i class="fas fa-magic"></i> Auto Allocation
+                                        </button>
+                                        <button id="iterateBtn" class="btn btn-info" disabled>
+                                            <i class="fas fa-sync-alt"></i> Run Optimization
+                                        </button>
+                                        <button id="saveScenario" class="btn btn-outline-primary">
+                                            <i class="fas fa-save"></i> Save
+                                        </button>
+                                        <button id="exportBtn" class="btn btn-success" disabled>
+                                            <i class="fas fa-file-export"></i> Export Results
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Status Message -->
+                            <div id="statusMessage" class="alert" style="display: none;"></div>
+
+                            <!-- Results Section (initially hidden) -->
+                            <div id="resultsSection" style="display:none;">
+                                <div class="card mb-4">
+                                    <div class="card-header bg-light">
+                                        <h4 class="mb-0">Summary Results</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <table class="table table-bordered">
+                                                    <tbody>
+                                                        <tr>
+                                                            <th>Peak Additional Investment</th>
+                                                            <td id="peakInvestment"></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th>Average Investment</th>
+                                                            <td id="averageInvestment"></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th>Total Savings</th>
+                                                            <td id="totalSavings"></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th>ROI</th>
+                                                            <td id="roi"></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th>Annualized ROI</th>
+                                                            <td id="annualizedRoi"></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th>Optimization Iterations</th>
+                                                            <td id="iterationCount"></td>
+                                                        </tr>
+                                                        <tr style="display: none;">
+                                                            <th>Raw Inventory Turnover (Unadjusted)</th>
+                                                            <td id="summaryPortfolioTurns"></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th>Annual ROI Multiplier (After-Terms)</th>
+                                                            <td id="portfolioEffectiveTurns"></td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <canvas id="roiChart" width="400" height="300"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card mb-4">
+                                    <div class="card-header bg-light">
+                                        <h4 class="mb-0">Optimization History</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-sm table-striped" id="optimizationHistoryTable">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Iteration</th>
+                                                        <th>Action</th>
+                                                        <th>Portfolio ROI</th>
+                                                        <th>Change</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="optimizationHistoryBody">
+                                                    <!-- History will be populated here -->
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
 
-                <div class="card mb-4">
-                    <div class="card-header bg-light">
-                        <h4 class="mb-0">Product Details</h4>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-hover" id="resultsTable">
-                                <thead class="thead-light">
-                                    <tr>
-                                        <th>Product</th>
-                                        <th>Smaller Deal Qty</th>
-                                        <th>Larger Deal Qty</th>
-                                        <th>Savings Per Bottle</th>
-                                        <th>Total Savings</th>
-                                        <th>Additional Investment</th>
-                                        <th>ROI</th>
-                                        <th>Annualized ROI</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="resultsTableBody">
-                                    <!-- Results will be added here -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card mb-4">
-                    <div class="card-header bg-light">
-                        <h4 class="mb-0">Visualization</h4>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h5 class="text-center">ROI by Product</h5>
-                                <canvas id="roiChart" width="400" height="300"></canvas>
+                        <!-- Saved Scenarios Tab -->
+                        <div class="tab-pane fade" id="scenarios" role="tabpanel" aria-labelledby="scenarios-tab">
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <h4>Saved Scenarios</h4>
+                                    <!-- Status message for Saved Scenarios tab -->
+                                    <div id="scenariosStatusMessage" class="alert alert-info" style="display:none;"></div>
+                                    <div class="list-group scenario-list" id="scenariosList">
+                                        {% if scenarios %}
+                                            {% for name in scenarios %}
+                                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <button type="button" class="btn btn-outline-primary scenario-item text-start" onclick="loadScenarioDetails('{{ name }}')" data-name="{{ name }}" style="width:60%;">
+                                                        {{ name }}
+                                                    </button>
+                                                    <div class="btn-group" role="group" style="width:38%;">
+                                                        <button type="button" class="btn btn-sm btn-success" onclick="loadScenarioToCalculator('{{ name }}')">
+                                                            <i class="fas fa-upload"></i> Load
+                                                        </button>
+                                                        <button type="button" class="btn btn-sm btn-danger" onclick="confirmDeleteScenario('{{ name }}')" data-name="{{ name }}">
+                                                            <i class="fas fa-trash"></i> Delete
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        {% else %}
+                                            <div class="list-group-item text-muted">No saved scenarios</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-7">
+                                    <div id="scenarioDetails" class="card" style="display: none;">
+                                        <div class="card-header bg-light">
+                                            <h5 class="mb-0" id="scenarioDetailName">Scenario Name</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row mb-3">
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label>Deal Size:</label>
+                                                        <div id="scenarioDetailDealSize" class="form-control-plaintext">60 cases</div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label>Min Days Stock:</label>
+                                                        <div id="scenarioDetailMinDaysStock" class="form-control-plaintext">30 days</div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label>Payment Terms:</label>
+                                                        <div id="scenarioDetailPaymentTerms" class="form-control-plaintext">30 days</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="table-responsive">
+                                                <table class="table table-sm table-bordered table-striped">
+                                                    <thead class="thead-light">
+                                                        <tr>
+                                                            <th rowspan="2">Product</th>
+                                                            <th colspan="2">Pricing</th>
+                                                            <th rowspan="2" class="detail-column">On Hand</th>
+                                                            <th rowspan="2" class="detail-column">Annual Cases</th>
+                                                            <th rowspan="2" class="detail-column">Bottles/Case</th>
+                                                            <th rowspan="2">Small Deal</th>
+                                                            <th rowspan="2">Bulk Cases</th>
+                                                            <th rowspan="2">Total Cases</th>
+                                                            <th rowspan="2">ROI</th>
+                                                            <th rowspan="2">Ann. ROI</th>
+                                                            <th rowspan="2">After-Terms ROI Multiplier</th>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="detail-column">Small</th>
+                                                            <th>Bulk</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="scenarioDetailsBody">
+                                                        <!-- Scenario details will be loaded here -->
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <div class="mt-3">
+                                                <button id="loadScenarioBtn" class="btn btn-primary" onclick="loadScenarioToCalculator(document.getElementById('scenarioDetailName').textContent)">Load to Calculator</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-md-6">
-                                <h5 class="text-center">Investment vs. Savings</h5>
-                                <canvas id="investmentChart" width="400" height="300"></canvas>
+                        </div>
+
+                        <!-- Help Tab -->
+                        <div class="tab-pane fade" id="help" role="tabpanel" aria-labelledby="help-tab">
+                            <h4>How to Use the Multi-Product Buying Calculator</h4>
+                            <div class="card mt-4">
+                                <div class="card-header">
+                                    <h5>How to Use</h5>
+                                </div>
+                                <div class="card-body">
+                                    <h6><strong>Step 1: Set Parameters</strong></h6>
+                                    <p>Enter your deal parameters: Deal Size (total cases), Minimum Days Stock (safety buffer), and Payment Terms (days to pay).</p>
+
+                                    <h6><strong>Step 2: Add Products</strong></h6>
+                                    <p>Click "Add Product" to add products to your analysis. Enter the product name, small deal price, bulk deal price, current inventory, annual cases sold, and bottles per case.</p>
+
+                                    <h6><strong>Step 3: Set Allocations</strong></h6>
+                                    <p><strong>Manual Entry:</strong> Enter your own bulk case quantities in the "Bulk Cases" column, then click "Calculate Results".</p>
+                                    <p><strong>Auto Allocation:</strong> Click "Auto Allocation" to automatically distribute cases proportionally based on annual sales, then click "Calculate Results".</p>
+
+                                    <h6><strong>Step 4: Optimize (Optional)</strong></h6>
+                                    <p>Click "Run Optimization" to find better case distributions that maximize your portfolio ROI.</p>
+
+                                    <h6><strong>Step 5: Save & Export</strong></h6>
+                                    <p>Save your scenario for future use or export the results for analysis.</p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -319,573 +813,20 @@
 <!-- Include Chart.js for visualizations -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<!-- Calculator Script -->
+<!-- Include calculator.js -->
+<script src="{{ url_for('static', filename='js/calculator.js') }}?v=1.0.1"></script>
+
+<!-- Initialize tooltips -->
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        let products = [];
-        let calculationResults = null;
-        let charts = {};
-
-        // Add first product row by default
-        addProductRow();
-
-        // Add statusMessage div after the action buttons
-        const actionsSection = document.querySelector('.row.mt-4.mb-4');
-        const statusMessage = document.createElement('div');
-        statusMessage.id = 'statusMessage';
-        statusMessage.className = 'mt-3';
-        statusMessage.style.display = 'none';
-        actionsSection.after(statusMessage);
-
-        // Display status message function
-        function showStatusMessage(message, type = 'success') {
-            const statusMessage = document.getElementById('statusMessage');
-            statusMessage.textContent = message;
-            statusMessage.className = 'alert alert-' + type;
-            statusMessage.style.display = 'block';
-
-            // Hide message after 5 seconds
-            setTimeout(() => {
-                statusMessage.style.display = 'none';
-            }, 5000);
-        }
-
-        // Event Listeners
-        document.getElementById('addProductRow').addEventListener('click', addProductRow);
-        document.getElementById('clearProducts').addEventListener('click', clearProducts);
-        document.getElementById('calculateBtn').addEventListener('click', calculateResults);
-        document.getElementById('generateReportBtn').addEventListener('click', generateReport);
-        document.getElementById('saveScenario').addEventListener('click', saveScenario);
-        document.getElementById('loadScenario').addEventListener('click', loadSelectedScenario);
-        document.getElementById('deleteScenario').addEventListener('click', function() {
-            const scenarioName = document.getElementById('scenarioSelect').value;
-            if (!scenarioName) {
-                showStatusMessage('Please select a scenario to delete.', 'warning');
-                return;
-            }
-
-            if (confirm(`Are you sure you want to delete the scenario "${scenarioName}"?`)) {
-                deleteScenario(scenarioName);
-            }
-        });
-        document.getElementById('scenarioSelect').addEventListener('change', function() {
-            const scenarioActions = document.getElementById('scenarioActions');
-            if (this.value) {
-                scenarioActions.style.display = 'block';
-            } else {
-                scenarioActions.style.display = 'none';
-            }
-        });
-
-        // Load scenarios on page load
-        loadScenarioList();
-
-        // Functions
-        function addProductRow() {
-            const template = document.getElementById('productRowTemplate');
-            const tbody = document.getElementById('productsTableBody');
-
-            const newRow = template.cloneNode(true);
-            newRow.style.display = '';
-            newRow.id = 'product-' + Date.now();
-
-            // Add event listener to remove button
-            newRow.querySelector('.remove-product').addEventListener('click', function() {
-                tbody.removeChild(newRow);
-            });
-
-            tbody.appendChild(newRow);
-        }
-
-        function clearProducts() {
-            if (confirm('Are you sure you want to clear all products?')) {
-                const tbody = document.getElementById('productsTableBody');
-                // Remove all rows except template
-                Array.from(tbody.children).forEach(row => {
-                    if (row.id !== 'productRowTemplate') {
-                        tbody.removeChild(row);
-                    }
-                });
-
-                // Add one empty row
-                addProductRow();
-            }
-        }
-
-        function collectProductData() {
-            products = [];
-            const rows = document.querySelectorAll('#productsTableBody tr:not(#productRowTemplate)');
-
-            rows.forEach(row => {
-                const productName = row.querySelector('.product-name').value.trim();
-                if (!productName) return; // Skip empty rows
-
-                const product = {
-                    product_name: productName,
-                    current_price: parseFloat(row.querySelector('.product-current-price').value) || 0,
-                    bulk_price: parseFloat(row.querySelector('.product-bulk-price').value) || 0,
-                    cases_on_hand: parseInt(row.querySelector('.product-cases-on-hand').value) || 0,
-                    cases_per_year: parseInt(row.querySelector('.product-cases-per-year').value) || 0,
-                    bottles_per_case: parseInt(row.querySelector('.product-bottles-per-case').value) || 0,
-                    bulk_quantity: parseInt(row.querySelector('.product-bulk-quantity').value) || 0
-                };
-
-                products.push(product);
-            });
-
-            return products;
-        }
-
-        function calculateResults() {
-            const products = collectProductData();
-            if (products.length === 0) {
-                showStatusMessage('Please add at least one product with data.', 'warning');
-                return;
-            }
-
-            // Get parameters
-            const params = {
-                small_deal_minimum: parseInt(document.getElementById('smallDealMinimum').value) || 30,
-                bulk_deal_minimum: parseInt(document.getElementById('bulkDealMinimum').value) || 60,
-                payment_terms: parseInt(document.getElementById('paymentTerms').value) || 30
-            };
-
-            // Send data to server for calculation
-            fetch('/api/calculate-multi-product-deal', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    parameters: params,
-                    products: products
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                calculationResults = data;
-                displayResults(data);
-                document.getElementById('generateReportBtn').disabled = false;
-                document.getElementById('resultsSection').style.display = 'block';
-                showStatusMessage('Calculation completed successfully!', 'success');
-            })
-            .catch(error => {
-                console.error('Error calculating results:', error);
-                showStatusMessage('Error calculating results: ' + error.message, 'danger');
-            });
-        }
-
-        function displayResults(data) {
-            // Display summary results
-            document.getElementById('peakInvestment').textContent = formatCurrency(data.summary.peak_additional_investment);
-            document.getElementById('averageInvestment').textContent = formatCurrency(data.summary.average_additional_investment);
-            document.getElementById('totalSavings').textContent = formatCurrency(data.summary.total_savings);
-            document.getElementById('roi').textContent = formatPercent(data.summary.roi);
-            document.getElementById('annualizedRoi').textContent = formatPercent(data.summary.annualized_roi);
-
-            // Display product results
-            const tbody = document.getElementById('resultsTableBody');
-            tbody.innerHTML = '';
-
-            data.products.forEach(product => {
-                const row = document.createElement('tr');
-
-                row.innerHTML = `
-                    <td>${product.product_name}</td>
-                    <td>${formatNumber(product.smaller_deal_quantity)}</td>
-                    <td>${formatNumber(product.larger_deal_quantity)}</td>
-                    <td>${formatCurrency(product.savings_per_bottle)}</td>
-                    <td>${formatCurrency(product.total_savings)}</td>
-                    <td>${formatCurrency(product.peak_additional_investment)}</td>
-                    <td>${formatPercent(product.roi)}</td>
-                    <td>${formatPercent(product.annualized_roi)}</td>
-                `;
-
-                tbody.appendChild(row);
-            });
-
-            // Create charts
-            createCharts(data);
-        }
-
-        function createCharts(data) {
-            // Destroy existing charts to prevent duplicates
-            Object.values(charts).forEach(chart => {
-                if (chart) chart.destroy();
-            });
-
-            // Prepare data for charts
-            const productNames = data.products.map(p => p.product_name);
-            const roiValues = data.products.map(p => p.roi);
-            const annRoiValues = data.products.map(p => p.annualized_roi);
-            const investmentValues = data.products.map(p => p.peak_additional_investment);
-            const savingsValues = data.products.map(p => p.total_savings);
-
-            // ROI chart
-            const roiCtx = document.getElementById('roiChart').getContext('2d');
-            charts.roi = new Chart(roiCtx, {
-                type: 'bar',
-                data: {
-                    labels: productNames,
-                    datasets: [
-                        {
-                            label: 'ROI',
-                            data: roiValues,
-                            backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                            borderColor: 'rgb(54, 162, 235)',
-                            borderWidth: 1
-                        },
-                        {
-                            label: 'Annualized ROI',
-                            data: annRoiValues,
-                            backgroundColor: 'rgba(255, 159, 64, 0.5)',
-                            borderColor: 'rgb(255, 159, 64)',
-                            borderWidth: 1
-                        }
-                    ]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            ticks: {
-                                callback: function(value) {
-                                    return (value * 100).toFixed(0) + '%';
-                                }
-                            }
-                        }
-                    },
-                    plugins: {
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return context.dataset.label + ': ' + (context.raw * 100).toFixed(2) + '%';
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-
-            // Investment vs Savings chart
-            const invCtx = document.getElementById('investmentChart').getContext('2d');
-            charts.investment = new Chart(invCtx, {
-                type: 'bar',
-                data: {
-                    labels: productNames,
-                    datasets: [
-                        {
-                            label: 'Additional Investment',
-                            data: investmentValues,
-                            backgroundColor: 'rgba(255, 99, 132, 0.5)',
-                            borderColor: 'rgb(255, 99, 132)',
-                            borderWidth: 1
-                        },
-                        {
-                            label: 'Total Savings',
-                            data: savingsValues,
-                            backgroundColor: 'rgba(75, 192, 192, 0.5)',
-                            borderColor: 'rgb(75, 192, 192)',
-                            borderWidth: 1
-                        }
-                    ]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            ticks: {
-                                callback: function(value) {
-                                    return '$' + value.toFixed(2);
-                                }
-                            }
-                        }
-                    },
-                    plugins: {
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return context.dataset.label + ': $' + context.raw.toFixed(2);
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-
-            // Summary chart (Investment vs Savings)
-            const summaryCtx = document.getElementById('summaryChart').getContext('2d');
-            charts.summary = new Chart(summaryCtx, {
-                type: 'pie',
-                data: {
-                    labels: ['Peak Investment', 'Total Savings'],
-                    datasets: [{
-                        data: [
-                            data.summary.peak_additional_investment,
-                            data.summary.total_savings
-                        ],
-                        backgroundColor: [
-                            'rgba(255, 99, 132, 0.5)',
-                            'rgba(75, 192, 192, 0.5)'
-                        ],
-                        borderColor: [
-                            'rgb(255, 99, 132)',
-                            'rgb(75, 192, 192)'
-                        ],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return context.label + ': $' + context.raw.toFixed(2);
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        function generateReport() {
-            if (!calculationResults) {
-                showStatusMessage('Please calculate results first.', 'warning');
-                return;
-            }
-
-            // Get parameters
-            const params = {
-                small_deal_minimum: parseInt(document.getElementById('smallDealMinimum').value) || 30,
-                bulk_deal_minimum: parseInt(document.getElementById('bulkDealMinimum').value) || 60,
-                payment_terms: parseInt(document.getElementById('paymentTerms').value) || 30
-            };
-
-            // Send data to server for report generation
-            fetch('/api/generate-multi-product-deal-report', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    parameters: params,
-                    results: calculationResults
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.filename) {
-                    window.location.href = '/download/' + data.filename;
-                    showStatusMessage('Report generated successfully!', 'success');
-                } else {
-                    showStatusMessage('Error generating report: ' + data.error, 'danger');
-                }
-            })
-            .catch(error => {
-                console.error('Error generating report:', error);
-                showStatusMessage('Error generating report: ' + error.message, 'danger');
-            });
-        }
-
-        function saveScenario() {
-            const scenarioName = document.getElementById('scenarioName').value.trim();
-            if (!scenarioName) {
-                showStatusMessage('Please enter a scenario name.', 'warning');
-                return;
-            }
-
-            const products = collectProductData();
-            if (products.length === 0) {
-                showStatusMessage('Please add at least one product with data.', 'warning');
-                return;
-            }
-
-            // Get parameters
-            const params = {
-                small_deal_minimum: parseInt(document.getElementById('smallDealMinimum').value) || 30,
-                bulk_deal_minimum: parseInt(document.getElementById('bulkDealMinimum').value) || 60,
-                payment_terms: parseInt(document.getElementById('paymentTerms').value) || 30
-            };
-
-            // Send data to server for saving
-            fetch('/api/save-multi-product-scenario', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    name: scenarioName,
-                    parameters: params,
-                    products: products
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    showStatusMessage('Scenario saved successfully!', 'success');
-                    loadScenarioList();
-                } else {
-                    showStatusMessage('Error saving scenario: ' + data.error, 'danger');
-                }
-            })
-            .catch(error => {
-                console.error('Error saving scenario:', error);
-                showStatusMessage('Error saving scenario: ' + error.message, 'danger');
-            });
-        }
-
-        function loadScenarioList() {
-            fetch('/api/list-multi-product-scenarios')
-                .then(response => response.json())
-                .then(data => {
-                    const select = document.getElementById('scenarioSelect');
-
-                    // Clear existing options except first
-                    while (select.options.length > 1) {
-                        select.remove(1);
-                    }
-
-                    // Add new options
-                    data.scenarios.forEach(scenario => {
-                        const option = document.createElement('option');
-                        option.value = scenario;
-                        option.textContent = scenario;
-                        select.appendChild(option);
-                    });
-
-                    // Hide the delete button by default
-                    document.getElementById('scenarioActions').style.display = 'none';
-                })
-                .catch(error => {
-                    console.error('Error loading scenarios:', error);
-                });
-        }
-
-        function loadSelectedScenario() {
-            const scenarioName = document.getElementById('scenarioSelect').value;
-            if (!scenarioName) {
-                showStatusMessage('Please select a scenario to load.', 'warning');
-                return;
-            }
-
-            console.log(`Attempting to load scenario: ${scenarioName}`);
-
-            fetch('/api/get-multi-product-scenario/' + encodeURIComponent(scenarioName))
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.error) {
-                        console.error('Error loading scenario:', data.error);
-                        showStatusMessage('Error loading scenario: ' + data.error, 'danger');
-                        return;
-                    }
-
-                    console.log('Scenario data received:', data);
-
-                    try {
-                        // Set parameters
-                        document.getElementById('smallDealMinimum').value = data.parameters.small_deal_minimum;
-                        document.getElementById('bulkDealMinimum').value = data.parameters.bulk_deal_minimum;
-                        document.getElementById('paymentTerms').value = data.parameters.payment_terms;
-
-                        // Clear existing products and set scenario name
-                        document.getElementById('scenarioName').value = scenarioName;
-                        clearProducts();
-
-                        // Add products by cloning template and creating actual DOM elements
-                        console.log(`Adding ${data.products.length} products from scenario`);
-                        const tbody = document.getElementById('productsTableBody');
-                        const template = document.getElementById('productRowTemplate');
-
-                        // Clear the tbody except for the template
-                        while (tbody.children.length > 1) {
-                            tbody.removeChild(tbody.children[1]);
-                        }
-
-                        data.products.forEach((product, index) => {
-                            console.log(`Adding product ${index + 1}:`, product.product_name);
-
-                            // Clone the template
-                            const newRow = template.cloneNode(true);
-                            newRow.id = 'product-' + Date.now() + index;
-                            newRow.style.display = '';
-
-                            // Set values
-                            newRow.querySelector('.product-name').value = product.product_name || '';
-                            newRow.querySelector('.product-current-price').value = product.current_price || 0;
-                            newRow.querySelector('.product-bulk-price').value = product.bulk_price || 0;
-                            newRow.querySelector('.product-cases-on-hand').value = product.cases_on_hand || 0;
-                            newRow.querySelector('.product-cases-per-year').value = product.cases_per_year || 0;
-                            newRow.querySelector('.product-bottles-per-case').value = product.bottles_per_case || 0;
-                            newRow.querySelector('.product-bulk-quantity').value = product.bulk_quantity || 0;
-
-                            // Add event listener for remove button
-                            newRow.querySelector('.remove-product').addEventListener('click', function() {
-                                tbody.removeChild(newRow);
-                            });
-
-                            // Append to tbody
-                            tbody.appendChild(newRow);
-                        });
-
-                        showStatusMessage('Scenario loaded successfully!', 'success');
-                    } catch (e) {
-                        console.error('Error processing scenario data:', e);
-                        showStatusMessage('Error processing scenario data: ' + e.message, 'danger');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error loading scenario:', error);
-                    showStatusMessage('Error loading scenario: ' + error.message, 'danger');
-                });
-        }
-
-        function deleteScenario(scenarioName) {
-            fetch('/api/delete-multi-product-scenario/' + encodeURIComponent(scenarioName), {
-                method: 'DELETE'
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    showStatusMessage(`Scenario "${scenarioName}" deleted successfully.`, 'success');
-
-                    // Reload the scenario list
-                    loadScenarioList();
-
-                    // Clear scenario name field if it matches the deleted scenario
-                    const nameField = document.getElementById('scenarioName');
-                    if (nameField.value === scenarioName) {
-                        nameField.value = '';
-                    }
-                } else {
-                    showStatusMessage('Error deleting scenario: ' + data.error, 'danger');
-                }
-            })
-            .catch(error => {
-                console.error('Error deleting scenario:', error);
-                showStatusMessage('Error deleting scenario: ' + error.message, 'danger');
-            });
-        }
-
-        // Utility functions
-        function formatCurrency(value) {
-            return '$' + parseFloat(value).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
-        }
-
-        function formatPercent(value) {
-            return (parseFloat(value) * 100).toFixed(2) + '%';
-        }
-
-        function formatNumber(value) {
-            return parseFloat(value).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
-        }
+    $(document).ready(function(){
+        $('[data-toggle="tooltip"]').tooltip();
     });
 </script>
+
+<!-- Main application script with cache busting -->
+<script src="{{ url_for('static', filename='js/multi_product_calculator_app.js') }}?v={{ range(100000, 999999) | random }}"></script>
+{% endblock %}
+
+{% block scripts %}
+<!-- All scripts are included in the main block above -->
 {% endblock %}

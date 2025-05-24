@@ -1,31 +1,69 @@
 {
-  "name": "Whiskey Test",
-  "desired_total": 180,
-  "varieties": [
+  "parameters": {
+    "small_deal_minimum": 15,
+    "bulk_deal_minimum": 35,
+    "payment_terms": 14
+  },
+  "products": [
     {
-      "variety": "Bourbon",
-      "annual_sales": 7200,
-      "inventory_on_hand": 85
+      "product_name": "Blanton's Single Barrel Bourbon 750ml",
+      "current_price": 85.0,
+      "bulk_price": 78.0,
+      "cases_on_hand": 2,
+      "cases_per_year": 48,
+      "bottles_per_case": 6,
+      "bulk_quantity": 0,
+      "daily_cases": 0.1315068493150685,
+      "monthly_cases": 4.0,
+      "days_of_stock": 15.208333333333334
     },
     {
-      "variety": "Scotch",
-      "annual_sales": 4800,
-      "inventory_on_hand": 60
+      "product_name": "Angel's Envy Bourbon 750ml",
+      "current_price": 48.99,
+      "bulk_price": 45.50,
+      "cases_on_hand": 4,
+      "cases_per_year": 72,
+      "bottles_per_case": 12,
+      "bulk_quantity": 0,
+      "daily_cases": 0.1972602739726027,
+      "monthly_cases": 6.0,
+      "days_of_stock": 20.277777777777779
     },
     {
-      "variety": "Irish",
-      "annual_sales": 3600,
-      "inventory_on_hand": 42
+      "product_name": "Woodford Reserve 750ml",
+      "current_price": 36.0,
+      "bulk_price": 33.50,
+      "cases_on_hand": 5,
+      "cases_per_year": 144,
+      "bottles_per_case": 12,
+      "bulk_quantity": 0,
+      "daily_cases": 0.3945205479452055,
+      "monthly_cases": 12.0,
+      "days_of_stock": 12.6388888888888889
     },
     {
-      "variety": "Rye",
-      "annual_sales": 2400,
-      "inventory_on_hand": 30
+      "product_name": "Michter's American Whiskey 750ml",
+      "current_price": 42.0,
+      "bulk_price": 39.25,
+      "cases_on_hand": 1,
+      "cases_per_year": 36,
+      "bottles_per_case": 12,
+      "bulk_quantity": 0,
+      "daily_cases": 0.0986301369863014,
+      "monthly_cases": 3.0,
+      "days_of_stock": 10.138888888888889
     },
     {
-      "variety": "Tennessee",
-      "annual_sales": 5400,
-      "inventory_on_hand": 65
+      "product_name": "High West Double Rye 750ml",
+      "current_price": 39.99,
+      "bulk_price": 37.00,
+      "cases_on_hand": 0,
+      "cases_per_year": 60,
+      "bottles_per_case": 12,
+      "bulk_quantity": 0,
+      "daily_cases": 0.1643835616438356,
+      "monthly_cases": 5.0,
+      "days_of_stock": 0.0
     }
   ]
 }

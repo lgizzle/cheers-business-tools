@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Compact View Test</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .detail-column { display: table-cell; }
+        .table.compact .detail-column { display: none; }
+        .thead-light th[colspan] {
+            text-align: center;
+            font-weight: 700;
+            background-color: #e9ecef !important;
+        }
+        .table.compact {
+            table-layout: auto;
+        }
+        .table.compact th, .table.compact td {
+            text-align: center;
+            vertical-align: middle;
+            padding: 0.3rem 0.2rem;
+            font-size: 0.85rem;
+        }
+        .table.compact th:first-child, .table.compact td:first-child {
+            text-align: left;
+            width: 180px;
+            max-width: 180px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="form-check form-switch mb-3">
+            <input class="form-check-input" type="checkbox" id="compactToggle">
+            <label class="form-check-label" for="compactToggle">
+                Compact View Test
+            </label>
+        </div>
+
+        <table class="table table-bordered table-hover" id="testTable">
+            <thead class="thead-light">
+                <tr>
+                    <th rowspan="2">Product Name</th>
+                    <th colspan="2">Pricing</th>
+                    <th rowspan="2" class="detail-column">Cases On Hand</th>
+                    <th rowspan="2" class="detail-column">Annual Cases</th>
+                    <th rowspan="2">Small Deal Cases</th>
+                    <th rowspan="2">Bulk Cases</th>
+                    <th rowspan="2">ROI</th>
+                </tr>
+                <tr>
+                    <th class="detail-column">Small</th>
+                    <th>Bulk</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Single Malt Scotch</td>
+                    <td class="detail-column">$69.99</td>
+                    <td>$59.99</td>
+                    <td class="detail-column">5</td>
+                    <td class="detail-column">36</td>
+                    <td>8</td>
+                    <td>10</td>
+                    <td>62.26%</td>
+                </tr>
+                <tr>
+                    <td>Bourbon Whiskey</td>
+                    <td class="detail-column">$42.99</td>
+                    <td>$36.99</td>
+                    <td class="detail-column">8</td>
+                    <td class="detail-column">48</td>
+                    <td>12</td>
+                    <td>18</td>
+                    <td>58.97%</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        document.getElementById('compactToggle').addEventListener('change', function() {
+            const isCompact = this.checked;
+            const table = document.getElementById('testTable');
+            table.classList.toggle('compact', isCompact);
+
+            // Dynamically adjust colspan for Pricing header
+            const pricingHeaders = table.querySelectorAll('th[colspan="2"]');
+            pricingHeaders.forEach(header => {
+                if (header.textContent.trim() === 'Pricing') {
+                    header.setAttribute('colspan', isCompact ? '1' : '2');
+                }
+            });
+
+            console.log('Compact toggled:', isCompact);
+        });
+    </script>
+</body>
+</html>

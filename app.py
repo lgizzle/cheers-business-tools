@@ -1,4 +1,5 @@
 import os
+from logging_utils import setup_logging
 from datetime import datetime, timedelta
 from flask import Flask, render_template, request, redirect, url_for, flash, send_file, jsonify
 from werkzeug.utils import secure_filename
@@ -12,7 +13,6 @@ import json
 import shutil
 from pathlib import Path
 import traceback
-import logging
 
 app = Flask(__name__, static_url_path='/static')
 app.config['SECRET_KEY'] = 'your-secret-key'
@@ -29,6 +29,9 @@ deal_calculator = DealSplitCalculator()
 single_deal_calculator = SingleDealCalculator()
 sales_tax_calculator = SalesTaxCalculator()
 margin_calculator = MarginCalculator()
+
+# Initialize the multi-product calculator instance
+multi_product_calculator_instance = MultiProductBuyingCalculator()
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
@@ -388,148 +391,187 @@ def view_sample_report():
 # Multi-Product Buying Calculator routes
 @app.route('/multi-product-calculator')
 def multi_product_calculator():
-    """Render the multi-product buying calculator page."""
     return render_template('multi_product_calculator.html')
+
+@app.route('/api/export-multi-product-deal', methods=['POST'])
+def export_multi_product_deal():
+    """Export a distributor order sheet to Excel."""
+    try:
+        data = request.json
+
+        # Get scenario name from request or use default
+        scenario_name = data.get('name', 'Distributor Order')
+
+        # Prepare data for the distributor export
+        export_data = {
+            'name': scenario_name,
+            'products': data.get('products', []),
+            'parameters': data.get('parameters', {})
+        }
+
+        # Generate distributor order Excel
+        file_path = multi_product_calculator_instance.generate_distributor_order_excel(export_data)
+
+        return send_file(file_path, as_attachment=True, download_name=os.path.basename(file_path))
+
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({"success": False, "error": str(e)})
 
 @app.route('/api/calculate-multi-product-deal', methods=['POST'])
 def calculate_multi_product_deal():
-    """Calculate multi-product deal metrics."""
-    data = request.get_json()
-
-    # Initialize calculator
-    calculator = MultiProductBuyingCalculator()
-
-    # Set parameters
-    calculator.set_parameters(
-        data['parameters']['small_deal_minimum'],
-        data['parameters']['bulk_deal_minimum'],
-        data['parameters']['payment_terms']
-    )
-
-    # Add products
-    for product in data['products']:
-        calculator.add_product(
-            product['product_name'],
-            product['current_price'],
-            product['bulk_price'],
-            product['cases_on_hand'],
-            product['cases_per_year'],
-            product['bottles_per_case'],
-            product['bulk_quantity']
-        )
-
-    # Calculate results
-    results = calculator.calculate()
-
-    return jsonify(results)
-
-@app.route('/api/generate-multi-product-deal-report', methods=['POST'])
-def generate_multi_product_deal_report():
-    """Generate Excel report for multi-product deal."""
-    data = request.get_json()
-
-    # Initialize calculator
-    calculator = MultiProductBuyingCalculator()
-
-    # Set parameters
-    calculator.set_parameters(
-        data['parameters']['small_deal_minimum'],
-        data['parameters']['bulk_deal_minimum'],
-        data['parameters']['payment_terms']
-    )
-
-    # Generate report
+    """Calculate results for the Multi-Product Buying Calculator."""
     try:
-        filename = calculator.generate_report(data['results'])
-        return jsonify({"filename": filename})
+        data = request.json
+
+        # Calculate results using the shared instance
+        results = multi_product_calculator_instance.calculate(data)
+
+        # Return the results
+        return jsonify({
+            "success": True,
+            "results": results
+        })
+
     except Exception as e:
-        return jsonify({"error": str(e)})
+        print(f"Error calculating multi-product deal: {str(e)}")
+        print(traceback.format_exc())
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        })
+
+@app.route('/api/optimize-multi-product-deal', methods=['POST'])
+def optimize_multi_product_deal():
+    """Run optimization for the Multi-Product Buying Calculator."""
+    try:
+        data = request.json
+
+        # Run optimization using the shared instance
+        results = multi_product_calculator_instance.optimize(data)
+
+        # Return the results
+        return jsonify({
+            "success": True,
+            "results": results
+        })
+
+    except Exception as e:
+        print(f"Error optimizing multi-product deal: {str(e)}")
+        print(traceback.format_exc())
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        })
+
+@app.route('/api/generate-multi-product-report', methods=['POST'])
+def generate_multi_product_report():
+    """Generate an Excel report for the Multi-Product Buying Calculator."""
+    try:
+        data = request.json
+
+        # Generate the report using the shared instance
+        file_path = multi_product_calculator_instance.generate_excel_report(data)
+
+        # Return the file path for download
+        filename = os.path.basename(file_path)
+        return jsonify({
+            "success": True,
+            "filename": filename,
+            "download_url": url_for('download_file', filename=filename)
+        })
+
+    except Exception as e:
+        print(f"Error generating multi-product report: {str(e)}")
+        print(traceback.format_exc())
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        })
 
 @app.route('/api/save-multi-product-scenario', methods=['POST'])
 def save_multi_product_scenario():
-    """Save a multi-product scenario."""
-    data = request.get_json()
-
-    # Initialize calculator
-    calculator = MultiProductBuyingCalculator()
-
-    # Set parameters
-    calculator.set_parameters(
-        data['parameters']['small_deal_minimum'],
-        data['parameters']['bulk_deal_minimum'],
-        data['parameters']['payment_terms']
-    )
-
-    # Add products
-    for product in data['products']:
-        calculator.add_product(
-            product['product_name'],
-            product['current_price'],
-            product['bulk_price'],
-            product['cases_on_hand'],
-            product['cases_per_year'],
-            product['bottles_per_case'],
-            product['bulk_quantity']
-        )
-
-    # Save scenario
+    """Save a scenario for the Multi-Product Buying Calculator."""
     try:
-        filename = calculator.save_scenario(data['name'])
-        return jsonify({"success": True, "filename": filename})
+        data = request.json
+
+        # Save the scenario using the shared instance
+        result = multi_product_calculator_instance.save_scenario(data)
+
+        # Return success
+        return jsonify({
+            "success": True
+        })
+
     except Exception as e:
-        return jsonify({"success": False, "error": str(e)})
+        print(f"Error saving multi-product scenario: {str(e)}")
+        print(traceback.format_exc())
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        })
 
 @app.route('/api/list-multi-product-scenarios')
 def list_multi_product_scenarios():
-    """List all saved multi-product scenarios."""
-    calculator = MultiProductBuyingCalculator()
-    scenarios = calculator.list_scenarios()
-    return jsonify({"scenarios": scenarios})
+    """List all scenarios for the Multi-Product Buying Calculator."""
+    try:
+        # List scenarios using the shared instance
+        scenarios = multi_product_calculator_instance.list_scenarios()
+
+        # Return the list
+        return jsonify({
+            "success": True,
+            "scenarios": scenarios
+        })
+
+    except Exception as e:
+        print(f"Error listing multi-product scenarios: {str(e)}")
+        print(traceback.format_exc())
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        })
+
+@app.route('/api/delete-multi-product-scenario/<scenario_name>', methods=['DELETE'])
+def delete_multi_product_scenario(scenario_name):
+    """Delete a scenario for the Multi-Product Buying Calculator."""
+    try:
+        # Delete the scenario using the shared instance
+        result = multi_product_calculator_instance.delete_scenario(scenario_name)
+
+        # Return success
+        return jsonify({
+            "success": True
+        })
+
+    except Exception as e:
+        print(f"Error deleting multi-product scenario: {str(e)}")
+        print(traceback.format_exc())
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        })
 
 @app.route('/api/get-multi-product-scenario/<scenario_name>')
 def get_multi_product_scenario(scenario_name):
-    """Get a specific multi-product scenario."""
-    logging.basicConfig(filename='logs/app.log', level=logging.DEBUG)
-    logging.info(f"Attempting to load scenario: {scenario_name}")
-
-    calculator = MultiProductBuyingCalculator()
-
+    """Get a scenario for the Multi-Product Buying Calculator."""
     try:
-        # Log available scenarios
-        available_scenarios = calculator.list_scenarios()
-        logging.info(f"Available scenarios: {available_scenarios}")
+        # Load the scenario using the shared instance
+        scenario = multi_product_calculator_instance.load_scenario(scenario_name)
 
-        # Check if scenario name matches any available scenario (case-insensitive)
-        scenario_name_lower = scenario_name.lower()
-        matching_scenarios = [s for s in available_scenarios if s.lower() == scenario_name_lower]
-        if matching_scenarios:
-            logging.info(f"Found matching scenario: {matching_scenarios[0]}")
-            scenario_name = matching_scenarios[0]  # Use the exact case from available scenarios
-
-        # Try to load the scenario
-        success = calculator.load_scenario(scenario_name)
-
-        if not success:
-            # Check if file exists
-            import os
-            filename = f"scenarios/{scenario_name.lower().replace(' ', '_')}.json"
-            logging.error(f"Failed to load scenario. File exists: {os.path.exists(filename)}")
-            return jsonify({"error": f"Scenario not found: {scenario_name}"})
-
-        logging.info(f"Successfully loaded scenario: {scenario_name}")
-
+        # Return the scenario
         return jsonify({
-            "parameters": {
-                "small_deal_minimum": calculator.small_deal_minimum,
-                "bulk_deal_minimum": calculator.bulk_deal_minimum,
-                "payment_terms": calculator.payment_terms
-            },
-            "products": calculator.products
+            "success": True,
+            "scenario": scenario
         })
+
     except Exception as e:
-        logging.error(f"Error loading scenario: {str(e)}")
-        logging.error(traceback.format_exc())
-        return jsonify({"error": f"Error loading scenario: {str(e)}"})
+        print(f"Error getting multi-product scenario: {str(e)}")
+        print(traceback.format_exc())
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        })
 
 # Margin/Markup Calculator routes
 @app.route('/margin-calculator')
@@ -602,4 +644,7 @@ def generate_margin_report():
         return jsonify({"success": False, "error": str(e)})
 
 if __name__ == '__main__':
+    # Set up logging
+    setup_logging()
+    # Run the Flask app with explicit host and port
     app.run(debug=True, host='0.0.0.0', port=8080)

@@ -76,7 +76,102 @@
         </div>
 
         <div class="row">
-            <!-- First tool card (AP Aging Report Generator) -->
+            <!-- First row: Margin Calculator -->
+            <div class="col-lg-6 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h2 class="text-center mb-0">Margin/Markup Calculator</h2>
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <h4 class="mb-4">Optimize Product Pricing & Margins</h4>
+                        <p class="mb-4">
+                            Calculate optimal selling prices based on cost and target margin, or analyze existing prices.
+                            Includes sensitivity analysis and visualization of the "sweet spot" margin range for maximum profitability.
+                        </p>
+                        <div class="mt-auto">
+                            <a href="{{ url_for('margin_calculator_page') }}" class="btn btn-primary btn-lg">Open Calculator</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- First row: Deal Split Calculator -->
+            <div class="col-lg-6 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h2 class="text-center mb-0">Deal Split Calculator</h2>
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <h4 class="mb-4">Calculate Deal Splits Between Stores</h4>
+                        <p class="mb-4">
+                            This tool helps you calculate optimal distribution of product deals across multiple store locations.
+                            Define your deal parameters and store volumes to split cases efficiently.
+                        </p>
+                        <div class="mt-auto">
+                            <a href="{{ url_for('deal_calculator_page') }}" class="btn btn-primary btn-lg">Open Deal Calculator</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Second row: Single Deal Calculator -->
+            <div class="col-lg-6 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h2 class="text-center mb-0">Single Deal Calculator</h2>
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <h4 class="mb-4">Calculate ROI for Single Product Deals</h4>
+                        <p class="mb-4">
+                            Analyze the ROI and holding cost implications of purchasing a product at a bulk discount price.
+                            Enter your product details and see if the deal is worthwhile.
+                        </p>
+                        <div class="mt-auto">
+                            <a href="{{ url_for('single_deal_calculator_page') }}" class="btn btn-primary btn-lg">Open Calculator</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Second row: Multi-Product Buying Calculator -->
+            <div class="col-lg-6 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h2 class="text-center mb-0">Multi-Product Buying Calculator</h2>
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <h4 class="mb-4">Analyze Multi-Product Deal ROI</h4>
+                        <p class="mb-4">
+                            This advanced tool helps you analyze the ROI of purchasing multiple related products at bulk discount pricing.
+                            Save and compare different deal scenarios to make optimal buying decisions.
+                        </p>
+                        <div class="mt-auto">
+                            <a href="{{ url_for('multi_product_calculator') }}" class="btn btn-primary btn-lg">Open Calculator</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Third row: Sales Tax Calculator -->
+            <div class="col-lg-6 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h2 class="text-center mb-0">Sales Tax Calculator</h2>
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <h4 class="mb-4">Calculate Sales Tax Distributions</h4>
+                        <p class="mb-4">
+                            This tool helps you accurately calculate sales figures and proper tax distributions from tax collection data.
+                            Enter tax amounts by jurisdiction and get detailed breakdowns.
+                        </p>
+                        <div class="mt-auto">
+                            <a href="{{ url_for('sales_tax_calculator_page') }}" class="btn btn-primary btn-lg">Open Calculator</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Third row: AP Aging Report Generator -->
             <div class="col-lg-6 mb-4">
                 <div class="card h-100 shadow-sm">
                     <div class="card-header bg-primary text-white">
@@ -97,101 +192,6 @@
 
                         <div class="mt-3">
                             <a href="{{ url_for('view_sample_report') }}" class="btn btn-outline-primary">View Sample Report</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Second tool card (Deal Split Calculator) -->
-            <div class="col-lg-6 mb-4">
-                <div class="card h-100 shadow-sm">
-                    <div class="card-header bg-primary text-white">
-                        <h2 class="text-center mb-0">Deal Split Calculator</h2>
-                    </div>
-                    <div class="card-body d-flex flex-column">
-                        <h4 class="mb-4">Calculate Deal Splits Between Stores</h4>
-                        <p class="mb-4">
-                            This tool helps you calculate optimal distribution of product deals across multiple store locations.
-                            Define your deal parameters and store volumes to split cases efficiently.
-                        </p>
-                        <div class="mt-auto">
-                            <a href="{{ url_for('deal_calculator_page') }}" class="btn btn-primary btn-lg">Open Deal Calculator</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Third tool card (Single Deal Calculator) -->
-            <div class="col-lg-6 mb-4">
-                <div class="card h-100 shadow-sm">
-                    <div class="card-header bg-primary text-white">
-                        <h2 class="text-center mb-0">Single Deal Calculator</h2>
-                    </div>
-                    <div class="card-body d-flex flex-column">
-                        <h4 class="mb-4">Calculate ROI for Single Product Deals</h4>
-                        <p class="mb-4">
-                            Analyze the ROI and holding cost implications of purchasing a product at a bulk discount price.
-                            Enter your product details and see if the deal is worthwhile.
-                        </p>
-                        <div class="mt-auto">
-                            <a href="{{ url_for('single_deal_calculator_page') }}" class="btn btn-primary btn-lg">Open Calculator</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Fourth tool card (Sales Tax Calculator) -->
-            <div class="col-lg-6 mb-4">
-                <div class="card h-100 shadow-sm">
-                    <div class="card-header bg-primary text-white">
-                        <h2 class="text-center mb-0">Sales Tax Calculator</h2>
-                    </div>
-                    <div class="card-body d-flex flex-column">
-                        <h4 class="mb-4">Calculate Sales Tax Distributions</h4>
-                        <p class="mb-4">
-                            This tool helps you accurately calculate sales figures and proper tax distributions from tax collection data.
-                            Enter tax amounts by jurisdiction and get detailed breakdowns.
-                        </p>
-                        <div class="mt-auto">
-                            <a href="{{ url_for('sales_tax_calculator_page') }}" class="btn btn-primary btn-lg">Open Calculator</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Fifth tool card (Multi-Product Buying Calculator) -->
-            <div class="col-lg-6 mb-4">
-                <div class="card h-100 shadow-sm">
-                    <div class="card-header bg-primary text-white">
-                        <h2 class="text-center mb-0">Multi-Product Buying Calculator</h2>
-                    </div>
-                    <div class="card-body d-flex flex-column">
-                        <h4 class="mb-4">Analyze Multi-Product Deal ROI</h4>
-                        <p class="mb-4">
-                            This advanced tool helps you analyze the ROI of purchasing multiple related products at bulk discount pricing.
-                            Save and compare different deal scenarios to make optimal buying decisions.
-                        </p>
-                        <div class="mt-auto">
-                            <a href="{{ url_for('multi_product_calculator') }}" class="btn btn-primary btn-lg">Open Calculator</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Sixth tool card (Margin/Markup Calculator) -->
-            <div class="col-lg-6 mb-4">
-                <div class="card h-100 shadow-sm">
-                    <div class="card-header bg-primary text-white">
-                        <h2 class="text-center mb-0">Margin/Markup Calculator</h2>
-                    </div>
-                    <div class="card-body d-flex flex-column">
-                        <h4 class="mb-4">Optimize Product Pricing & Margins</h4>
-                        <p class="mb-4">
-                            Calculate optimal selling prices based on cost and target margin, or analyze existing prices.
-                            Includes sensitivity analysis and visualization of the "sweet spot" margin range for maximum profitability.
-                        </p>
-                        <div class="mt-auto">
-                            <a href="{{ url_for('margin_calculator_page') }}" class="btn btn-primary btn-lg">Open Calculator</a>
                         </div>
                     </div>
                 </div>

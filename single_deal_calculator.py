@@ -6,6 +6,8 @@ from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 import os
 import json
 from datetime import datetime
+from calculator import calculate_roi, calculate_annualized_roi
+from excel_utils import get_title_font, get_header_font, get_header_fill, get_money_format, get_percent_format, apply_header_styles
 
 class SingleDealCalculator:
     """
@@ -69,9 +71,9 @@ class SingleDealCalculator:
             annualized_roi = float('inf')
             annualized_roi_text = "Infinite"
         else:
-            roi = total_savings / extra_cash_tied_up
+            roi = calculate_roi(total_savings, extra_cash_tied_up)
             roi_text = f"{roi:.2%}"
-            annualized_roi = 0 if days_tied_up == 0 else roi * (365 / days_tied_up)
+            annualized_roi = 0 if days_tied_up == 0 else calculate_annualized_roi(roi, days_tied_up / 365)
             annualized_roi_text = f"{annualized_roi:.2%}"
 
         # Generate recommendation
@@ -126,22 +128,22 @@ class SingleDealCalculator:
 
         # Add title
         ws['A1'] = "CHEERS LIQUOR MART"
-        ws['A1'].font = Font(size=14, bold=True)
+        ws['A1'].font = get_title_font()
         ws.merge_cells('A1:C1')
         ws['A1'].alignment = Alignment(horizontal='center')
 
         ws['A2'] = "SINGLE PRODUCT DEAL BUYING CALCULATOR"
-        ws['A2'].font = Font(size=12, bold=True)
+        ws['A2'].font = get_header_font()
         ws.merge_cells('A2:C2')
         ws['A2'].alignment = Alignment(horizontal='center')
 
         # Add header for input section
         ws['A4'] = "Input Variables"
-        ws['A4'].font = Font(bold=True)
+        ws['A4'].font = get_header_font()
         ws['B4'] = "Amount"
-        ws['B4'].font = Font(bold=True)
+        ws['B4'].font = get_header_font()
         ws['C4'] = "Input Explanations"
-        ws['C4'].font = Font(bold=True)
+        ws['C4'].font = get_header_font()
 
         # Fill input section
         input_rows = [

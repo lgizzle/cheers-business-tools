@@ -1,0 +1,40 @@
+{
+  "name": "Wine & Beer Bundle Test",
+  "parameters": {
+    "dealSizeCases": 60,
+    "minDaysStock": 30,
+    "paymentTermsDays": 30,
+    "iterations": "auto"
+  },
+  "products": [
+    {
+      "id": "product-0",
+      "name": "",
+      "priceSmall": null,
+      "priceBulk": null,
+      "onHandCases": null,
+      "annualCases": null,
+      "bottlesPerCase": null
+    },
+    {
+      "id": "product-1",
+      "name": "Premium Wine 2022",
+      "priceSmall": 45.99,
+      "priceBulk": 39.99,
+      "onHandCases": 10,
+      "annualCases": 60,
+      "bottlesPerCase": 12,
+      "bulkCases": 30
+    },
+    {
+      "id": "product-2",
+      "name": "Craft Beer Selection",
+      "priceSmall": 28.99,
+      "priceBulk": 24.99,
+      "onHandCases": 10,
+      "annualCases": 60,
+      "bottlesPerCase": 12,
+      "bulkCases": 30
+    }
+  ]
+}

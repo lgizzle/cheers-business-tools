@@ -131,13 +131,15 @@ class MarginCalculator:
                 current_markup = self.calculate_markup_from_price(cost, current_price)
                 current_profit = current_price - cost
 
-                df = df.append({
+                current_row = pd.DataFrame([{
                     'margin': current_margin,
                     'markup': current_markup,
                     'price': current_price,
                     'profit': current_profit,
                     'is_current': True
-                }, ignore_index=True)
+                }])
+
+                df = pd.concat([df, current_row], ignore_index=True)
 
                 # Sort by margin
                 df = df.sort_values('margin')

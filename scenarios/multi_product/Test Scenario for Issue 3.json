@@ -1,0 +1,40 @@
+{
+  "name": "Test Scenario for Issue 3",
+  "parameters": {
+    "dealSizeCases": 60,
+    "minDaysStock": 30,
+    "paymentTermsDays": 30,
+    "iterations": "auto"
+  },
+  "products": [
+    {
+      "id": "product-0",
+      "name": "",
+      "priceSmall": null,
+      "priceBulk": null,
+      "onHandCases": null,
+      "annualCases": null,
+      "bottlesPerCase": null
+    },
+    {
+      "id": "product-1",
+      "name": "Test Product",
+      "priceSmall": 45.99,
+      "priceBulk": 39.99,
+      "onHandCases": 10,
+      "annualCases": 60,
+      "bottlesPerCase": 12,
+      "bulkCases": 26
+    },
+    {
+      "id": "product-2",
+      "name": "Wine Product",
+      "priceSmall": 45.99,
+      "priceBulk": 39.99,
+      "onHandCases": 10,
+      "annualCases": 80,
+      "bottlesPerCase": 12,
+      "bulkCases": 34
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "name": "Premium Spirits Portfolio",
+  "parameters": {
+    "dealSizeCases": 100,
+    "minDaysStock": 45,
+    "paymentTermsDays": 60,
+    "iterations": "auto"
+  },
+  "products": [
+    {
+      "name": "Single Malt Scotch",
+      "priceSmall": 49.99,
+      "priceBulk": 42.99,
+      "onHandCases": 15,
+      "annualCases": 60,
+      "bottlesPerCase": 6
+    },
+    {
+      "name": "Aged Bourbon",
+      "priceSmall": 35.99,
+      "priceBulk": 29.99,
+      "onHandCases": 20,
+      "annualCases": 120,
+      "bottlesPerCase": 12
+    },
+    {
+      "name": "Premium Vodka",
+      "priceSmall": 28.99,
+      "priceBulk": 24.99,
+      "onHandCases": 25,
+      "annualCases": 180,
+      "bottlesPerCase": 12
+    }
+  ]
+}

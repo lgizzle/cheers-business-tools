@@ -1,26 +1,69 @@
 {
-  "name": "Tequila Test",
-  "desired_total": 120,
-  "varieties": [
+  "parameters": {
+    "small_deal_minimum": 40,
+    "bulk_deal_minimum": 80,
+    "payment_terms": 21
+  },
+  "products": [
     {
-      "variety": "Reposado",
-      "annual_sales": 3500,
-      "inventory_on_hand": 48
+      "product_name": "Patrón Silver 750ml",
+      "current_price": 52.0,
+      "bulk_price": 48.0,
+      "cases_on_hand": 3,
+      "cases_per_year": 96,
+      "bottles_per_case": 12,
+      "bulk_quantity": 0,
+      "daily_cases": 0.2630136986301370,
+      "monthly_cases": 8.0,
+      "days_of_stock": 11.40625
     },
     {
-      "variety": "Silver",
-      "annual_sales": 5200,
-      "inventory_on_hand": 62
+      "product_name": "Don Julio 1942 750ml",
+      "current_price": 165.0,
+      "bulk_price": 155.0,
+      "cases_on_hand": 1,
+      "cases_per_year": 24,
+      "bottles_per_case": 6,
+      "bulk_quantity": 0,
+      "daily_cases": 0.0657534246575342,
+      "monthly_cases": 2.0,
+      "days_of_stock": 15.208333333333334
     },
     {
-      "variety": "Añejo",
-      "annual_sales": 1800,
-      "inventory_on_hand": 24
+      "product_name": "Captain Morgan Spiced Rum 1.75L",
+      "current_price": 32.99,
+      "bulk_price": 30.50,
+      "cases_on_hand": 9,
+      "cases_per_year": 240,
+      "bottles_per_case": 6,
+      "bulk_quantity": 0,
+      "daily_cases": 0.6575342465753425,
+      "monthly_cases": 20.0,
+      "days_of_stock": 13.6875
     },
     {
-      "variety": "Gold",
-      "annual_sales": 2900,
-      "inventory_on_hand": 36
+      "product_name": "Espolòn Tequila Blanco 750ml",
+      "current_price": 24.99,
+      "bulk_price": 22.75,
+      "cases_on_hand": 6,
+      "cases_per_year": 156,
+      "bottles_per_case": 12,
+      "bulk_quantity": 0,
+      "daily_cases": 0.4273972602739726,
+      "monthly_cases": 13.0,
+      "days_of_stock": 14.038461538461538
+    },
+    {
+      "product_name": "Bacardi Superior White Rum 750ml",
+      "current_price": 18.50,
+      "bulk_price": 17.00,
+      "cases_on_hand": 0,
+      "cases_per_year": 300,
+      "bottles_per_case": 12,
+      "bulk_quantity": 0,
+      "daily_cases": 0.8219178082191781,
+      "monthly_cases": 25.0,
+      "days_of_stock": 0.0
     }
   ]
 }

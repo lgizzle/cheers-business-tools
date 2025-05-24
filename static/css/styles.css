@@ -1,0 +1,178 @@
+/* Main custom stylesheet for the application */
+
+/* Global Styles */
+body {
+    font-family: 'Nunito', sans-serif;
+    background-color: #f8f9fa;
+}
+
+.navbar-brand {
+    font-weight: 700;
+}
+
+.page-title {
+    font-weight: 700;
+    color: #303030;
+}
+
+/* Card styles */
+.card {
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+}
+
+.card-header {
+    font-weight: 600;
+}
+
+/* Button styles */
+.btn {
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.btn-primary {
+    background-color: #2c6ecb;
+    border-color: #2c6ecb;
+}
+
+.btn-primary:hover {
+    background-color: #1c5dba;
+    border-color: #1c5dba;
+}
+
+/* Table styles */
+.table th {
+    font-weight: 600;
+    background-color: #f5f5f5;
+}
+
+.table-sm th, .table-sm td {
+    padding: 0.5rem;
+}
+
+/* Form styles */
+.form-control {
+    border-radius: 4px;
+}
+
+.form-control:focus {
+    border-color: #2c6ecb;
+    box-shadow: 0 0 0 0.2rem rgba(44, 110, 203, 0.25);
+}
+
+/* Input groups */
+.input-group-text {
+    background-color: #f5f5f5;
+    border-color: #ddd;
+}
+
+/* Custom styles */
+.calculation-results {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-top: 2rem;
+}
+
+.calculator-container {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    padding: 2rem;
+    margin-top: 2rem;
+}
+
+/* Positive/negative values */
+.positive-roi {
+    color: #28a745;
+    font-weight: 600;
+}
+
+.negative-roi {
+    color: #dc3545;
+    font-weight: 600;
+}
+
+/* Scenario list styling */
+.scenario-list {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.scenario-item {
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.scenario-item:hover {
+    background-color: #f1f1f1;
+}
+
+/* Selected scenario styling */
+.btn-danger.scenario-item {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: white;
+    font-weight: bold;
+}
+
+.btn-danger.scenario-item:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+}
+
+/* Scenario detail panel */
+.scenario-details-panel {
+    border-left: 3px solid #dc3545;
+    background-color: #f8f9fa;
+}
+
+.scenario-load-btn {
+    font-weight: bold;
+    transition: all 0.2s ease;
+}
+
+.scenario-load-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Print styles */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+
+    .page-break {
+        page-break-after: always;
+    }
+
+    body {
+        font-size: 12pt;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 100%;
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .calculator-container {
+        padding: 1rem;
+    }
+
+    .btn {
+        padding: 0.375rem 0.5rem;
+    }
+
+    .card-body {
+        padding: 1rem;
+    }
+}

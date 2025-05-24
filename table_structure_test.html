@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Table Structure Test</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Table styling */
+        .table th, .table td {
+            border: 1px solid #000;
+            text-align: center;
+            padding: 8px;
+            font-size: 12px;
+        }
+
+        .table th:first-child, .table td:first-child {
+            text-align: left;
+            width: 180px;
+        }
+
+        /* Compact view toggle functionality */
+        .detail-column {
+            display: table-cell;
+        }
+
+        .table.compact .detail-column {
+            display: none;
+        }
+
+        /* Grouped header styling */
+        .thead-light th[colspan] {
+            text-align: center;
+            font-weight: 700;
+            background-color: #e9ecef !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <h3>Table Structure Test</h3>
+
+        <!-- Compact View Toggle -->
+        <div class="compact-toggle mb-3">
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="compactViewToggle">
+                <label class="form-check-label" for="compactViewToggle">
+                    Compact View (hides Cases On Hand, Annual Cases, Bottles/Case, Small Price)
+                </label>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover" id="productsTable">
+                <thead class="thead-light">
+                    <tr>
+                        <th rowspan="2">Product Name</th>
+                        <th colspan="2">Pricing</th>
+                        <th rowspan="2" class="detail-column">Cases On Hand</th>
+                        <th rowspan="2" class="detail-column">Annual Cases</th>
+                        <th rowspan="2" class="detail-column">Bottles/Case</th>
+                        <th rowspan="2">Small Deal Cases</th>
+                        <th rowspan="2">Bulk Cases</th>
+                        <th rowspan="2">Cases After Purchase</th>
+                        <th rowspan="2">ROI</th>
+                        <th rowspan="2">Ann. ROI</th>
+                        <th rowspan="2">Deal Cycles/Year</th>
+                        <th rowspan="2">Action</th>
+                    </tr>
+                    <tr>
+                        <th class="detail-column">Small</th>
+                        <th>Bulk</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Single Malt Scotch</td>
+                        <td class="detail-column">69.99</td>
+                        <td>59.99</td>
+                        <td class="detail-column">10</td>
+                        <td class="detail-column">24</td>
+                        <td class="detail-column">6</td>
+                        <td>3</td>
+                        <td>6</td>
+                        <td>16</td>
+                        <td>70.71%</td>
+                        <td>231.14%</td>
+                        <td>3.00</td>
+                        <td>🗑️</td>
+                    </tr>
+                    <tr>
+                        <td>Bourbon Whiskey</td>
+                        <td class="detail-column">42.99</td>
+                        <td>36.99</td>
+                        <td class="detail-column">15</td>
+                        <td class="detail-column">84</td>
+                        <td class="detail-column">12</td>
+                        <td>8</td>
+                        <td>20</td>
+                        <td>35</td>
+                        <td>54.88%</td>
+                        <td>287.02%</td>
+                        <td>4.80</td>
+                        <td>🗑️</td>
+                    </tr>
+                    <tr class="table-secondary font-weight-bold">
+                        <td>TOTALS</td>
+                        <td class="detail-column">-</td>
+                        <td>-</td>
+                        <td class="detail-column">25</td>
+                        <td class="detail-column">108</td>
+                        <td class="detail-column">-</td>
+                        <td>11</td>
+                        <td>26</td>
+                        <td>51</td>
+                        <td>58.62%</td>
+                        <td>278.73%</td>
+                        <td>4.36</td>
+                        <td>-</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Compact view toggle functionality
+        document.getElementById('compactViewToggle').addEventListener('change', function() {
+            const table = document.getElementById('productsTable');
+            const pricingHeaders = document.querySelectorAll('th[colspan]');
+
+            if (this.checked) {
+                table.classList.add('compact');
+                // Adjust colspan for compact mode
+                pricingHeaders.forEach(header => {
+                    if (header.textContent === 'Pricing') {
+                        header.setAttribute('colspan', '1');
+                    }
+                });
+            } else {
+                table.classList.remove('compact');
+                // Restore colspan for normal mode
+                pricingHeaders.forEach(header => {
+                    if (header.textContent === 'Pricing') {
+                        header.setAttribute('colspan', '2');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

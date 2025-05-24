@@ -1,0 +1,55 @@
+{
+  "params": {
+    "small_deal_minimum": 30,
+    "bulk_deal_minimum": 60,
+    "payment_terms": 30,
+    "daily_interest_rate": 0.00021918
+  },
+  "products": [
+    {
+      "product_name": "Jose Cuervo Gold 750ml",
+      "current_price": 22.0,
+      "bulk_price": 20.5,
+      "cases_on_hand": 6,
+      "cases_per_year": 140,
+      "bottles_per_case": 12,
+      "bulk_quantity": 20
+    },
+    {
+      "product_name": "Jose Cuervo Silver 750ml",
+      "current_price": 23.0,
+      "bulk_price": 21.0,
+      "cases_on_hand": 4,
+      "cases_per_year": 120,
+      "bottles_per_case": 12,
+      "bulk_quantity": 15
+    },
+    {
+      "product_name": "Patron Silver 750ml",
+      "current_price": 48.0,
+      "bulk_price": 45.0,
+      "cases_on_hand": 2,
+      "cases_per_year": 50,
+      "bottles_per_case": 6,
+      "bulk_quantity": 8
+    },
+    {
+      "product_name": "Casamigos Blanco 750ml",
+      "current_price": 44.0,
+      "bulk_price": 40.0,
+      "cases_on_hand": 1,
+      "cases_per_year": 40,
+      "bottles_per_case": 6,
+      "bulk_quantity": 10
+    },
+    {
+      "product_name": "Don Julio Reposado 750ml",
+      "current_price": 52.0,
+      "bulk_price": 48.0,
+      "cases_on_hand": 1,
+      "cases_per_year": 30,
+      "bottles_per_case": 6,
+      "bulk_quantity": 7
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "params": {
+    "small_deal_minimum": 30,
+    "bulk_deal_minimum": 60,
+    "payment_terms": 30,
+    "daily_interest_rate": 0.00021918
+  },
+  "products": [
+    {
+      "product_name": "Tito's Handmade Vodka 750ml",
+      "current_price": 21.0,
+      "bulk_price": 19.5,
+      "cases_on_hand": 8,
+      "cases_per_year": 180,
+      "bottles_per_case": 12,
+      "bulk_quantity": 25
+    },
+    {
+      "product_name": "Smirnoff Vodka 750ml",
+      "current_price": 15.0,
+      "bulk_price": 13.5,
+      "cases_on_hand": 10,
+      "cases_per_year": 150,
+      "bottles_per_case": 12,
+      "bulk_quantity": 15
+    },
+    {
+      "product_name": "Grey Goose Vodka 750ml",
+      "current_price": 36.0,
+      "bulk_price": 33.0,
+      "cases_on_hand": 3,
+      "cases_per_year": 60,
+      "bottles_per_case": 6,
+      "bulk_quantity": 8
+    },
+    {
+      "product_name": "Absolut Vodka 750ml",
+      "current_price": 19.0,
+      "bulk_price": 17.5,
+      "cases_on_hand": 5,
+      "cases_per_year": 90,
+      "bottles_per_case": 12,
+      "bulk_quantity": 10
+    },
+    {
+      "product_name": "Ketel One Vodka 750ml",
+      "current_price": 25.0,
+      "bulk_price": 23.0,
+      "cases_on_hand": 2,
+      "cases_per_year": 70,
+      "bottles_per_case": 12,
+      "bulk_quantity": 7
+    }
+  ]
+}
