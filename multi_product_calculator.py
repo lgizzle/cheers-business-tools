@@ -484,14 +484,15 @@ class MultiProductBuyingCalculator:
                     product_with_roi['annualizedRoi'] = annualized_roi
                     products_with_roi.append(product_with_roi)
 
-                    # Track lowest annualized ROI (only for products with bulk cases)
-                    if annualized_roi < lowest_roi and product.get('bulk_quantity', 0) > 0:
+                    # Track lowest annualized ROI (only for products with bulk cases > 1)
+                    # Ensure we don't reduce any product below 1 case
+                    if annualized_roi < lowest_roi and product.get('bulk_quantity', 0) > 1:
                         lowest_roi = annualized_roi
                         lowest_roi_product = product
 
-                    # Track highest annualized ROI (only for products with room for more)
-                    annual_cases = product.get('annual_cases', 0)
-                    if annualized_roi > highest_roi and product.get('bulk_quantity', 0) < annual_cases:
+                    # Track highest annualized ROI (for any product that can accept more cases)
+                    # Remove the artificial annual_cases constraint - optimization should be based on ROI differences
+                    if annualized_roi > highest_roi:
                         highest_roi = annualized_roi
                         highest_roi_product = product
 
@@ -502,11 +503,23 @@ class MultiProductBuyingCalculator:
                     # Create test copies
                     test_products = [p.copy() for p in current_products]
 
-                    # Find indexes of the products
-                    low_index = next(i for i, p in enumerate(test_products)
-                                  if p.get('id') == lowest_roi_product.get('id'))
-                    high_index = next(i for i, p in enumerate(test_products)
-                                   if p.get('id') == highest_roi_product.get('id'))
+                    # Find indexes of the products by matching product_name and other attributes
+                    low_index = None
+                    high_index = None
+
+                    for i, p in enumerate(test_products):
+                        if (p.get('product_name') == lowest_roi_product.get('product_name') and
+                            p.get('current_price') == lowest_roi_product.get('current_price') and
+                            p.get('bulk_price') == lowest_roi_product.get('bulk_price')):
+                            low_index = i
+                        if (p.get('product_name') == highest_roi_product.get('product_name') and
+                            p.get('current_price') == highest_roi_product.get('current_price') and
+                            p.get('bulk_price') == highest_roi_product.get('bulk_price')):
+                            high_index = i
+
+                    if low_index is None or high_index is None:
+                        self.logger.error("Could not find product indexes for swap")
+                        continue
 
                     # Perform the swap
                     test_products[low_index]['bulk_quantity'] -= 1
