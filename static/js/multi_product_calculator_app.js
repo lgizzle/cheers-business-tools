@@ -177,19 +177,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
         rows.forEach((row, index) => {
             const product = {
-                id: 'product-' + index,
-                name: row.querySelector('.product-name').value,
-                priceSmall: parseFloat(row.querySelector('.product-small-price').value),
-                priceBulk: parseFloat(row.querySelector('.product-bulk-price').value),
-                onHandCases: parseInt(row.querySelector('.product-cases-on-hand').value),
-                annualCases: parseInt(row.querySelector('.product-annual-cases').value),
-                bottlesPerCase: parseInt(row.querySelector('.product-bottles-per-case').value)
+                product_name: row.querySelector('.product-name').value,
+                current_price: parseFloat(row.querySelector('.product-small-price').value),
+                bulk_price: parseFloat(row.querySelector('.product-bulk-price').value),
+                on_hand: parseInt(row.querySelector('.product-cases-on-hand').value),
+                annual_cases: parseInt(row.querySelector('.product-annual-cases').value) || 1,
+                bottles_per_case: parseInt(row.querySelector('.product-bottles-per-case').value),
+                bulk_quantity: parseInt(row.querySelector('.product-bulk-cases').value) || 0
             };
-
             products.push(product);
         });
 
-        console.log('Collected products:', products);
+        console.log('Collected products (calculation payload):', products);
 
         // Basic validation
         if (products.length === 0) {
@@ -197,12 +196,30 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
+                        // New: Check for annual cases > 0
+        for (const product of products) {
+            if (product.annual_cases <= 0) {
+                alert('Annual cases must be greater than zero for all products.');
+                return;
+            }
+        }
+
         // Get parameters
+        const dealSizeCases = parseInt(document.getElementById('dealSizeCases').value);
+        const minDaysStock = parseInt(document.getElementById('minDaysStock').value);
+        const paymentTermsDays = parseInt(document.getElementById('paymentTermsDays').value);
+        const iterations = document.getElementById('iterations').value;
         const params = {
-            dealSizeCases: parseInt(document.getElementById('dealSizeCases').value),
-            minDaysStock: parseInt(document.getElementById('minDaysStock').value),
-            paymentTermsDays: parseInt(document.getElementById('paymentTermsDays').value),
-            iterations: document.getElementById('iterations').value
+            // Backend validation keys
+            small_deal_minimum: dealSizeCases,
+            bulk_deal_minimum: dealSizeCases,
+            payment_terms: paymentTermsDays,
+            min_days_stock: minDaysStock,
+            // Calculation logic keys
+            dealSizeCases: dealSizeCases,
+            minDaysStock: minDaysStock,
+            paymentTermsDays: paymentTermsDays,
+            iterations: iterations
         };
 
         console.log('Calculation parameters:', params);
@@ -266,13 +283,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Update bulk cases in input table
                 const bulkCasesInput = inputRow.querySelector('.product-bulk-cases');
                 if (bulkCasesInput) {
-                    bulkCasesInput.value = product.bulkCases || 0;
+                    bulkCasesInput.value = product.bulk_quantity || 0;
                 }
 
                 // Get values for results table
                 const productName = inputRow.querySelector('.product-name').value;
                 const onHandCases = parseInt(inputRow.querySelector('.product-cases-on-hand').value) || 0;
-                const bulkCases = product.bulkCases || 0;
+                const bulkCases = product.bulk_quantity || 0;
                 const casesAfterPurchase = onHandCases + bulkCases;
 
                 // Add to totals
@@ -505,8 +522,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
                             scenario.products.forEach(product => {
                                 // Skip products with invalid data (null/undefined critical fields)
-                                if (!product.name || product.priceSmall == null || product.priceBulk == null ||
-                                    product.onHandCases == null || product.annualCases == null || product.bottlesPerCase == null) {
+                                if (!product.product_name || product.current_price == null || product.bulk_price == null ||
+                                    product.cases_on_hand == null || product.cases_per_year == null || product.bottles_per_case == null) {
                                     console.warn('Skipping invalid product:', product);
                                     return;
                                 }
@@ -516,14 +533,14 @@ document.addEventListener('DOMContentLoaded', function() {
                                 let totalCases = '-';
 
                                 // If we have the necessary data, calculate smallDealCases
-                                if (product.bulkCases && scenario.parameters) {
-                                    const dailyCases = product.annualCases / 365;
-                                    const daysQty = Math.ceil(dailyCases * scenario.parameters.minDaysStock);
-                                    const propQty = Math.ceil(product.bulkCases * (scenario.parameters.smallDealMinimum || 30) / scenario.parameters.dealSizeCases);
+                                if (product.bulk_quantity && scenario.parameters) {
+                                    const dailyCases = product.cases_per_year / 365;
+                                    const daysQty = Math.ceil(dailyCases * scenario.parameters.min_days_stock);
+                                    const propQty = Math.ceil(product.bulk_quantity * (scenario.parameters.small_deal_minimum || 30) / scenario.parameters.dealSizeCases);
                                     smallDealCases = Math.max(propQty, daysQty);
 
                                     // Calculate total cases after purchase
-                                    totalCases = product.onHandCases + product.bulkCases;
+                                    totalCases = product.cases_on_hand + product.bulk_quantity;
 
                                     // Add to totals if numeric values
                                     totalSmallDealCases += parseInt(smallDealCases) || 0;
@@ -531,20 +548,20 @@ document.addEventListener('DOMContentLoaded', function() {
                                 }
 
                                 // Add to running totals
-                                totalCasesOnHand += product.onHandCases || 0;
-                                totalAnnualCases += product.annualCases || 0;
-                                totalBulkCases += product.bulkCases || 0;
+                                totalCasesOnHand += product.cases_on_hand || 0;
+                                totalAnnualCases += product.cases_per_year || 0;
+                                totalBulkCases += product.bulk_quantity || 0;
 
                                 const row = document.createElement('tr');
                                 row.innerHTML = `
-                                    <td>${product.name}</td>
-                                    <td>$${product.priceSmall.toFixed(2)}</td>
-                                    <td>$${product.priceBulk.toFixed(2)}</td>
-                                    <td>${product.onHandCases}</td>
-                                    <td>${product.annualCases}</td>
-                                    <td>${product.bottlesPerCase}</td>
+                                    <td>${product.product_name}</td>
+                                    <td>$${product.current_price.toFixed(2)}</td>
+                                    <td>$${product.bulk_price.toFixed(2)}</td>
+                                    <td>${product.cases_on_hand}</td>
+                                    <td>${product.cases_per_year}</td>
+                                    <td>${product.bottles_per_case}</td>
                                     <td>${smallDealCases}</td>
-                                    <td>${product.bulkCases || 'N/A'}</td>
+                                    <td>${product.bulk_quantity || 'N/A'}</td>
                                     <td>${totalCases}</td>
                                 `;
                                 detailsBody.appendChild(row);
@@ -650,22 +667,24 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Add products
                     scenario.products.forEach(product => {
                         // Skip products with invalid data (null/undefined critical fields)
-                        if (!product.name || product.priceSmall == null || product.priceBulk == null ||
-                            product.onHandCases == null || product.annualCases == null || product.bottlesPerCase == null) {
+                        if (!product.product_name || product.current_price == null || product.bulk_price == null ||
+                            product.on_hand == null || product.annual_cases == null || product.bottles_per_case == null) {
                             console.warn('Skipping invalid product during load:', product);
                             return;
                         }
 
+                        const mappedProduct = mapLegacyProductKeys(product);
+
                         const newRow = document.createElement('tr');
 
                         newRow.innerHTML = `
-                            <td><input type="text" class="form-control product-name" value="${product.name}" required></td>
-                            <td><input type="number" class="form-control product-small-price" min="0.01" step="0.01" value="${product.priceSmall}" required></td>
-                            <td><input type="number" class="form-control product-bulk-price" min="0.01" step="0.01" value="${product.priceBulk}" required></td>
-                            <td class="detail-column"><input type="number" class="form-control product-cases-on-hand" min="0" value="${product.onHandCases}" required></td>
-                            <td class="detail-column"><input type="number" class="form-control product-annual-cases" min="1" value="${product.annualCases}" required></td>
-                            <td class="detail-column"><input type="number" class="form-control product-bottles-per-case" min="1" value="${product.bottlesPerCase}" required></td>
-                            <td><input type="number" class="form-control product-bulk-cases" min="0" value="${product.bulkCases || ''}" placeholder="Auto-calculated"></td>
+                            <td><input type="text" class="form-control product-name" value="${mappedProduct.product_name}" required></td>
+                            <td><input type="number" class="form-control product-small-price" min="0.01" step="0.01" value="${mappedProduct.current_price}" required></td>
+                            <td><input type="number" class="form-control product-bulk-price" min="0.01" step="0.01" value="${mappedProduct.bulk_price}" required></td>
+                            <td class="detail-column"><input type="number" class="form-control product-cases-on-hand" min="0" value="${mappedProduct.cases_on_hand}" required></td>
+                            <td class="detail-column"><input type="number" class="form-control product-annual-cases" min="1" value="${mappedProduct.cases_per_year}" required></td>
+                            <td class="detail-column"><input type="number" class="form-control product-bottles-per-case" min="1" value="${mappedProduct.bottles_per_case}" required></td>
+                            <td><input type="number" class="form-control product-bulk-cases" min="0" value="${mappedProduct.bulk_quantity || ''}" placeholder="Auto-calculated"></td>
                             <td>
                                 <button class="btn btn-sm btn-danger remove-product">
                                     <i class="fas fa-trash"></i>
@@ -770,18 +789,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const product = {
                 id: 'product-' + index,
-                name: nameInput.value,
-                priceSmall: parseFloat(row.querySelector('.product-small-price').value),
-                priceBulk: parseFloat(row.querySelector('.product-bulk-price').value),
-                onHandCases: parseInt(row.querySelector('.product-cases-on-hand').value),
-                annualCases: parseInt(row.querySelector('.product-annual-cases').value),
-                bottlesPerCase: parseInt(row.querySelector('.product-bottles-per-case').value)
+                product_name: nameInput.value,
+                current_price: parseFloat(row.querySelector('.product-small-price').value),
+                bulk_price: parseFloat(row.querySelector('.product-bulk-price').value),
+                on_hand: parseInt(row.querySelector('.product-cases-on-hand').value),
+                annual_cases: parseInt(row.querySelector('.product-annual-cases').value) || 1,
+                bottles_per_case: parseInt(row.querySelector('.product-bottles-per-case').value),
+                bulk_quantity: parseInt(row.querySelector('.product-bulk-cases').value) || 0
             };
-
-            const bulkCasesInput = row.querySelector('.product-bulk-cases');
-            if (bulkCasesInput && bulkCasesInput.value) {
-                product.bulkCases = parseInt(bulkCasesInput.value);
-            }
 
             productsToSave.push(product);
         });
@@ -908,13 +923,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (nameInput && smallPriceInput && bulkPriceInput) {
                     const product = {
                         id: 'product-' + index,
-                        name: nameInput.value,
-                        priceSmall: parseFloat(smallPriceInput.value),
-                        priceBulk: parseFloat(bulkPriceInput.value),
-                        onHandCases: parseInt(onHandInput ? onHandInput.value : 10),
-                        annualCases: parseInt(annualInput ? annualInput.value : 60),
-                        bottlesPerCase: parseInt(bottlesInput ? bottlesInput.value : 12),
-                        bulkCases: parseInt(bulkCasesInput ? bulkCasesInput.value || 0 : 0)
+                        product_name: nameInput.value,
+                        current_price: parseFloat(smallPriceInput.value),
+                        bulk_price: parseFloat(bulkPriceInput.value),
+                        on_hand: parseInt(onHandInput ? onHandInput.value : 10),
+                        annual_cases: parseInt(annualInput ? annualInput.value : 60),
+                        bottles_per_case: parseInt(bottlesInput ? bottlesInput.value : 12),
+                        bulk_quantity: parseInt(bulkCasesInput ? bulkCasesInput.value || 0 : 0) || 0
                     };
 
                     products.push(product);
@@ -927,11 +942,21 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Total products collected:', products.length);
 
             // Get parameters
+            const dealSizeCases = parseInt(document.getElementById('dealSizeCases').value);
+            const minDaysStock = parseInt(document.getElementById('minDaysStock').value);
+            const paymentTermsDays = parseInt(document.getElementById('paymentTermsDays').value);
+            const iterations = document.getElementById('iterations').value;
             const params = {
-                dealSizeCases: parseInt(document.getElementById('dealSizeCases').value),
-                minDaysStock: parseInt(document.getElementById('minDaysStock').value),
-                paymentTermsDays: parseInt(document.getElementById('paymentTermsDays').value),
-                iterations: document.getElementById('iterations').value
+                // Backend validation keys
+                small_deal_minimum: dealSizeCases,
+                bulk_deal_minimum: dealSizeCases,
+                payment_terms: paymentTermsDays,
+                min_days_stock: minDaysStock,
+                // Calculation logic keys
+                dealSizeCases: dealSizeCases,
+                minDaysStock: minDaysStock,
+                paymentTermsDays: paymentTermsDays,
+                iterations: iterations
             };
 
             console.log('Optimization products:', products);
@@ -1130,7 +1155,7 @@ document.addEventListener('DOMContentLoaded', function() {
             totalAnnualCases += annualCases;
             productData.push({
                 row: row,
-                annualCases: annualCases
+                annual_cases: annualCases
             });
         });
 
@@ -1150,7 +1175,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 casesToAllocate = dealSizeCases - allocatedCases;
             } else {
                 // Calculate proportional allocation
-                const proportion = product.annualCases / totalAnnualCases;
+                const proportion = product.annual_cases / totalAnnualCases;
                 casesToAllocate = Math.round(dealSizeCases * proportion);
                 allocatedCases += casesToAllocate;
             }
@@ -1318,18 +1343,14 @@ document.addEventListener('DOMContentLoaded', function() {
         rows.forEach((row, index) => {
             const product = {
                 id: 'product-' + index,
-                name: row.querySelector('.product-name').value,
-                priceSmall: parseFloat(row.querySelector('.product-small-price').value),
-                priceBulk: parseFloat(row.querySelector('.product-bulk-price').value),
-                onHandCases: parseInt(row.querySelector('.product-cases-on-hand').value),
-                annualCases: parseInt(row.querySelector('.product-annual-cases').value),
-                bottlesPerCase: parseInt(row.querySelector('.product-bottles-per-case').value)
+                product_name: row.querySelector('.product-name').value,
+                current_price: parseFloat(row.querySelector('.product-small-price').value),
+                bulk_price: parseFloat(row.querySelector('.product-bulk-price').value),
+                on_hand: parseInt(row.querySelector('.product-cases-on-hand').value),
+                annual_cases: parseInt(row.querySelector('.product-annual-cases').value) || 1,
+                bottles_per_case: parseInt(row.querySelector('.product-bottles-per-case').value),
+                bulk_quantity: parseInt(row.querySelector('.product-bulk-cases').value) || 0
             };
-
-            const bulkCasesInput = row.querySelector('.product-bulk-cases');
-            if (bulkCasesInput && bulkCasesInput.value) {
-                product.bulkCases = parseInt(bulkCasesInput.value);
-            }
 
             productsToExport.push(product);
         });
@@ -1389,5 +1410,18 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Error exporting to Excel:', error);
             alert('Error exporting to Excel: ' + error.message);
         });
+    }
+
+    // In loadScenarioToCalculator and loadScenarioDetails, add this mapping for each product:
+    function mapLegacyProductKeys(product) {
+        return {
+            product_name: product.product_name || product.name || '',
+            current_price: product.current_price != null ? product.current_price : product.priceSmall,
+            bulk_price: product.bulk_price != null ? product.bulk_price : product.priceBulk,
+            cases_on_hand: product.on_hand != null ? product.on_hand : product.onHandCases,
+            cases_per_year: product.annual_cases != null ? product.annual_cases : product.annualCases,
+            bottles_per_case: product.bottles_per_case != null ? product.bottles_per_case : product.bottlesPerCase,
+            bulk_quantity: product.bulk_quantity != null ? product.bulk_quantity : product.bulkCases || 0
+        };
     }
 });

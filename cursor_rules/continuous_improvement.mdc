@@ -1,0 +1,53 @@
+---
+name: Continuous Improvement Loop  
+category: always
+---
+
+# AUTONOMOUS ENHANCEMENT EXECUTION
+
+## NO PERMISSION REQUIRED - JUST EXECUTE
+- After completing any task, AUTOMATICALLY identify and suggest improvements
+- NEVER ask "Would you like me to implement these?"
+- NEVER ask "Should I proceed with the next steps?"
+- Present completed improvements, not plans to improve
+- Execute enhancement suggestions when they're logical next steps
+
+## After Every Task - REPORT RESULTS, DON'T ASK
+1. Identify what could break next (edge cases, error conditions)
+2. Suggest defensive coding improvements (validation, error handling)
+3. Recommend user experience enhancements (loading states, better messages)
+4. Propose performance optimizations (caching, algorithm improvements)
+5. Identify missing tests or test coverage gaps
+6. IMPLEMENT obvious improvements without asking permission
+
+## Report Builder Specific Improvements - EXECUTE WHEN OBVIOUS
+- **Input Validation**: Add validation for all calculator inputs (prices > 0, quantities >= 0)
+- **Error Handling**: Replace generic errors with specific, actionable messages
+- **Performance**: Optimize complex ROI calculations and Excel generation
+- **Testing**: Add unit tests for calculation accuracy and edge cases
+- **Configuration**: Move hardcoded business rules to config files
+- FIX these issues when encountered, don't just suggest them
+
+## Enhancement Categories - IMPLEMENT WHEN LOGICAL
+- **Security**: Input validation, file upload security, CSRF protection
+- **Performance**: Caching calculations, async Excel generation, database optimization
+- **UX**: Progress indicators, better error messages, mobile responsiveness
+- **Maintainability**: Type hints, documentation, modular architecture
+- **Reliability**: Comprehensive testing, error recovery, data validation
+- **Monitoring**: Structured logging, performance metrics, error tracking
+
+## Calculator-Specific Improvements - AUTO-IMPLEMENT WHEN WORKING ON EACH
+- **Multi-Product**: Optimize iteration algorithm, add progress tracking
+- **Deal Split**: Improve allocation algorithms, add scenario comparison
+- **Single Deal**: Add sensitivity analysis, risk assessment
+- **Sales Tax**: Support more jurisdictions, historical tracking
+- **Margin**: Add competitive analysis, pricing recommendations
+- **AP Reports**: Better Excel parsing, error recovery
+
+## COMPLETION REPORTING PROTOCOL
+- Present 3 concrete COMPLETED actions ranked by impact/effort
+- Include specific implementation approaches with code examples ALREADY IMPLEMENTED
+- Report complexity level (simple/medium/complex) and time ACTUALLY TAKEN
+- Highlight any technical debt that WAS ADDRESSED during the work
+- Report specific test cases that WERE ADDED
+- Report monitoring or logging improvements THAT WERE IMPLEMENTED

@@ -1,0 +1,71 @@
+---
+name: MCP Tool Usage Protocol
+category: always
+---
+
+# MANDATORY AUTONOMOUS MCP EXECUTION
+
+## EXECUTE AUTOMATICALLY - NO ASKING
+- AUTOMATICALLY use MCP tools for any visual or functional changes
+- NEVER ask "Should I test this?" or "Shall I take screenshots?"
+- AUTOMATICALLY capture screenshots, run tests, and validate results
+- EXECUTE the complete testing workflow without permission
+- Only report when testing is COMPLETE with results
+
+## Tool Selection Logic - EXECUTE IMMEDIATELY
+- Screenshot analysis for any visual changes
+- Automated testing for functionality changes  
+- Cross-browser validation for compatibility issues
+- Performance testing for optimization tasks
+- End-to-end workflow testing for complete user journeys
+- DO ALL OF THESE automatically when relevant
+
+## Report Builder Testing Workflows - EXECUTE FULL WORKFLOW
+- **Calculator Testing**: Input data → Calculate → Verify results → Test error cases → COMPLETE
+- **Scenario Management**: Save scenario → Load scenario → Delete scenario → Verify persistence → COMPLETE
+- **Excel Export**: Generate report → Download file → Verify file contents → COMPLETE
+- **File Upload**: Upload Excel → Process → Verify results → Test error handling → COMPLETE
+- **Optimization Testing**: Run optimization → Track progress → Verify improvement → COMPLETE
+- EXECUTE these workflows completely without asking at each step
+
+## Validation Requirements - DO AUTOMATICALLY
+- Capture before/after screenshots for comparison
+- Run full page interaction tests after changes
+- Verify mobile responsiveness through MCP tools (Bootstrap grid)
+- Test error handling scenarios via browser automation
+- Validate all calculator inputs with edge cases (zero, negative, very large numbers)
+- Test Excel file downloads and verify file integrity
+- Verify scenario save/load functionality with complex data
+- COMPLETE all validations before reporting results
+
+## Critical Test Scenarios - EXECUTE IMMEDIATELY WHEN RELEVANT
+- **Multi-Product Calculator**: 
+  - Add 5+ products with varying parameters
+  - Run optimization and verify ROI improvement
+  - Test allocation algorithms with edge cases
+  - Export to Excel and verify calculations
+- **Deal Split Calculator**:
+  - Test proportional allocation accuracy
+  - Verify total allocation matches target
+  - Test with uneven sales distributions
+- **Error Handling**:
+  - Test with missing required fields
+  - Test with invalid numeric inputs
+  - Test with corrupted Excel uploads
+  - Verify user-friendly error messages
+- EXECUTE relevant scenarios automatically
+
+## Performance Validation - AUTO-EXECUTE
+- Test calculation speed with large datasets (20+ products)
+- Verify optimization completes within reasonable time
+- Test Excel generation performance
+- Monitor memory usage during complex calculations
+- Report performance metrics, don't ask if you should test them
+
+## Failure Response - AUTO-REMEDIATE
+- If MCP tools report issues, immediately investigate root cause
+- Re-run tests after each fix attempt
+- Don't proceed until all MCP validations pass
+- Document any workarounds or known limitations discovered
+- Create regression tests for any bugs found and fixed
+- FIX issues automatically when possible, don't just report them

@@ -55,12 +55,12 @@ class MultiProductBuyingCalculator:
         """
         try:
             # Extract product data
-            annual_cases = product.get('annualCases', 0)           # Annual velocity in cases
-            bottles_per_case = product.get('bottlesPerCase', 0)    # B: Bottles per case
-            price_small = product.get('priceSmall', 0)             # P₁: Price per bottle in small deal
-            price_bulk = product.get('priceBulk', 0)               # P₂: Price per bottle in bulk deal
-            bulk_cases = product.get('bulkCases', 0)               # Q₂: Cases purchased in bulk
-            on_hand_cases = product.get('onHandCases', 0)          # Current inventory in cases
+            annual_cases = product.get('annual_cases', 0)           # Annual velocity in cases
+            bottles_per_case = product.get('bottles_per_case', 0)    # B: Bottles per case
+            price_small = product.get('current_price', 0)             # P₁: Price per bottle in small deal
+            price_bulk = product.get('bulk_price', 0)               # P₂: Price per bottle in bulk deal
+            bulk_cases = product.get('bulk_quantity', 0)               # Q₂: Cases purchased in bulk
+            on_hand_cases = product.get('on_hand', 0)          # Current inventory in cases
 
             # Extract parameters
             payment_terms_days = params.get('paymentTermsDays', 30)
@@ -257,19 +257,19 @@ class MultiProductBuyingCalculator:
                 product_copy = product.copy()
 
                 # Calculate daily depletion rate
-                annual_cases = product.get('annualCases', 0)
+                annual_cases = product.get('annual_cases', 0)
                 total_annual_cases += annual_cases
 
                 if annual_cases <= 0:
                     # Skip products with no sales velocity
-                    product_copy['bulkCases'] = 0
+                    product_copy['bulk_quantity'] = 0
                     allocated_products.append(product_copy)
                     continue
 
                 daily_cases = annual_cases / 365
 
                 # Calculate current days of stock
-                on_hand_cases = product.get('onHandCases', 0)
+                on_hand_cases = product.get('on_hand', 0)
                 current_days_stock = on_hand_cases / daily_cases if daily_cases > 0 else float('inf')
 
                 # Calculate additional cases needed to reach minimum days of stock
@@ -306,7 +306,7 @@ class MultiProductBuyingCalculator:
                     allocated_cases = 0
 
                 # Ensure allocated_cases is an integer
-                product['bulkCases'] = int(allocated_cases)
+                product['bulk_quantity'] = int(allocated_cases)
                 remaining_cases -= int(allocated_cases)
 
             # STEP 2: If we've allocated all cases based on need and have leftover,
@@ -327,7 +327,7 @@ class MultiProductBuyingCalculator:
                         annual_proportion = product_info['annual_cases'] / total_annual_cases
                         fractional_cases = remaining_cases * annual_proportion
                         int_cases = int(fractional_cases)
-                        product_info['product']['bulkCases'] += int_cases
+                        product_info['product']['bulk_quantity'] += int_cases
                         remaining_cases -= int_cases
 
                         annual_fractions.append({
@@ -338,10 +338,10 @@ class MultiProductBuyingCalculator:
                     # Distribute any remaining individual cases by highest fraction
                     annual_fractions.sort(key=lambda x: x['fraction'], reverse=True)
                     for i in range(min(int(remaining_cases), len(annual_fractions))):
-                        annual_fractions[i]['product_info']['product']['bulkCases'] += 1
+                        annual_fractions[i]['product_info']['product']['bulk_quantity'] += 1
 
             # Final sanity check - ensure we've allocated exactly the requested number of cases
-            total_allocated = sum(p['product']['bulkCases'] for p in products_with_need)
+            total_allocated = sum(p['product']['bulk_quantity'] for p in products_with_need)
             if total_allocated != deal_size_cases:
                 self.logger.warning(f"Allocation discrepancy: Target={deal_size_cases}, Actual={total_allocated}. Adjusting.")
 
@@ -353,17 +353,17 @@ class MultiProductBuyingCalculator:
 
                 for product_info in products_by_annual:
                     # Only increase allocation (if adjustment > 0) or decrease if product has enough cases
-                    if adjustment > 0 or product_info['product']['bulkCases'] >= abs(adjustment):
-                        product_info['product']['bulkCases'] += adjustment
+                    if adjustment > 0 or product_info['product']['bulk_quantity'] >= abs(adjustment):
+                        product_info['product']['bulk_quantity'] += adjustment
                         break
 
             # Collect all products into the final result
             for product_info in products_with_need:
-                # Final check to ensure all bulkCases are integers
-                product_info['product']['bulkCases'] = int(product_info['product']['bulkCases'])
+                # Final check to ensure all bulk_quantity are integers
+                product_info['product']['bulk_quantity'] = int(product_info['product']['bulk_quantity'])
                 allocated_products.append(product_info['product'])
 
-            self.logger.info(f"Allocated {sum(p.get('bulkCases', 0) for p in allocated_products)} cases based on inventory needs and annual sales")
+            self.logger.info(f"Allocated {sum(p.get('bulk_quantity', 0) for p in allocated_products)} cases based on inventory needs and annual sales")
             return allocated_products
 
         except Exception as e:
@@ -385,7 +385,7 @@ class MultiProductBuyingCalculator:
         """
         try:
             # Calculate total annual cases
-            total_annual = sum(p.get('annualCases', 0) for p in products)
+            total_annual = sum(p.get('annual_cases', 0) for p in products)
 
             if total_annual <= 0:
                 raise ValueError("Total annual cases must be greater than zero")
@@ -396,13 +396,13 @@ class MultiProductBuyingCalculator:
 
             # Calculate raw case allocation and initial floor allocation
             for product in products:
-                annual_cases = product.get('annualCases', 0)
+                annual_cases = product.get('annual_cases', 0)
                 raw_cases = deal_size_cases * (annual_cases / total_annual)
                 bulk_cases = int(raw_cases)  # Floor
                 remainder = raw_cases - bulk_cases  # Fractional part
 
                 product_copy = product.copy()
-                product_copy['bulkCases'] = bulk_cases
+                product_copy['bulk_quantity'] = bulk_cases
                 allocated_products.append(product_copy)
                 remainder_info.append({
                     'index': len(allocated_products) - 1,
@@ -410,7 +410,7 @@ class MultiProductBuyingCalculator:
                 })
 
             # Calculate leftover cases
-            allocated_cases = sum(p.get('bulkCases', 0) for p in allocated_products)
+            allocated_cases = sum(p.get('bulk_quantity', 0) for p in allocated_products)
             leftover = deal_size_cases - allocated_cases
 
             # Sort by remainder in descending order for leftover distribution
@@ -419,7 +419,7 @@ class MultiProductBuyingCalculator:
             # Distribute leftover cases
             for i in range(int(min(leftover, len(remainder_info)))):
                 idx = remainder_info[i]['index']
-                allocated_products[idx]['bulkCases'] += 1
+                allocated_products[idx]['bulk_quantity'] += 1
 
             return allocated_products
 
@@ -484,19 +484,19 @@ class MultiProductBuyingCalculator:
                     products_with_roi.append(product_with_roi)
 
                     # Track lowest ROI (only for products with bulk cases)
-                    if roi < lowest_roi and product.get('bulkCases', 0) > 0:
+                    if roi < lowest_roi and product.get('bulk_quantity', 0) > 0:
                         lowest_roi = roi
                         lowest_roi_product = product
 
                     # Track highest ROI (only for products with room for more)
-                    annual_cases = product.get('annualCases', 0)
-                    if roi > highest_roi and product.get('bulkCases', 0) < annual_cases:
+                    annual_cases = product.get('annual_cases', 0)
+                    if roi > highest_roi and product.get('bulk_quantity', 0) < annual_cases:
                         highest_roi = roi
                         highest_roi_product = product
 
                 # Try a swap if we found candidates
                 if lowest_roi_product and highest_roi_product:
-                    self.logger.info(f"Attempting swap from {lowest_roi_product.get('name')} (ROI: {lowest_roi:.4f}) to {highest_roi_product.get('name')} (ROI: {highest_roi:.4f})")
+                    self.logger.info(f"Attempting swap from {lowest_roi_product.get('product_name')} (ROI: {lowest_roi:.4f}) to {highest_roi_product.get('product_name')} (ROI: {highest_roi:.4f})")
 
                     # Create test copies
                     test_products = [p.copy() for p in current_products]
@@ -508,8 +508,8 @@ class MultiProductBuyingCalculator:
                                    if p.get('id') == highest_roi_product.get('id'))
 
                     # Perform the swap
-                    test_products[low_index]['bulkCases'] -= 1
-                    test_products[high_index]['bulkCases'] += 1
+                    test_products[low_index]['bulk_quantity'] -= 1
+                    test_products[high_index]['bulk_quantity'] += 1
 
                     # Calculate new portfolio ROI (we no longer check minimum days stock here)
                     new_portfolio_roi = self.calculate_portfolio_roi(test_products, params)
@@ -527,8 +527,8 @@ class MultiProductBuyingCalculator:
                             'iteration': iteration_count,
                             'totalROI': float(portfolio_roi['roi']),
                             'swapped': {
-                                'from': lowest_roi_product.get('name', ''),
-                                'to': highest_roi_product.get('name', '')
+                                'from': lowest_roi_product.get('product_name', ''),
+                                'to': highest_roi_product.get('product_name', '')
                             },
                             'products': [p.copy() for p in current_products]
                         })
@@ -598,14 +598,14 @@ class MultiProductBuyingCalculator:
                 delta_investment = result.get('deltaInvestment', 0)
                 savings = result.get('savings', 0)
                 days_at_risk = result.get('debug', {}).get('daysAtRisk', 0)
-                bulk_cases = product.get('bulkCases', 0)
+                bulk_cases = product.get('bulk_quantity', 0)
 
                 total_delta_investment += delta_investment
                 total_savings += savings
 
                 # Collect data for portfolio deal cycles calculation (raw turnover)
-                annual_cases = product.get('annualCases', 0)
-                on_hand_cases = product.get('onHandCases', 0)
+                annual_cases = product.get('annual_cases', 0)
+                on_hand_cases = product.get('on_hand', 0)
 
                 total_annual_cases += annual_cases
                 total_avg_inventory += (on_hand_cases + bulk_cases) / 2
@@ -662,9 +662,9 @@ class MultiProductBuyingCalculator:
             params.setdefault('iterations', 'auto')
             params.setdefault('smallDealMinimum', 30)
 
-            # Perform initial allocation if bulkCases not already set
+            # Perform initial allocation if bulk_quantity not already set
             for product in products:
-                if 'bulkCases' not in product:
+                if 'bulk_quantity' not in product:
                     products = self.allocate_based_on_need(products, params['dealSizeCases'], params['minDaysStock'])
                     break
 

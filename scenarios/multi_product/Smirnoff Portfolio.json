@@ -9,48 +9,48 @@
   "products": [
     {
       "id": "product-0",
-      "name": "Smirnoff Vodka Original",
-      "priceSmall": 19.99,
-      "priceBulk": 15.99,
-      "onHandCases": 15,
-      "annualCases": 180,
-      "bottlesPerCase": 12
+      "product_name": "Smirnoff Vodka Original",
+      "current_price": 19.99,
+      "bulk_price": 15.99,
+      "on_hand": 15,
+      "annual_cases": 180,
+      "bottles_per_case": 12
     },
     {
       "id": "product-1",
-      "name": "Smirnoff Raspberry",
-      "priceSmall": 21.99,
-      "priceBulk": 17.99,
-      "onHandCases": 8,
-      "annualCases": 60,
-      "bottlesPerCase": 12
+      "product_name": "Smirnoff Raspberry",
+      "current_price": 21.99,
+      "bulk_price": 17.99,
+      "on_hand": 8,
+      "annual_cases": 60,
+      "bottles_per_case": 12
     },
     {
       "id": "product-2",
-      "name": "Smirnoff Citrus",
-      "priceSmall": 21.99,
-      "priceBulk": 17.99,
-      "onHandCases": 10,
-      "annualCases": 72,
-      "bottlesPerCase": 12
+      "product_name": "Smirnoff Citrus",
+      "current_price": 21.99,
+      "bulk_price": 17.99,
+      "on_hand": 10,
+      "annual_cases": 72,
+      "bottles_per_case": 12
     },
     {
       "id": "product-3",
-      "name": "Smirnoff Vanilla",
-      "priceSmall": 22.99,
-      "priceBulk": 18.99,
-      "onHandCases": 6,
-      "annualCases": 48,
-      "bottlesPerCase": 12
+      "product_name": "Smirnoff Vanilla",
+      "current_price": 22.99,
+      "bulk_price": 18.99,
+      "on_hand": 6,
+      "annual_cases": 48,
+      "bottles_per_case": 12
     },
     {
       "id": "product-4",
-      "name": "Smirnoff Ice",
-      "priceSmall": 16.99,
-      "priceBulk": 13.99,
-      "onHandCases": 12,
-      "annualCases": 96,
-      "bottlesPerCase": 24
+      "product_name": "Smirnoff Ice",
+      "current_price": 16.99,
+      "bulk_price": 13.99,
+      "on_hand": 12,
+      "annual_cases": 96,
+      "bottles_per_case": 24
     }
   ]
 }

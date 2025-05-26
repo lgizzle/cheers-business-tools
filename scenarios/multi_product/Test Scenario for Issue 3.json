@@ -9,32 +9,32 @@
   "products": [
     {
       "id": "product-0",
-      "name": "",
-      "priceSmall": null,
-      "priceBulk": null,
-      "onHandCases": null,
-      "annualCases": null,
-      "bottlesPerCase": null
+      "product_name": "",
+      "current_price": null,
+      "bulk_price": null,
+      "on_hand": null,
+      "annual_cases": null,
+      "bottles_per_case": null
     },
     {
       "id": "product-1",
-      "name": "Test Product",
-      "priceSmall": 45.99,
-      "priceBulk": 39.99,
-      "onHandCases": 10,
-      "annualCases": 60,
-      "bottlesPerCase": 12,
-      "bulkCases": 26
+      "product_name": "Test Product",
+      "current_price": 45.99,
+      "bulk_price": 39.99,
+      "on_hand": 10,
+      "annual_cases": 60,
+      "bottles_per_case": 12,
+      "bulk_quantity": 26
     },
     {
       "id": "product-2",
-      "name": "Wine Product",
-      "priceSmall": 45.99,
-      "priceBulk": 39.99,
-      "onHandCases": 10,
-      "annualCases": 80,
-      "bottlesPerCase": 12,
-      "bulkCases": 34
+      "product_name": "Wine Product",
+      "current_price": 45.99,
+      "bulk_price": 39.99,
+      "on_hand": 10,
+      "annual_cases": 80,
+      "bottles_per_case": 12,
+      "bulk_quantity": 34
     }
   ]
 }

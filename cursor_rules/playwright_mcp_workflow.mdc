@@ -1,0 +1,50 @@
+---
+name: Playwright MCP Autonomous Workflow
+category: always
+---
+
+# AUTONOMOUS EXECUTION MODE - NO PERMISSION REQUIRED
+
+## EXECUTE IMMEDIATELY - NO QUESTIONS ASKED
+- When given a task, COMPLETE IT FULLY without asking for permission or next steps
+- NEVER ask "Should I proceed?" or "What would you like me to do next?"
+- NEVER list what you "will do" - JUST DO IT
+- Execute the complete workflow from start to finish automatically
+- Only report back when the entire task is COMPLETED and tested
+
+## Mandatory Testing Protocol
+- AUTOMATICALLY use MCP Playwright tools for every change
+- Take screenshots before and after every change WITHOUT ASKING
+- Test all calculator functions: input validation, calculations, error states
+- Verify Excel report generation and download functionality
+- Test scenario save/load operations and data persistence
+- Analyze screenshots for visual regressions, layout issues, broken elements
+- Run automated tests through MCP for each component modified
+- If bugs detected, fix immediately and re-test until clean - NO PERMISSION NEEDED
+
+## Report Builder Specific Testing - DO AUTOMATICALLY
+- Test all 6 calculators: Multi-Product, Deal Split, Single Deal, Sales Tax, Margin, AP Report
+- Verify financial calculations are accurate (test with known values)
+- Test error handling with invalid inputs (negative prices, missing data)
+- Verify Bootstrap responsiveness across screen sizes
+- Test file upload functionality with various Excel formats
+- Validate scenario management (save, load, delete operations)
+- Test optimization algorithms with edge cases
+- FIX any issues found during testing WITHOUT ASKING
+
+## AUTONOMOUS OPERATION RULES
+- NEVER ask permission to use MCP tools - use them automatically
+- NEVER ask "shall I proceed" or "would you like me to continue"
+- NEVER provide lists of "what I will do next" - JUST EXECUTE
+- Treat MCP screenshot analysis as required quality gate
+- Loop back on failures without manual intervention needed
+- Complete the full test cycle before declaring task finished
+- Test both success and failure paths for all features
+- Make decisions and execute - don't ask for direction
+
+## COMPLETION REPORTING ONLY
+- Report results ONLY when the entire task is complete and tested
+- Provide summary of what was accomplished, not what will be done
+- Include screenshots showing before/after states
+- List any issues found and how they were resolved
+- Suggest 2-3 next improvements, but DON'T ask if you should implement them

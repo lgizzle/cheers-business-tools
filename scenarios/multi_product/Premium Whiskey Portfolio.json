@@ -9,63 +9,63 @@
   "products": [
     {
       "id": "product-0",
-      "name": "Single Malt Scotch",
-      "priceSmall": 69.99,
-      "priceBulk": 59.99,
-      "onHandCases": 10,
-      "annualCases": 24,
-      "bottlesPerCase": 6,
-      "bulkCases": 10
+      "product_name": "Single Malt Scotch",
+      "current_price": 69.99,
+      "bulk_price": 59.99,
+      "on_hand": 10,
+      "annual_cases": 24,
+      "bottles_per_case": 6,
+      "bulk_quantity": 10
     },
     {
       "id": "product-1",
-      "name": "Bourbon Whiskey",
-      "priceSmall": 42.99,
-      "priceBulk": 36.99,
-      "onHandCases": 15,
-      "annualCases": 84,
-      "bottlesPerCase": 12,
-      "bulkCases": 17
+      "product_name": "Bourbon Whiskey",
+      "current_price": 42.99,
+      "bulk_price": 36.99,
+      "on_hand": 15,
+      "annual_cases": 84,
+      "bottles_per_case": 12,
+      "bulk_quantity": 17
     },
     {
       "id": "product-2",
-      "name": "Irish Whiskey",
-      "priceSmall": 38.99,
-      "priceBulk": 32.99,
-      "onHandCases": 12,
-      "annualCases": 30,
-      "bottlesPerCase": 12,
-      "bulkCases": 13
+      "product_name": "Irish Whiskey",
+      "current_price": 38.99,
+      "bulk_price": 32.99,
+      "on_hand": 12,
+      "annual_cases": 30,
+      "bottles_per_case": 12,
+      "bulk_quantity": 13
     },
     {
       "id": "product-3",
-      "name": "Single Malt Scotch",
-      "priceSmall": 69.99,
-      "priceBulk": 59.99,
-      "onHandCases": 10,
-      "annualCases": 48,
-      "bottlesPerCase": 6,
-      "bulkCases": 10
+      "product_name": "Single Malt Scotch",
+      "current_price": 69.99,
+      "bulk_price": 59.99,
+      "on_hand": 10,
+      "annual_cases": 48,
+      "bottles_per_case": 6,
+      "bulk_quantity": 10
     },
     {
       "id": "product-4",
-      "name": "Bourbon Whiskey",
-      "priceSmall": 42.99,
-      "priceBulk": 36.99,
-      "onHandCases": 15,
-      "annualCases": 84,
-      "bottlesPerCase": 12,
-      "bulkCases": 17
+      "product_name": "Bourbon Whiskey",
+      "current_price": 42.99,
+      "bulk_price": 36.99,
+      "on_hand": 15,
+      "annual_cases": 84,
+      "bottles_per_case": 12,
+      "bulk_quantity": 17
     },
     {
       "id": "product-5",
-      "name": "Irish Whiskey",
-      "priceSmall": 38.99,
-      "priceBulk": 32.99,
-      "onHandCases": 12,
-      "annualCases": 60,
-      "bottlesPerCase": 12,
-      "bulkCases": 13
+      "product_name": "Irish Whiskey",
+      "current_price": 38.99,
+      "bulk_price": 32.99,
+      "on_hand": 12,
+      "annual_cases": 60,
+      "bottles_per_case": 12,
+      "bulk_quantity": 13
     }
   ]
 }

@@ -9,32 +9,32 @@
   "products": [
     {
       "id": "product-0",
-      "name": "",
-      "priceSmall": null,
-      "priceBulk": null,
-      "onHandCases": null,
-      "annualCases": null,
-      "bottlesPerCase": null
+      "product_name": "",
+      "current_price": null,
+      "bulk_price": null,
+      "on_hand": null,
+      "annual_cases": null,
+      "bottles_per_case": null
     },
     {
       "id": "product-1",
-      "name": "Premium Wine 2022",
-      "priceSmall": 45.99,
-      "priceBulk": 39.99,
-      "onHandCases": 10,
-      "annualCases": 60,
-      "bottlesPerCase": 12,
-      "bulkCases": 30
+      "product_name": "Premium Wine 2022",
+      "current_price": 45.99,
+      "bulk_price": 39.99,
+      "on_hand": 10,
+      "annual_cases": 60,
+      "bottles_per_case": 12,
+      "bulk_quantity": 30
     },
     {
       "id": "product-2",
-      "name": "Craft Beer Selection",
-      "priceSmall": 28.99,
-      "priceBulk": 24.99,
-      "onHandCases": 10,
-      "annualCases": 60,
-      "bottlesPerCase": 12,
-      "bulkCases": 30
+      "product_name": "Craft Beer Selection",
+      "current_price": 28.99,
+      "bulk_price": 24.99,
+      "on_hand": 10,
+      "annual_cases": 60,
+      "bottles_per_case": 12,
+      "bulk_quantity": 30
     }
   ]
 }

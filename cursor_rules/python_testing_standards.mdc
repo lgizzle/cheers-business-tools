@@ -1,0 +1,57 @@
+---
+name: Python Testing Standards
+category: auto_attached
+globs:
+  - "**/*.py"
+---
+
+# AUTONOMOUS PYTHON DEVELOPMENT - NO ASKING
+
+## EXECUTE IMPROVEMENTS AUTOMATICALLY
+- When working on Python files, AUTOMATICALLY implement code quality improvements
+- NEVER ask "Should I add type hints?" - JUST ADD THEM
+- NEVER ask "Should I add validation?" - JUST ADD IT
+- AUTOMATICALLY fix code issues when encountered
+- Only report what was COMPLETED, not what could be done
+
+## Code Quality Standards - IMPLEMENT IMMEDIATELY
+- Write descriptive variable names, avoid single letters except iterators
+- AUTOMATICALLY add comprehensive type hints: Dict[str, Any], List[Product], Optional[float]
+- AUTOMATICALLY handle exceptions with custom exception classes (ValidationError, CalculationError)
+- Follow PEP 8 but prioritize readability
+- AUTOMATICALLY add docstrings to all public methods explaining parameters and return values
+- AUTOMATICALLY move magic numbers to constants (move to config.py)
+
+## Input Validation Requirements - IMPLEMENT WITHOUT ASKING
+- AUTOMATICALLY validate ALL inputs before processing: required fields, numeric ranges, business logic
+- AUTOMATICALLY return structured error responses: {"success": False, "error": "user-friendly message"}
+- AUTOMATICALLY check business constraints: bulk_price < regular_price, quantities >= 0
+- AUTOMATICALLY validate file uploads: check file size, format, and Excel structure
+
+## Testing Requirements - ADD TESTS AUTOMATICALLY
+- AUTOMATICALLY add unit tests for every calculation function with multiple scenarios
+- AUTOMATICALLY test edge cases: zero values, very large numbers, empty inputs
+- AUTOMATICALLY test error conditions: invalid inputs, missing data, calculation failures
+- Use pytest fixtures for setup/teardown
+- Mock external dependencies (file system, Excel operations)
+- Validate both happy path and error conditions
+- Aim for >80% code coverage on core calculation logic
+- ADD tests when working on functions, don't ask permission
+
+## Financial Calculation Standards - IMPLEMENT AUTOMATICALLY
+- AUTOMATICALLY use Decimal for precise monetary calculations where needed
+- AUTOMATICALLY validate calculation results with known test cases
+- AUTOMATICALLY handle rounding consistently across all calculations
+- AUTOMATICALLY log calculation inputs and outputs for audit trails
+- AUTOMATICALLY test ROI algorithms with mathematical verification
+
+## Configuration Management - IMPLEMENT WHEN ENCOUNTERED
+- AUTOMATICALLY move hardcoded values to config.py (payment terms, minimums, limits)
+- AUTOMATICALLY use environment variables for deployment-specific settings
+- AUTOMATICALLY create different configs for development/testing/production
+
+## MCP Integration - EXECUTE AUTOMATICALLY
+- AUTOMATICALLY use MCP tools to verify web functionality after Python changes
+- AUTOMATICALLY screenshot test any UI components modified by Python backend
+- AUTOMATICALLY validate API responses through browser testing via MCP
+- AUTOMATICALLY test Excel report generation by downloading and validating files

@@ -354,6 +354,69 @@
         color: #856404;
         font-weight: bold;
     }
+
+    #productsInputTable {
+        table-layout: fixed;
+        width: 100%;
+    }
+    #productsInputTable th, #productsInputTable td {
+        font-size: 0.92rem;
+        padding: 0.5rem 0.7rem;
+        text-align: center;
+        vertical-align: middle;
+    }
+    #productsInputTable th.product-name, #productsInputTable td.product-name {
+        width: 55%;
+        text-align: left;
+        white-space: normal;
+        word-break: break-word;
+    }
+    #productsInputTable th.price, #productsInputTable td.price,
+    #productsInputTable th.cases, #productsInputTable td.cases,
+    #productsInputTable th.bulk-cases, #productsInputTable td.bulk-cases {
+        width: 75px;
+        min-width: 75px;
+        max-width: 75px;
+        text-align: right;
+        font-size: 0.92rem;
+        vertical-align: middle;
+    }
+    #productsInputTable th.action, #productsInputTable td.action {
+        width: 36px;
+        min-width: 36px;
+        max-width: 36px;
+        text-align: center;
+        vertical-align: middle;
+    }
+    #productsInputTable .product-name input {
+        width: 100%;
+        text-align: left;
+        white-space: normal;
+        overflow-wrap: break-word;
+        font-size: 0.92rem;
+        min-width: 0;
+        max-width: none;
+        vertical-align: middle;
+    }
+    #productsInputTable .action button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+        background: #dc3545;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        padding: 4px 10px;
+        font-size: 1.1em;
+        cursor: pointer;
+        transition: background 0.2s;
+        height: 28px;
+        width: 28px;
+    }
+    #productsInputTable .action button:hover {
+        background: #b52a37;
+    }
 </style>
 {% endblock %}
 
@@ -498,32 +561,26 @@
                                         <table class="table table-bordered table-hover" id="productsInputTable">
                                             <thead class="thead-light">
                                                 <tr>
-                                                    <th>Product Name</th>
-                                                    <th>Small Price</th>
-                                                    <th>Bulk Price</th>
-                                                    <th class="detail-column">Cases On Hand</th>
-                                                    <th class="detail-column">Annual Cases</th>
-                                                    <th class="detail-column">Bottles/Case</th>
-                                                    <th>Bulk Cases
-                                                        <i class="fas fa-info-circle tooltip-icon" data-toggle="tooltip"
-                                                           title="Target bulk purchase quantity - can be manually set or auto-calculated"></i>
-                                                        <div id="bulkCasesHeaderIndicator" class="bulk-cases-header-indicator" style="display: none;">
-                                                            <small id="bulkCasesHeaderText" class="text-muted">(0/60)</small>
-                                                        </div>
-                                                    </th>
-                                                    <th>Action</th>
+                                                    <th class="product-name">Product Name</th>
+                                                    <th class="price">Small<br>Price</th>
+                                                    <th class="price">Bulk<br>Price</th>
+                                                    <th class="cases detail-column">On<br>Hand</th>
+                                                    <th class="cases detail-column">Annual<br>Cases</th>
+                                                    <th class="cases detail-column">Bottles<br>per Case</th>
+                                                    <th class="bulk-cases">Bulk<br>Quantity</th>
+                                                    <th class="action">Action</th>
                                                 </tr>
                                             </thead>
                                             <tbody id="productsTableBody">
                                                 <tr id="productRowTemplate" style="display: none;">
-                                                    <td><input type="text" class="form-control product-name" placeholder="Product Name" required></td>
-                                                    <td><input type="number" class="form-control product-small-price" min="0.01" step="0.01" placeholder="$" required></td>
-                                                    <td><input type="number" class="form-control product-bulk-price" min="0.01" step="0.01" placeholder="$" required></td>
-                                                    <td class="detail-column"><input type="number" class="form-control product-cases-on-hand" min="0" placeholder="Cases" required></td>
-                                                    <td class="detail-column"><input type="number" class="form-control product-annual-cases" min="1" placeholder="Cases/Year" required></td>
-                                                    <td class="detail-column"><input type="number" class="form-control product-bottles-per-case" min="1" placeholder="Bottles" required></td>
-                                                    <td><input type="number" class="form-control product-bulk-cases" min="0" placeholder="Cases"></td>
-                                                    <td><button class="btn btn-sm btn-danger remove-product"><i class="fas fa-trash"></i></button></td>
+                                                    <td class="product-name"><input type="text" class="form-control product-name" placeholder="Product Name" required></td>
+                                                    <td class="price"><input type="number" class="form-control product-small-price numeric-input" min="0.01" step="0.01" placeholder="$" required></td>
+                                                    <td class="price"><input type="number" class="form-control product-bulk-price numeric-input" min="0.01" step="0.01" placeholder="$" required></td>
+                                                    <td class="cases detail-column"><input type="number" class="form-control product-cases-on-hand numeric-input" min="0" placeholder="Cases" required></td>
+                                                    <td class="cases detail-column"><input type="number" class="form-control product-annual-cases numeric-input" min="1" placeholder="Cases/Year" required></td>
+                                                    <td class="cases detail-column"><input type="number" class="form-control product-bottles-per-case numeric-input" min="1" placeholder="Bottles" required></td>
+                                                    <td class="bulk-cases"><input type="number" class="form-control product-bulk-cases numeric-input" min="0" placeholder="auto"></td>
+                                                    <td class="action"><button class="btn btn-sm btn-danger remove-product"><i class="fas fa-trash"></i></button></td>
                                                 </tr>
                                             </tbody>
                                         </table>

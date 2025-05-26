@@ -13,6 +13,7 @@ import json
 import shutil
 from pathlib import Path
 import traceback
+from validator import validate_product, validate_calculator_params, ValidationError
 
 app = Flask(__name__, static_url_path='/static')
 app.config['SECRET_KEY'] = 'your-secret-key'
@@ -96,20 +97,28 @@ def calculate_deal():
         data = request.json
         varieties_data = data.get('varieties', [])
         desired_total = int(data.get('desired_total', 0))
-
-        # Filter out empty rows
-        filtered_data = [
-            {
-                "variety": item.get('variety', ''),
-                "annual_sales": int(item.get('annual_sales', 0)),
-                "inventory_on_hand": int(item.get('inventory_on_hand', 0))
-            }
-            for item in varieties_data
-            if item.get('variety') and item.get('annual_sales')
-        ]
-
+        # Validate input
+        if not varieties_data:
+            return jsonify({"success": False, "error": "No varieties provided"}), 400
+        for idx, item in enumerate(varieties_data):
+            if 'variety' not in item or not item['variety']:
+                return jsonify({"success": False, "error": f"Missing variety name in row {idx+1}"}), 400
+            try:
+                annual_sales = int(item.get('annual_sales', 0))
+                if annual_sales < 0:
+                    raise ValueError
+            except Exception:
+                return jsonify({"success": False, "error": f"Annual sales must be a non-negative integer in row {idx+1}"}), 400
+            try:
+                inventory_on_hand = int(item.get('inventory_on_hand', 0))
+                if inventory_on_hand < 0:
+                    raise ValueError
+            except Exception:
+                return jsonify({"success": False, "error": f"Inventory on hand must be a non-negative integer in row {idx+1}"}), 400
+        if desired_total <= 0:
+            return jsonify({"success": False, "error": "Desired total must be greater than 0"}), 400
         # Calculate the split
-        results_df = deal_calculator.calculate_split(filtered_data, desired_total)
+        results_df = deal_calculator.calculate_split(varieties_data, desired_total)
 
         # Convert to list of dictionaries for JSON response
         results = results_df.to_dict('records')
@@ -230,8 +239,7 @@ def single_deal_calculator_page():
 def calculate_single_deal():
     try:
         data = request.json
-
-        # Validate required parameters
+        # Validate required parameters and types
         required_params = [
             'smaller_deal_qty',
             'bulk_deal_qty',
@@ -241,18 +249,29 @@ def calculate_single_deal():
             'vendor_terms',
             'bottles_per_case'
         ]
-
         for param in required_params:
-            if param not in data or not data[param]:
-                return jsonify({"success": False, "error": f"Missing required parameter: {param}"})
-
+            if param not in data:
+                return jsonify({"success": False, "error": f"Missing required parameter: {param}"}), 400
+        # Numeric and business logic validation
+        try:
+            smaller_qty = int(data['smaller_deal_qty'])
+            bulk_qty = int(data['bulk_deal_qty'])
+            price_small = float(data['price_per_bottle_smaller'])
+            price_bulk = float(data['price_per_bottle_bulk'])
+            annual_sales = int(data['annual_sales_volume'])
+            vendor_terms = int(data['vendor_terms'])
+            bottles_per_case = int(data['bottles_per_case'])
+        except Exception:
+            return jsonify({"success": False, "error": "All quantities and prices must be valid numbers"}), 400
+        if smaller_qty < 0 or bulk_qty < 0 or annual_sales < 0 or vendor_terms < 0 or bottles_per_case <= 0:
+            return jsonify({"success": False, "error": "Quantities and terms must be non-negative, bottles per case > 0"}), 400
+        if price_small <= 0 or price_bulk <= 0:
+            return jsonify({"success": False, "error": "Prices must be greater than $0"}), 400
+        if price_bulk >= price_small:
+            return jsonify({"success": False, "error": "Bulk price must be less than small price"}), 400
         # Calculate results
         results = single_deal_calculator.calculate_deal(data)
-
-        return jsonify({
-            "success": True,
-            "results": results
-        })
+        return jsonify({"success": True, "results": results})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)})
 
@@ -302,10 +321,23 @@ def calculate_sales_tax():
     try:
         data = request.json
         tax_data = data.get('tax_data', [])
-
         if not tax_data:
-            return jsonify({"success": False, "error": "No tax data provided"})
-
+            return jsonify({"success": False, "error": "No tax data provided"}), 400
+        for idx, row in enumerate(tax_data):
+            if 'price' not in row or 'quantity' not in row or 'tax_rate' not in row:
+                return jsonify({"success": False, "error": f"Missing required fields in row {idx+1}"}), 400
+            try:
+                price = float(row['price'])
+                quantity = int(row['quantity'])
+                tax_rate = float(row['tax_rate'])
+            except Exception:
+                return jsonify({"success": False, "error": f"Invalid data types in row {idx+1}"}), 400
+            if price <= 0:
+                return jsonify({"success": False, "error": f"Price must be greater than $0 in row {idx+1}"}), 400
+            if quantity < 0:
+                return jsonify({"success": False, "error": f"Quantity must be non-negative in row {idx+1}"}), 400
+            if not (0 <= tax_rate <= 100):
+                return jsonify({"success": False, "error": f"Tax rate must be between 0 and 100 in row {idx+1}"}), 400
         # Calculate results
         results = sales_tax_calculator.calculate_sales_from_tax(tax_data)
 
@@ -424,23 +456,23 @@ def calculate_multi_product_deal():
     """Calculate results for the Multi-Product Buying Calculator."""
     try:
         data = request.json
-
+        # Validate input structure
+        if not data or 'products' not in data or 'parameters' not in data:
+            return jsonify({"success": False, "error": "Missing required fields: products, parameters"}), 400
+        try:
+            # Validate each product
+            validated_products = [validate_product(p) for p in data['products']]
+            # Validate parameters
+            validated_params = validate_calculator_params(data['parameters'])
+        except ValidationError as ve:
+            return jsonify({"success": False, "error": str(ve)}), 400
         # Calculate results using the shared instance
         results = multi_product_calculator_instance.calculate(data)
-
-        # Return the results
-        return jsonify({
-            "success": True,
-            "results": results
-        })
-
+        return jsonify({"success": True, "results": results})
     except Exception as e:
         print(f"Error calculating multi-product deal: {str(e)}")
         print(traceback.format_exc())
-        return jsonify({
-            "success": False,
-            "error": str(e)
-        })
+        return jsonify({"success": False, "error": str(e)})
 
 @app.route('/api/optimize-multi-product-deal', methods=['POST'])
 def optimize_multi_product_deal():

@@ -7,6 +7,12 @@ class ValidationError(Exception):
     """Custom exception for validation errors."""
     pass
 
+def format_currency(val):
+    try:
+        return f"${float(val):.2f}"
+    except Exception:
+        return str(val)
+
 def validate_numeric(value, name, min_value=None, allow_zero=True, integer_only=False):
     """
     Validate that a value is numeric and within constraints.
@@ -30,7 +36,10 @@ def validate_numeric(value, name, min_value=None, allow_zero=True, integer_only=
 
     # Check if value is negative
     if numeric_value < 0:
-        raise ValidationError(f"{name} cannot be negative, got {value}")
+        if name.lower().endswith('price'):
+            raise ValidationError(f"{name} cannot be negative, got {format_currency(value)}")
+        else:
+            raise ValidationError(f"{name} cannot be negative, got {value}")
 
     # Check if zero is allowed
     if not allow_zero and numeric_value == 0:
@@ -38,7 +47,10 @@ def validate_numeric(value, name, min_value=None, allow_zero=True, integer_only=
 
     # Check minimum value
     if min_value is not None and numeric_value < min_value:
-        raise ValidationError(f"{name} must be at least {min_value}, got {value}")
+        if name.lower().endswith('price'):
+            raise ValidationError(f"{name} must be at least {format_currency(min_value)}, got {format_currency(value)}")
+        else:
+            raise ValidationError(f"{name} must be at least {min_value}, got {value}")
 
     return numeric_value
 
@@ -55,7 +67,7 @@ def validate_product(product):
     # Check required fields
     required_fields = [
         "product_name", "current_price", "bulk_price",
-        "cases_on_hand", "cases_per_year", "bottles_per_case"
+        "on_hand", "annual_cases", "bottles_per_case"
     ]
 
     for field in required_fields:
@@ -71,8 +83,8 @@ def validate_product(product):
         "product_name": product["product_name"],
         "current_price": validate_numeric(product["current_price"], "Current price", min_value=0),
         "bulk_price": validate_numeric(product["bulk_price"], "Bulk price", min_value=0),
-        "cases_on_hand": validate_numeric(product["cases_on_hand"], "Cases on hand", min_value=0, integer_only=False),
-        "cases_per_year": validate_numeric(product["cases_per_year"], "Cases per year", min_value=0),
+        "on_hand": validate_numeric(product["on_hand"], "Cases on hand", min_value=0, integer_only=False),
+        "annual_cases": validate_numeric(product["annual_cases"], "Cases per year", min_value=0),
         "bottles_per_case": validate_numeric(product["bottles_per_case"], "Bottles per case", min_value=1, allow_zero=False, integer_only=True)
     }
 
@@ -84,7 +96,7 @@ def validate_product(product):
 
     # Additional validation rules
     if validated["bulk_price"] > validated["current_price"]:
-        raise ValidationError(f"Bulk price (${validated['bulk_price']}) cannot be higher than current price (${validated['current_price']})")
+        raise ValidationError(f"Bulk price ({format_currency(validated['bulk_price'])}) cannot be higher than current price ({format_currency(validated['current_price'])})")
 
     return validated
 
