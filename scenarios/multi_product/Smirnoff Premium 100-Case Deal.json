@@ -2,9 +2,9 @@
   "name": "Smirnoff Premium 100-Case Deal",
   "parameters": {
     "smallDealCases": 25,
-    "dealSizeCases": 100,
+    "dealSizeCases": 500,
     "minDaysStock": 21,
-    "paymentTermsDays": 15,
+    "paymentTermsDays": 30,
     "iterations": "10"
   },
   "products": [
@@ -14,9 +14,9 @@
       "current_price": 1.99,
       "bulk_price": 1.79,
       "on_hand": 3,
-      "annual_cases": 240,
+      "annual_cases": 24,
       "bottles_per_case": 120,
-      "bulk_quantity": 14
+      "bulk_quantity": 53
     },
     {
       "id": "product-1",
@@ -24,9 +24,9 @@
       "current_price": 3.99,
       "bulk_price": 3.49,
       "on_hand": 2,
-      "annual_cases": 180,
+      "annual_cases": 18,
       "bottles_per_case": 12,
-      "bulk_quantity": 10
+      "bulk_quantity": 57
     },
     {
       "id": "product-2",
@@ -34,9 +34,9 @@
       "current_price": 8.99,
       "bulk_price": 7.99,
       "on_hand": 1,
-      "annual_cases": 120,
+      "annual_cases": 12,
       "bottles_per_case": 12,
-      "bulk_quantity": 7
+      "bulk_quantity": 34
     },
     {
       "id": "product-3",
@@ -44,9 +44,9 @@
       "current_price": 15.99,
       "bulk_price": 13.99,
       "on_hand": 5,
-      "annual_cases": 360,
+      "annual_cases": 36,
       "bottles_per_case": 12,
-      "bulk_quantity": 21
+      "bulk_quantity": 112
     },
     {
       "id": "product-4",
@@ -54,9 +54,9 @@
       "current_price": 24.99,
       "bulk_price": 21.99,
       "on_hand": 4,
-      "annual_cases": 240,
+      "annual_cases": 24,
       "bottles_per_case": 12,
-      "bulk_quantity": 14
+      "bulk_quantity": 68
     },
     {
       "id": "product-5",
@@ -64,9 +64,9 @@
       "current_price": 16.99,
       "bulk_price": 14.99,
       "on_hand": 1,
-      "annual_cases": 96,
+      "annual_cases": 9,
       "bottles_per_case": 12,
-      "bulk_quantity": 5
+      "bulk_quantity": 27
     },
     {
       "id": "product-6",
@@ -74,9 +74,9 @@
       "current_price": 16.99,
       "bulk_price": 14.99,
       "on_hand": 2,
-      "annual_cases": 144,
+      "annual_cases": 14,
       "bottles_per_case": 12,
-      "bulk_quantity": 8
+      "bulk_quantity": 41
     },
     {
       "id": "product-7",
@@ -84,9 +84,9 @@
       "current_price": 16.99,
       "bulk_price": 14.99,
       "on_hand": 1,
-      "annual_cases": 72,
+      "annual_cases": 7,
       "bottles_per_case": 12,
-      "bulk_quantity": 4
+      "bulk_quantity": 21
     },
     {
       "id": "product-8",
@@ -94,9 +94,9 @@
       "current_price": 16.99,
       "bulk_price": 14.99,
       "on_hand": 2,
-      "annual_cases": 120,
+      "annual_cases": 12,
       "bottles_per_case": 12,
-      "bulk_quantity": 7
+      "bulk_quantity": 34
     },
     {
       "id": "product-9",
@@ -104,9 +104,9 @@
       "current_price": 16.99,
       "bulk_price": 14.99,
       "on_hand": 3,
-      "annual_cases": 180,
+      "annual_cases": 18,
       "bottles_per_case": 12,
-      "bulk_quantity": 10
+      "bulk_quantity": 53
     }
   ]
 }
