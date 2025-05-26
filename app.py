@@ -14,6 +14,7 @@ import shutil
 from pathlib import Path
 import traceback
 from validator import validate_product, validate_calculator_params, ValidationError
+import logging
 
 app = Flask(__name__, static_url_path='/static')
 app.config['SECRET_KEY'] = 'your-secret-key'
@@ -34,6 +35,13 @@ margin_calculator = MarginCalculator()
 
 # Initialize the multi-product calculator instance
 multi_product_calculator_instance = MultiProductBuyingCalculator()
+
+# Set up debug logging for scenario API
+logging.basicConfig(
+    filename='scenario_debug.log',
+    level=logging.DEBUG,
+    format='%(asctime)s %(levelname)s %(message)s'
+)
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
@@ -166,12 +174,16 @@ def save_scenario():
 @app.route('/api/get-scenario/<n>')
 def get_scenario(n):
     try:
+        logging.debug(f"Scenario requested: '{n}'")
         scenario = deal_calculator.get_scenario(n)
+        logging.debug(f"Scenario lookup result: {scenario}")
         if scenario:
-            return jsonify({"success": True, "scenario": scenario})
+            return jsonify({"success": True, "scenario": {"varieties": scenario}})
         else:
+            logging.debug("Scenario not found!")
             return jsonify({"success": False, "error": "Scenario not found"})
     except Exception as e:
+        logging.debug(f"Exception in get_scenario: {e}")
         return jsonify({"success": False, "error": str(e)})
 
 @app.route('/api/get-all-scenarios')

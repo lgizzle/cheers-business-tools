@@ -26,15 +26,15 @@
 
     /* WIDER Pricing columns - make them clearly visible */
     #productsTable th:nth-child(2), #productsTable td:nth-child(2) {
-        width: 100px;
-        max-width: 100px;
+        width: 80px;
+        max-width: 80px;
         background-color: #f8f9fa;
         font-weight: 600;
     }
 
     #productsTable th:nth-child(3), #productsTable td:nth-child(3) {
-        width: 100px;
-        max-width: 100px;
+        width: 80px;
+        max-width: 80px;
         background-color: #fff3cd;
         border: 1px solid #ffc107;
         font-weight: 700;
@@ -44,7 +44,7 @@
     #productsTable th:nth-child(4), #productsTable td:nth-child(4),
     #productsTable th:nth-child(5), #productsTable td:nth-child(5),
     #productsTable th:nth-child(6), #productsTable td:nth-child(6) {
-        width: 80px;
+        width: 70px;
         max-width: 80px;
     }
 
@@ -416,6 +416,505 @@
     }
     #productsInputTable .action button:hover {
         background: #b52a37;
+    }
+
+    /* --- BEGIN: Improved Product Table CSS (User Provided) --- */
+
+    /* 1. WIDER PRODUCT NAME COLUMN - This is the key fix */
+    #productsInputTable th.product-name,
+    #productsInputTable td.product-name {
+        width: 240px !important; /* Increased from 55% */
+        min-width: 240px !important;
+        max-width: 240px !important;
+    }
+
+    #productsInputTable .product-name input {
+        width: 100%;
+        text-align: left;
+        font-size: 0.9rem;
+        padding: 0.5rem;
+        /* Allow text wrapping in product name inputs */
+        white-space: normal;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        min-height: 38px;
+    }
+
+    /* 2. BETTER COLUMN WIDTHS - Prevent header text wrapping */
+    #productsInputTable th, #productsInputTable td {
+        font-size: 0.9rem;
+        padding: 0.5rem 0.4rem;
+        vertical-align: middle;
+        white-space: nowrap; /* Prevent header text wrapping */
+    }
+
+    /* 3. IMPROVED PRICING COLUMNS */
+    #productsInputTable th.price, #productsInputTable td.price {
+        width: 80px !important;
+        max-width: 80px !important;
+        min-width: 80px !important;
+        text-align: right;
+    }
+
+    /* 4. BETTER INVENTORY COLUMNS */
+    #productsInputTable th.cases, #productsInputTable td.cases,
+    #productsInputTable th.bulk-cases, #productsInputTable td.bulk-cases {
+        width: 60px !important;
+        min-width: 60px !important;
+        max-width: 60px !important;
+        text-align: right;
+    }
+
+    /* 5. IMPROVED VISUAL HIERARCHY FOR PRICING */
+    #productsInputTable .product-small-price {
+        background-color: inherit !important;
+        border: 1px solid #dee2e6 !important;
+        font-weight: 500 !important;
+        box-shadow: none;
+    }
+
+    #productsInputTable .product-bulk-price {
+        background-color: inherit !important;
+        border: 1px solid #dee2e6 !important;
+        font-weight: 600 !important;
+        box-shadow: none;
+    }
+
+    #productsInputTable .product-bulk-cases {
+        background-color: inherit !important;
+        border: 1px solid #dee2e6 !important;
+        font-weight: 600 !important;
+    }
+
+    /* 6. RIGHT-ALIGN ALL NUMERIC INPUTS */
+    #productsInputTable .price input,
+    #productsInputTable .cases input,
+    #productsInputTable .bulk-cases input {
+        text-align: right !important;
+        font-weight: 500;
+        padding: 0.4rem 0.6rem;
+    }
+
+    /* 7. BETTER TABLE CONTAINER */
+    .table-responsive {
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        border: 1px solid #dee2e6;
+    }
+
+    #productsInputTable {
+        margin-bottom: 0;
+        min-width: 1000px; /* Ensure readable minimum width */
+    }
+
+    /* 8. IMPROVED HEADERS */
+    #productsInputTable thead th {
+        background-color: #f1f3f4 !important;
+        color: #212529;
+        font-weight: 600;
+        border-bottom: 2px solid #dee2e6;
+        text-align: center;
+        font-size: 0.85rem;
+        padding: 0.6rem 0.4rem;
+    }
+
+    /* Product name header stays left-aligned */
+    #productsInputTable thead th.product-name {
+        text-align: left !important;
+    }
+
+    /* 9. BETTER ACTION BUTTONS */
+    #productsInputTable .action {
+        width: 50px;
+        min-width: 50px;
+        max-width: 50px;
+        text-align: center;
+    }
+
+    #productsInputTable .action button {
+        background: linear-gradient(135deg, #dc3545, #c82333);
+        border: none;
+        border-radius: 6px;
+        color: white;
+        padding: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 4px rgba(220,53,69,0.25);
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    #productsInputTable .action button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(220,53,69,0.35);
+        background: linear-gradient(135deg, #c82333, #a71e2a);
+    }
+
+    /* 10. COMPACT VIEW IMPROVEMENTS */
+    .table.compact .detail-column {
+        display: none;
+    }
+
+    .table.compact #productsInputTable {
+        min-width: 650px; /* Smaller when compact */
+    }
+
+    .table.compact #productsInputTable th.product-name,
+    .table.compact #productsInputTable td.product-name {
+        width: 280px !important; /* Even more room in compact mode */
+        min-width: 280px !important;
+    }
+
+    /* 11. BULK CASES VALIDATION INDICATOR */
+    .bulk-cases-total {
+        padding: 0.75rem;
+        border-radius: 6px;
+        text-align: center;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        border: 2px solid;
+    }
+
+    .bulk-cases-total.valid {
+        background-color: #d4edda;
+        color: #155724;
+        border-color: #28a745;
+    }
+
+    .bulk-cases-total.invalid {
+        background-color: #f8d7da;
+        color: #721c24;
+        border-color: #dc3545;
+    }
+
+    .bulk-cases-total.warning {
+        background-color: #fff3cd;
+        color: #856404;
+        border-color: #ffc107;
+    }
+
+    /* 12. FORM VALIDATION STYLING */
+    .form-control.is-invalid {
+        border-color: #dc3545 !important;
+        background-color: #fef5f5 !important;
+    }
+
+    .form-control.is-valid {
+        border-color: #28a745 !important;
+        background-color: #f5fef5 !important;
+    }
+
+    /* 13. RESPONSIVE IMPROVEMENTS */
+    @media (max-width: 1200px) {
+        #productsInputTable th.product-name,
+        #productsInputTable td.product-name {
+            width: 200px !important;
+            min-width: 200px !important;
+        }
+
+        #productsInputTable th.price, #productsInputTable td.price,
+        #productsInputTable th.cases, #productsInputTable td.cases {
+            width: 75px;
+            min-width: 75px;
+        }
+    }
+
+    /* 14. IMPROVE OVERALL TABLE SPACING */
+    #productsInputTable tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    #productsInputTable tbody tr {
+        transition: background-color 0.2s ease;
+    }
+
+    /* 15. BETTER FOCUS STATES */
+    #productsInputTable input:focus {
+        border-color: #007bff !important;
+        box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25) !important;
+        background-color: #fff !important;
+    }
+
+    /* --- END: Improved Product Table CSS (User Provided) --- */
+
+    /* --- BEGIN: ADDITIONAL REFINEMENTS (May 2024) --- */
+
+    /* 1. BETTER HEADER GROUPING with spanning headers */
+    .table-header-group {
+        background-color: #e9ecef !important;
+        border: 2px solid #6c757d !important;
+        font-weight: 700 !important;
+        text-align: center !important;
+        color: #495057 !important;
+        font-size: 0.9rem !important;
+    }
+
+    /* 2. REMOVE DROPDOWN VISUAL CLUTTER - Hide dropdown arrows where not needed */
+    #productsInputTable input[type="number"] {
+        -webkit-appearance: none;
+        -moz-appearance: textfield;
+    }
+
+    #productsInputTable input[type="number"]::-webkit-outer-spin-button,
+    #productsInputTable input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    /* 3. IMPROVE ROW SEPARATION */
+    #productsInputTable tbody tr {
+        border-bottom: 1px solid #e3e6ea;
+    }
+
+    #productsInputTable tbody tr:nth-child(even) {
+        background-color: #f8f9fa;
+    }
+
+    #productsInputTable tbody tr:hover {
+        background-color: #e8f4f8 !important;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        transition: all 0.2s ease;
+    }
+
+    /* 4. BETTER COLUMN VISUAL SEPARATION */
+    #productsInputTable th:nth-child(2), /* Small Price */
+    #productsInputTable td:nth-child(2) {
+        border-left: 2px solid #dee2e6;
+    }
+
+    #productsInputTable th:nth-child(4), /* On Hand */
+    #productsInputTable td:nth-child(4) {
+        border-left: 2px solid #dee2e6;
+    }
+
+    #productsInputTable th:nth-child(7), /* Bulk Quantity */
+    #productsInputTable td:nth-child(7) {
+        border-left: 2px solid #dee2e6;
+    }
+
+    #productsInputTable th:nth-child(8), /* Action */
+    #productsInputTable td:nth-child(8) {
+        border-left: 2px solid #dee2e6;
+    }
+
+    /* 5. ENHANCED ACTION BUTTONS */
+    #productsInputTable .action button {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        border: none;
+        border-radius: 8px;
+        color: white;
+        padding: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 6px rgba(220,53,69,0.3);
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+    }
+
+    #productsInputTable .action button:hover {
+        transform: translateY(-2px) scale(1.05);
+        box-shadow: 0 4px 12px rgba(220,53,69,0.4);
+        background: linear-gradient(135deg, #c82333 0%, #a71e2a 100%);
+    }
+
+    #productsInputTable .action button:active {
+        transform: translateY(0) scale(0.95);
+        box-shadow: 0 2px 4px rgba(220,53,69,0.3);
+    }
+
+    /* 6. IMPROVE HEADER STYLING */
+    #productsInputTable thead th {
+        background: linear-gradient(180deg, #f8f9fa 0%, #f1f3f4 100%);
+        color: #495057;
+        font-weight: 600;
+        border-bottom: 3px solid #dee2e6;
+        text-align: center;
+        font-size: 0.85rem;
+        padding: 0.8rem 0.5rem;
+        position: relative;
+    }
+
+    #productsInputTable thead th.product-name {
+        text-align: left !important;
+        font-weight: 700;
+    }
+
+    /* 7. ADD SUBTLE SHADOWS TO PRICING COLUMNS */
+    #productsInputTable .product-small-price {
+        background-color: inherit !important;
+        border: 1px solid #dee2e6 !important;
+        font-weight: 500 !important;
+        box-shadow: none;
+    }
+
+    #productsInputTable .product-bulk-price {
+        background-color: inherit !important;
+        border: 1px solid #dee2e6 !important;
+        font-weight: 600 !important;
+        box-shadow: none;
+    }
+
+    /* 8. IMPROVE FOCUS STATES */
+    #productsInputTable input:focus {
+        border-color: #007bff !important;
+        box-shadow: 0 0 0 0.25rem rgba(0,123,255,0.15) !important;
+        background-color: #fff !important;
+        transform: scale(1.02);
+        z-index: 10;
+        position: relative;
+    }
+
+    /* 9. BETTER COMPACT VIEW */
+    .table.compact #productsInputTable thead th:not(.product-name):not(.price):not(.bulk-cases):not(.action) {
+        font-size: 0;
+        padding: 0.4rem 0.2rem;
+    }
+
+    .table.compact #productsInputTable thead th:not(.product-name):not(.price):not(.bulk-cases):not(.action):after {
+        content: "Hidden";
+        font-size: 0.7rem;
+        color: #6c757d;
+        font-style: italic;
+    }
+
+    /* 10. RESPONSIVE HEADER IMPROVEMENTS */
+    @media (max-width: 1200px) {
+        #productsInputTable thead th {
+            font-size: 0.75rem;
+            padding: 0.6rem 0.3rem;
+        }
+
+        #productsInputTable th, #productsInputTable td {
+            font-size: 0.85rem;
+            padding: 0.4rem 0.3rem;
+        }
+    }
+
+    /* 11. IMPROVE TABLE CONTAINER */
+    .table-responsive {
+        border-radius: 12px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        border: 1px solid #e3e6ea;
+        overflow: hidden;
+    }
+
+    #productsInputTable {
+        margin-bottom: 0;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    /* 12. ADD LOADING STATE STYLING (for when data is being loaded) */
+    .table-loading {
+        opacity: 0.6;
+        pointer-events: none;
+        position: relative;
+    }
+
+    .table-loading::after {
+        content: "Loading...";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(255,255,255,0.9);
+        padding: 1rem 2rem;
+        border-radius: 8px;
+        font-weight: 600;
+        z-index: 1000;
+    }
+
+    /* 13. IMPROVE BULK QUANTITY COLUMN HIGHLIGHTING */
+    #productsInputTable th:nth-child(7), /* Bulk Quantity header */
+    #productsInputTable td:nth-child(7) { /* Bulk Quantity cells */
+        background-color: inherit !important;
+        border-left: 2px solid #dee2e6 !important;
+    }
+
+    #productsInputTable .product-bulk-cases {
+        background-color: inherit !important;
+        border: 1px solid #dee2e6 !important;
+        font-weight: 600 !important;
+    }
+
+    /* 14. ADD SUBTLE ANIMATIONS */
+    #productsInputTable tbody tr {
+        transition: all 0.2s ease;
+    }
+
+    #productsInputTable input {
+        transition: all 0.2s ease;
+    }
+
+    /* 15. IMPROVE TOOLTIP POSITIONING (if you add tooltips later) */
+    .table-tooltip {
+        position: relative;
+    }
+
+    .table-tooltip:hover::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #333;
+        color: white;
+        padding: 0.5rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        white-space: nowrap;
+        z-index: 1000;
+    }
+
+    /* --- END: ADDITIONAL REFINEMENTS (May 2024) --- */
+
+    /* Header alignment: all center except Product Name */
+    #productsInputTable thead th {
+        text-align: center !important;
+    }
+    #productsInputTable thead th.product-name {
+        text-align: left !important;
+    }
+
+    #productsInputTable td.price {
+        text-align: right !important;
+    }
+    #productsInputTable .price input,
+    #productsInputTable .product-small-price input,
+    #productsInputTable .product-bulk-price input {
+        text-align: right !important;
+    }
+
+    #productsInputTable td.price,
+    #productsInputTable td.price input,
+    #productsInputTable .product-small-price,
+    #productsInputTable .product-small-price input,
+    #productsInputTable .product-bulk-price,
+    #productsInputTable .product-bulk-price input {
+        text-align: right !important;
+    }
+
+    #productsInputTable td.cases,
+    #productsInputTable td.cases input,
+    #productsInputTable .product-cases-on-hand,
+    #productsInputTable .product-cases-on-hand input,
+    #productsInputTable .product-annual-cases,
+    #productsInputTable .product-annual-cases input,
+    #productsInputTable .product-bottles-per-case,
+    #productsInputTable .product-bottles-per-case input,
+    #productsInputTable td.bulk-cases,
+    #productsInputTable td.bulk-cases input,
+    #productsInputTable .product-bulk-cases,
+    #productsInputTable .product-bulk-cases input {
+        text-align: right !important;
     }
 </style>
 {% endblock %}

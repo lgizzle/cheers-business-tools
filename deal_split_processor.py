@@ -134,7 +134,7 @@ class DealSplitCalculator:
 
     def get_scenario(self, name):
         """
-        Retrieve a saved scenario
+        Retrieve a saved scenario (case-insensitive, trimmed)
 
         Args:
             name: Name of the scenario
@@ -142,14 +142,20 @@ class DealSplitCalculator:
         Returns:
             List of dictionaries or None if scenario doesn't exist
         """
-        return self.scenarios.get(name)
+        key = name.strip().lower()
+        for scenario_name in self.scenarios:
+            if scenario_name.strip().lower() == key:
+                return self.scenarios[scenario_name]
+        return None
 
     def delete_scenario(self, name):
-        """Delete a scenario by name"""
-        if name in self.scenarios:
-            del self.scenarios[name]
-            self.save_scenarios()
-            return True
+        """Delete a scenario by name (case-insensitive, trimmed)"""
+        key = name.strip().lower()
+        for scenario_name in list(self.scenarios.keys()):
+            if scenario_name.strip().lower() == key:
+                del self.scenarios[scenario_name]
+                self.save_scenarios()
+                return True
         return False
 
     def get_all_scenarios(self):

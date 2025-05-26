@@ -1059,16 +1059,18 @@ document.addEventListener('DOMContentLoaded', function() {
             // Format action message with improved labels
             let action;
             if (iteration.iteration === 0) {
-                // Only the very first iteration of the very first run is "Initial Allocation"
                 if (isVeryFirstOptimization) {
                     action = "Initial Allocation";
                 } else {
-                    // Check if this optimization run found no improvements
+                    // If this is the last row of the run and no further swaps, label as Fully Optimized
+                    const isLastOfRun = (
+                        index === history.length - 1 ||
+                        (history[index + 1] && history[index + 1].separator)
+                    );
                     const roi = iteration.totalROI;
                     const roiChange = index > 0 && !history[index-1]?.separator ? roi - prevRoi : 0;
 
-                    if (Math.abs(roiChange) < 0.001) {
-                        // No improvement found - allocation is already optimal
+                    if (isLastOfRun && Math.abs(roiChange) < 0.001) {
                         action = "Fully Optimized";
                     } else {
                         action = "Continue from Previous";
