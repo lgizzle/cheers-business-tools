@@ -100,13 +100,12 @@ class MultiProductBuyingCalculator:
             # Calculate daily velocity
             daily_cases = annual_cases / 365  # V: Daily velocity in cases
 
-            # Calculate the two baseline quantities for Q₁
-            # 1. Proportional baseline: ceiling(Q₂ × SmallDealMin/BulkDealMin)
-            prop_qty = math.ceil(bulk_cases * (small_deal_minimum / deal_size_cases))
-            # 2. Days-of-stock baseline: ceiling(V × MinDaysStock)
+            # Calculate Small Deal quantity - purely proportional, not influenced by days stock
+            # Q₁ = ceiling(Q₂ × SmallDealMin/BulkDealMin)
+            small_deal_cases = math.ceil(bulk_cases * (small_deal_minimum / deal_size_cases))
+
+            # Days-of-stock baseline is only used for validation/warnings, not for Small Deal calculation
             days_qty = math.ceil(daily_cases * min_days_stock)
-            # Q₁ = max(propQty, daysQty)
-            small_deal_cases = max(prop_qty, days_qty)
 
             # 1. Calculate Total Savings: Q₂ × B × (P₁-P₂)
             savings_per_bottle = price_small - price_bulk
@@ -172,9 +171,8 @@ class MultiProductBuyingCalculator:
             debug_info = {
                 "dailyVelocity": daily_cases,
                 "Q2": bulk_cases,
-                "propQty": prop_qty,
-                "daysQty": days_qty,
                 "Q1": small_deal_cases,
+                "daysQty": days_qty,
                 "minDaysStock": min_days_stock,
                 "smallDealMin": small_deal_minimum,
                 "bulkDealMin": deal_size_cases,
