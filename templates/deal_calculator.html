@@ -247,9 +247,62 @@ function loadScenarioToCalculator(name) {
         name,
         '/api/get-scenario',
         function(scenario) {
+            // Clear existing rows except the first one
+            const varietiesTableBody = document.getElementById('varietiesTableBody');
+            while (varietiesTableBody.children.length > 1) {
+                varietiesTableBody.removeChild(varietiesTableBody.lastChild);
+            }
+
             // Populate the calculator tab with scenario data
-            // (existing logic here)
-            showStatusMessage('Scenario loaded successfully!', 'success');
+            if (scenario && scenario.varieties && scenario.varieties.length > 0) {
+                scenario.varieties.forEach((variety, index) => {
+                    let row;
+                    if (index === 0) {
+                        // Use the first existing row
+                        row = varietiesTableBody.children[0];
+                    } else {
+                        // Create new rows for additional varieties
+                        row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td><input type="text" class="form-control variety-input" placeholder="Enter variety name"></td>
+                            <td><input type="number" class="form-control numeric-input annual-sales-input" placeholder="Enter sales quantity"></td>
+                            <td><input type="number" class="form-control numeric-input inventory-on-hand-input" placeholder="Current inventory" value="0"></td>
+                            <td class="text-center">
+                                <button class="btn btn-danger btn-sm delete-row">Remove</button>
+                            </td>
+                        `;
+                        varietiesTableBody.appendChild(row);
+
+                        // Add event listener to the new delete button
+                        row.querySelector('.delete-row').addEventListener('click', function() {
+                            if (varietiesTableBody.children.length > 1) {
+                                varietiesTableBody.removeChild(row);
+                            } else {
+                                showStatusMessage('Cannot remove the last row', 'warning');
+                            }
+                        });
+                    }
+
+                    // Populate the row with data
+                    const varietyInput = row.querySelector('.variety-input');
+                    const annualSalesInput = row.querySelector('.annual-sales-input');
+                    const inventoryOnHandInput = row.querySelector('.inventory-on-hand-input');
+
+                    if (varietyInput) varietyInput.value = variety.variety || '';
+                    if (annualSalesInput) annualSalesInput.value = variety.annual_sales || '';
+                    if (inventoryOnHandInput) inventoryOnHandInput.value = variety.inventory_on_hand || 0;
+                });
+
+                // Switch to the Calculator tab
+                const calculatorTab = document.getElementById('calculator-tab');
+                if (calculatorTab) {
+                    calculatorTab.click();
+                }
+
+                showStatusMessage('Scenario loaded successfully!', 'success');
+            } else {
+                showStatusMessage('No variety data found in scenario', 'warning');
+            }
         },
         function(errorMsg) {
             showStatusMessage('Error loading scenario: ' + errorMsg, 'danger');

@@ -46,5 +46,12 @@
             "annual_sales": 290,
             "inventory_on_hand": 36
         }
+    ],
+    "Test Scenario Save": [
+        {
+            "variety": "Test Product A",
+            "annual_sales": 100,
+            "inventory_on_hand": 0
+        }
     ]
 }
