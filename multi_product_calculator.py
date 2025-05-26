@@ -451,12 +451,14 @@ class MultiProductBuyingCalculator:
             current_products = [p.copy() for p in products]
 
             # Initial portfolio ROI calculation
-            portfolio_roi = self.calculate_portfolio_roi(current_products, params)
-            self.logger.info(f"Initial portfolio ROI: {portfolio_roi['roi']:.4f}")
+            portfolio_metrics = self.calculate_portfolio_roi(current_products, params)
+            portfolio_annualized_roi = portfolio_metrics['roi'] * portfolio_metrics['annualROIMultiplier']
+            self.logger.info(f"Initial portfolio ROI: {portfolio_metrics['roi']:.4f}, Annualized: {portfolio_annualized_roi:.4f}")
 
             history.append({
                 'iteration': 0,
-                'totalROI': float(portfolio_roi['roi']),
+                'totalROI': float(portfolio_metrics['roi']),
+                'totalAnnualizedROI': float(portfolio_annualized_roi),
                 'products': [p.copy() for p in current_products]
             })
 
@@ -476,26 +478,26 @@ class MultiProductBuyingCalculator:
                 products_with_roi = []
                 for product in current_products:
                     roi_metrics = self.compute_line_item_roi(product, params)
-                    roi = roi_metrics.get('roi', 0)  # Use 'roi' not 'annualizedRoi' for consistency
+                    annualized_roi = roi_metrics.get('annualizedRoi', 0)  # Use annualized ROI for optimization
 
                     product_with_roi = product.copy()
-                    product_with_roi['roi'] = roi
+                    product_with_roi['annualizedRoi'] = annualized_roi
                     products_with_roi.append(product_with_roi)
 
-                    # Track lowest ROI (only for products with bulk cases)
-                    if roi < lowest_roi and product.get('bulk_quantity', 0) > 0:
-                        lowest_roi = roi
+                    # Track lowest annualized ROI (only for products with bulk cases)
+                    if annualized_roi < lowest_roi and product.get('bulk_quantity', 0) > 0:
+                        lowest_roi = annualized_roi
                         lowest_roi_product = product
 
-                    # Track highest ROI (only for products with room for more)
+                    # Track highest annualized ROI (only for products with room for more)
                     annual_cases = product.get('annual_cases', 0)
-                    if roi > highest_roi and product.get('bulk_quantity', 0) < annual_cases:
-                        highest_roi = roi
+                    if annualized_roi > highest_roi and product.get('bulk_quantity', 0) < annual_cases:
+                        highest_roi = annualized_roi
                         highest_roi_product = product
 
                 # Try a swap if we found candidates
                 if lowest_roi_product and highest_roi_product:
-                    self.logger.info(f"Attempting swap from {lowest_roi_product.get('product_name')} (ROI: {lowest_roi:.4f}) to {highest_roi_product.get('product_name')} (ROI: {highest_roi:.4f})")
+                    self.logger.info(f"Attempting swap from {lowest_roi_product.get('product_name')} (Annualized ROI: {lowest_roi:.4f}) to {highest_roi_product.get('product_name')} (Annualized ROI: {highest_roi:.4f})")
 
                     # Create test copies
                     test_products = [p.copy() for p in current_products]
@@ -510,21 +512,24 @@ class MultiProductBuyingCalculator:
                     test_products[low_index]['bulk_quantity'] -= 1
                     test_products[high_index]['bulk_quantity'] += 1
 
-                    # Calculate new portfolio ROI (we no longer check minimum days stock here)
-                    new_portfolio_roi = self.calculate_portfolio_roi(test_products, params)
-                    self.logger.info(f"New portfolio ROI after swap: {new_portfolio_roi['roi']:.4f}")
+                    # Calculate new portfolio metrics (we no longer check minimum days stock here)
+                    new_portfolio_metrics = self.calculate_portfolio_roi(test_products, params)
+                    new_portfolio_annualized_roi = new_portfolio_metrics['roi'] * new_portfolio_metrics['annualROIMultiplier']
+                    self.logger.info(f"New portfolio ROI after swap: {new_portfolio_metrics['roi']:.4f}, Annualized: {new_portfolio_annualized_roi:.4f}")
 
-                    # Accept the swap if it improves the portfolio ROI
-                    if new_portfolio_roi['roi'] > portfolio_roi['roi']:
+                    # Accept the swap if it improves the ANNUALIZED portfolio ROI
+                    if new_portfolio_annualized_roi > portfolio_annualized_roi:
                         current_products = test_products
-                        portfolio_roi = new_portfolio_roi
+                        portfolio_metrics = new_portfolio_metrics
+                        portfolio_annualized_roi = new_portfolio_annualized_roi
                         improved = True
-                        self.logger.info(f"Swap accepted - portfolio ROI improved to {portfolio_roi['roi']:.4f}")
+                        self.logger.info(f"Swap accepted - portfolio annualized ROI improved to {portfolio_annualized_roi:.4f}")
 
                         # Record this iteration
                         history.append({
                             'iteration': iteration_count,
-                            'totalROI': float(portfolio_roi['roi']),
+                            'totalROI': float(portfolio_metrics['roi']),
+                            'totalAnnualizedROI': float(portfolio_annualized_roi),
                             'swapped': {
                                 'from': lowest_roi_product.get('product_name', ''),
                                 'to': highest_roi_product.get('product_name', '')
@@ -532,7 +537,7 @@ class MultiProductBuyingCalculator:
                             'products': [p.copy() for p in current_products]
                         })
                     else:
-                        self.logger.info(f"Swap rejected - portfolio ROI would decrease to {new_portfolio_roi['roi']:.4f}")
+                        self.logger.info(f"Swap rejected - portfolio annualized ROI would decrease to {new_portfolio_annualized_roi:.4f}")
                 else:
                     self.logger.info("No suitable candidates found for swapping")
 
@@ -541,12 +546,13 @@ class MultiProductBuyingCalculator:
                     self.logger.info(f"No improvement in iteration {iteration_count}, stopping optimization")
                     break
 
-            self.logger.info(f"Optimization completed after {iteration_count} iterations. Final ROI: {portfolio_roi['roi']:.4f}")
+            self.logger.info(f"Optimization completed after {iteration_count} iterations. Final ROI: {portfolio_metrics['roi']:.4f}, Annualized: {portfolio_annualized_roi:.4f}")
             return {
                 'products': current_products,
                 'history': history,
                 'totalIterations': iteration_count,
-                'finalROI': float(portfolio_roi['roi'])
+                'finalROI': float(portfolio_metrics['roi']),
+                'finalAnnualizedROI': float(portfolio_annualized_roi)
             }
 
         except Exception as e:
