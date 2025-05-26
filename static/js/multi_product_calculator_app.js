@@ -1073,7 +1073,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         index === history.length - 1 ||
                         (history[index + 1] && history[index + 1].separator)
                     );
-                    const roi = iteration.totalROI;
+                    const roi = iteration.totalAnnualizedROI || iteration.totalROI;
                     const roiChange = index > 0 && !history[index-1]?.separator ? roi - prevRoi : 0;
 
                     if (isLastOfRun && Math.abs(roiChange) < 0.001) {
@@ -1088,8 +1088,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 action = `Moved 1 case from ${from} to ${to}`;
             }
 
-            // Calculate ROI change
-            const roi = iteration.totalROI;
+            // Calculate ROI change - USE ANNUALIZED ROI instead of regular ROI
+            const roi = iteration.totalAnnualizedROI || iteration.totalROI;
             const roiChange = index > 0 && !history[index-1]?.separator ? roi - prevRoi : 0;
 
             row.innerHTML = `
