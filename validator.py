@@ -110,18 +110,32 @@ def validate_calculator_params(params):
     Returns: Validated params with numeric fields converted to appropriate types.
     Raises ValidationError if validation fails.
     """
-    # Check required fields
-    required_fields = ["small_deal_minimum", "bulk_deal_minimum", "payment_terms"]
+    # Handle both old and new parameter names for backward compatibility
+    # Check for either smallDealCases or small_deal_minimum
+    if 'smallDealCases' not in params and 'small_deal_minimum' not in params:
+        raise ValidationError("Missing required field: smallDealCases or small_deal_minimum")
 
-    for field in required_fields:
-        if field not in params:
-            raise ValidationError(f"Missing required field: {field}")
+    # Check for either dealSizeCases or bulk_deal_minimum
+    if 'dealSizeCases' not in params and 'bulk_deal_minimum' not in params:
+        raise ValidationError("Missing required field: dealSizeCases or bulk_deal_minimum")
 
-    # Validate numeric fields
+    # Check for either paymentTermsDays or payment_terms
+    if 'paymentTermsDays' not in params and 'payment_terms' not in params:
+        raise ValidationError("Missing required field: paymentTermsDays or payment_terms")
+
+    # Validate numeric fields with backward compatibility
+    small_deal_value = params.get('smallDealCases', params.get('small_deal_minimum'))
+    bulk_deal_value = params.get('dealSizeCases', params.get('bulk_deal_minimum'))
+    payment_terms_value = params.get('paymentTermsDays', params.get('payment_terms'))
+
     validated = {
-        "small_deal_minimum": validate_numeric(params["small_deal_minimum"], "Small deal minimum", min_value=0, integer_only=False),
-        "bulk_deal_minimum": validate_numeric(params["bulk_deal_minimum"], "Bulk deal minimum", min_value=0, integer_only=False),
-        "payment_terms": validate_numeric(params["payment_terms"], "Payment terms", min_value=0, integer_only=True)
+        "small_deal_minimum": validate_numeric(small_deal_value, "Small deal minimum", min_value=0, integer_only=False),
+        "bulk_deal_minimum": validate_numeric(bulk_deal_value, "Bulk deal minimum", min_value=0, integer_only=False),
+        "payment_terms": validate_numeric(payment_terms_value, "Payment terms", min_value=0, integer_only=True),
+        # Also include the new parameter names for consistency
+        "smallDealCases": validate_numeric(small_deal_value, "Small deal cases", min_value=0, integer_only=False),
+        "dealSizeCases": validate_numeric(bulk_deal_value, "Deal size cases", min_value=0, integer_only=False),
+        "paymentTermsDays": validate_numeric(payment_terms_value, "Payment terms days", min_value=0, integer_only=True)
     }
 
     # Additional validation rules

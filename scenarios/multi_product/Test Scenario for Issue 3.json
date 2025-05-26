@@ -1,6 +1,7 @@
 {
   "name": "Test Scenario for Issue 3",
   "parameters": {
+    "smallDealCases": 15,
     "dealSizeCases": 60,
     "minDaysStock": 30,
     "paymentTermsDays": 30,

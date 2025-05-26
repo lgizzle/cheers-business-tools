@@ -1,6 +1,7 @@
 {
   "name": "Smirnoff Portfolio",
   "parameters": {
+    "smallDealCases": 30,
     "dealSizeCases": 120,
     "minDaysStock": 10,
     "paymentTermsDays": 30,

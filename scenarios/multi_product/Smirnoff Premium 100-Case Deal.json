@@ -1,0 +1,112 @@
+{
+  "name": "Smirnoff Premium 100-Case Deal",
+  "parameters": {
+    "smallDealCases": 25,
+    "dealSizeCases": 100,
+    "minDaysStock": 21,
+    "paymentTermsDays": 30,
+    "iterations": "10"
+  },
+  "products": [
+    {
+      "id": "product-0",
+      "product_name": "Smirnoff Vodka 50mL",
+      "current_price": 1.99,
+      "bulk_price": 1.79,
+      "on_hand": 120,
+      "annual_cases": 240,
+      "bottles_per_case": 120,
+      "bulk_quantity": 0
+    },
+    {
+      "id": "product-1",
+      "product_name": "Smirnoff Vodka 100mL",
+      "current_price": 3.99,
+      "bulk_price": 3.49,
+      "on_hand": 48,
+      "annual_cases": 180,
+      "bottles_per_case": 12,
+      "bulk_quantity": 0
+    },
+    {
+      "id": "product-2",
+      "product_name": "Smirnoff Vodka 375mL",
+      "current_price": 8.99,
+      "bulk_price": 7.99,
+      "on_hand": 36,
+      "annual_cases": 120,
+      "bottles_per_case": 12,
+      "bulk_quantity": 0
+    },
+    {
+      "id": "product-3",
+      "product_name": "Smirnoff Vodka 750mL",
+      "current_price": 15.99,
+      "bulk_price": 13.99,
+      "on_hand": 72,
+      "annual_cases": 360,
+      "bottles_per_case": 12,
+      "bulk_quantity": 0
+    },
+    {
+      "id": "product-4",
+      "product_name": "Smirnoff Vodka 1.75L",
+      "current_price": 24.99,
+      "bulk_price": 21.99,
+      "on_hand": 48,
+      "annual_cases": 240,
+      "bottles_per_case": 12,
+      "bulk_quantity": 0
+    },
+    {
+      "id": "product-5",
+      "product_name": "Smirnoff Raspberry 750mL",
+      "current_price": 16.99,
+      "bulk_price": 14.99,
+      "on_hand": 24,
+      "annual_cases": 96,
+      "bottles_per_case": 12,
+      "bulk_quantity": 0
+    },
+    {
+      "id": "product-6",
+      "product_name": "Smirnoff Citrus 750mL",
+      "current_price": 16.99,
+      "bulk_price": 14.99,
+      "on_hand": 36,
+      "annual_cases": 144,
+      "bottles_per_case": 12,
+      "bulk_quantity": 0
+    },
+    {
+      "id": "product-7",
+      "product_name": "Smirnoff Vanilla 750mL",
+      "current_price": 16.99,
+      "bulk_price": 14.99,
+      "on_hand": 24,
+      "annual_cases": 72,
+      "bottles_per_case": 12,
+      "bulk_quantity": 0
+    },
+    {
+      "id": "product-8",
+      "product_name": "Smirnoff Green Apple 750mL",
+      "current_price": 16.99,
+      "bulk_price": 14.99,
+      "on_hand": 36,
+      "annual_cases": 120,
+      "bottles_per_case": 12,
+      "bulk_quantity": 0
+    },
+    {
+      "id": "product-9",
+      "product_name": "Smirnoff Watermelon 750mL",
+      "current_price": 16.99,
+      "bulk_price": 14.99,
+      "on_hand": 48,
+      "annual_cases": 180,
+      "bottles_per_case": 12,
+      "bulk_quantity": 0
+    }
+  ]
+}

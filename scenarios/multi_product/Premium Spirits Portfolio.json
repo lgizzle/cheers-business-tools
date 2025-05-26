@@ -1,6 +1,7 @@
 {
   "name": "Premium Spirits Portfolio",
   "parameters": {
+    "smallDealCases": 20,
     "dealSizeCases": 100,
     "minDaysStock": 45,
     "paymentTermsDays": 60,

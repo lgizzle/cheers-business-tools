@@ -66,7 +66,8 @@ class MultiProductBuyingCalculator:
             payment_terms_days = params.get('paymentTermsDays', 30)
             min_days_stock = params.get('minDaysStock', 30)
             deal_size_cases = params.get('dealSizeCases', 60)      # Bulk deal minimum in cases
-            small_deal_minimum = params.get('smallDealMinimum', 30) # Small deal minimum in cases
+            # Handle both old and new parameter names for backward compatibility
+            small_deal_minimum = params.get('smallDealCases', params.get('smallDealMinimum', 30)) # Small deal minimum in cases
 
             # Edge case: No velocity
             if annual_cases <= 0:
@@ -660,7 +661,9 @@ class MultiProductBuyingCalculator:
             params.setdefault('minDaysStock', 30)
             params.setdefault('paymentTermsDays', 30)
             params.setdefault('iterations', 'auto')
-            params.setdefault('smallDealMinimum', 30)
+            # Handle both old and new parameter names for backward compatibility
+            if 'smallDealCases' not in params and 'smallDealMinimum' not in params:
+                params['smallDealCases'] = 30
 
             # Perform initial allocation if bulk_quantity not already set
             for product in products:

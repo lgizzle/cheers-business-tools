@@ -205,17 +205,19 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // Get parameters
+        const smallDealCases = parseInt(document.getElementById('smallDealCases').value);
         const dealSizeCases = parseInt(document.getElementById('dealSizeCases').value);
         const minDaysStock = parseInt(document.getElementById('minDaysStock').value);
         const paymentTermsDays = parseInt(document.getElementById('paymentTermsDays').value);
         const iterations = document.getElementById('iterations').value;
         const params = {
             // Backend validation keys
-            small_deal_minimum: dealSizeCases,
+            small_deal_minimum: smallDealCases,
             bulk_deal_minimum: dealSizeCases,
             payment_terms: paymentTermsDays,
             min_days_stock: minDaysStock,
             // Calculation logic keys
+            smallDealCases: smallDealCases,
             dealSizeCases: dealSizeCases,
             minDaysStock: minDaysStock,
             paymentTermsDays: paymentTermsDays,
@@ -658,6 +660,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
 
                     // Load parameters
+                    document.getElementById('smallDealCases').value = scenario.parameters.smallDealCases || 15;
                     document.getElementById('dealSizeCases').value = scenario.parameters.dealSizeCases;
                     document.getElementById('minDaysStock').value = scenario.parameters.minDaysStock;
                     document.getElementById('paymentTermsDays').value = scenario.parameters.paymentTermsDays;
@@ -803,6 +806,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Get parameters
         const params = {
+            smallDealCases: parseInt(document.getElementById('smallDealCases').value),
             dealSizeCases: parseInt(document.getElementById('dealSizeCases').value),
             minDaysStock: parseInt(document.getElementById('minDaysStock').value),
             paymentTermsDays: parseInt(document.getElementById('paymentTermsDays').value),
@@ -942,17 +946,19 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Total products collected:', products.length);
 
             // Get parameters
+            const smallDealCases = parseInt(document.getElementById('smallDealCases').value);
             const dealSizeCases = parseInt(document.getElementById('dealSizeCases').value);
             const minDaysStock = parseInt(document.getElementById('minDaysStock').value);
             const paymentTermsDays = parseInt(document.getElementById('paymentTermsDays').value);
             const iterations = document.getElementById('iterations').value;
             const params = {
                 // Backend validation keys
-                small_deal_minimum: dealSizeCases,
+                small_deal_minimum: smallDealCases,
                 bulk_deal_minimum: dealSizeCases,
                 payment_terms: paymentTermsDays,
                 min_days_stock: minDaysStock,
                 // Calculation logic keys
+                smallDealCases: smallDealCases,
                 dealSizeCases: dealSizeCases,
                 minDaysStock: minDaysStock,
                 paymentTermsDays: paymentTermsDays,

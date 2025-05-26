@@ -1,6 +1,7 @@
 {
   "name": "Premium Whiskey Portfolio",
   "parameters": {
+    "smallDealCases": 20,
     "dealSizeCases": 80,
     "minDaysStock": 15,
     "paymentTermsDays": 30,

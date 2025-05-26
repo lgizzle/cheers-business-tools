@@ -959,9 +959,26 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="row">
-                                        <div class="col-md-3">
+                                        <div class="col-md-2">
                                             <div class="form-group">
-                                                <label for="dealSizeCases">Deal Size
+                                                <label for="smallDealCases">Small Deal Quantity
+                                                    <i class="fas fa-info-circle tooltip-icon" data-toggle="tooltip"
+                                                       title="Number of cases in the small deal for ROI comparison"></i>
+                                                </label>
+                                                <div class="input-group">
+                                                    <input type="number" class="form-control" id="smallDealCases" min="1" value="15" required>
+                                                    <div class="input-group-append">
+                                                        <span class="input-group-text">cases</span>
+                                                    </div>
+                                                    <div class="invalid-feedback">
+                                                        Small deal quantity must be at least 1 case
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label for="dealSizeCases">Deal Size (Bulk)
                                                     <i class="fas fa-info-circle tooltip-icon" data-toggle="tooltip"
                                                        title="Total number of cases in the bulk deal"></i>
                                                 </label>
@@ -976,7 +993,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-3">
+                                        <div class="col-md-2">
                                             <div class="form-group">
                                                 <label for="minDaysStock">Minimum Days Stock
                                                     <i class="fas fa-info-circle tooltip-icon" data-toggle="tooltip"
@@ -993,7 +1010,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-3">
+                                        <div class="col-md-2">
                                             <div class="form-group">
                                                 <label for="paymentTermsDays">Payment Terms
                                                     <i class="fas fa-info-circle tooltip-icon" data-toggle="tooltip"
@@ -1010,7 +1027,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-3">
+                                        <div class="col-md-4">
                                             <div class="form-group">
                                                 <label for="iterations">Optimization Iterations
                                                     <i class="fas fa-info-circle tooltip-icon" data-toggle="tooltip"
