@@ -3,34 +3,40 @@
   "parameters": {
     "smallDealCases": 20,
     "dealSizeCases": 100,
-    "minDaysStock": 45,
-    "paymentTermsDays": 60,
+    "minDaysStock": 15,
+    "paymentTermsDays": 30,
     "iterations": "auto"
   },
   "products": [
     {
+      "id": "product-0",
       "product_name": "Single Malt Scotch",
       "current_price": 49.99,
       "bulk_price": 42.99,
       "on_hand": 15,
       "annual_cases": 60,
-      "bottles_per_case": 6
+      "bottles_per_case": 6,
+      "bulk_quantity": 8
     },
     {
+      "id": "product-1",
       "product_name": "Aged Bourbon",
       "current_price": 35.99,
       "bulk_price": 29.99,
       "on_hand": 20,
       "annual_cases": 120,
-      "bottles_per_case": 12
+      "bottles_per_case": 12,
+      "bulk_quantity": 30
     },
     {
+      "id": "product-2",
       "product_name": "Premium Vodka",
       "current_price": 28.99,
       "bulk_price": 24.99,
       "on_hand": 25,
       "annual_cases": 180,
-      "bottles_per_case": 12
+      "bottles_per_case": 12,
+      "bulk_quantity": 62
     }
   ]
 }

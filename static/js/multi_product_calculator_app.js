@@ -79,6 +79,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const dealSizeInput = document.getElementById('dealSizeCases');
     if (dealSizeInput) {
         dealSizeInput.addEventListener('input', validateBulkCasesTotals);
+
+        // ✅ ADD: Also trigger validation on page load if deal size already has a value
+        if (dealSizeInput.value) {
+            setTimeout(() => validateBulkCasesTotals(), 200);
+        }
     }
 
     // Event delegation to monitor manual changes to bulk case inputs
@@ -383,6 +388,15 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Switching to Scenarios tab');
         loadScenarioList();
     });
+
+    // ✅ ADD: Validation when switching to calculator tab
+    const calculatorTab = document.getElementById('calculator-tab');
+    if (calculatorTab) {
+        calculatorTab.addEventListener('click', function() {
+            // Trigger validation when switching to calculator tab
+            setTimeout(() => validateBulkCasesTotals(), 100);
+        });
+    }
 
     // Load scenario list
     function loadScenarioList() {
@@ -714,6 +728,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Remove the success popup - it's unnecessary and causes browser automation issues
                     console.log(`Scenario "${scenario.name}" loaded successfully with ${scenario.products.length} products!`);
 
+                    // ✅ ADD: Validate bulk cases totals after loading scenario
+                    setTimeout(() => validateBulkCasesTotals(), 100);
+
                     // Note: updateTotals() removed since it's no longer needed with the new two-table design
                     // The results table will be populated when calculations are run
                 } else {
@@ -856,6 +873,14 @@ document.addEventListener('DOMContentLoaded', function() {
         handleAddProduct();
         defaultProductAdded = true;
     }
+
+    // ✅ ADD: Check for bulk cases validation on page load
+    setTimeout(() => {
+        const existingRows = productsTableBody?.querySelectorAll('tr:not(#productRowTemplate)');
+        if (existingRows && existingRows.length > 0) {
+            validateBulkCasesTotals();
+        }
+    }, 500);
 
     // Add a clear products button event handler
     const clearProductsBtn = document.getElementById('clearProducts');
@@ -1217,14 +1242,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Bulk cases validation function
     function validateBulkCasesTotals() {
         const dealSize = parseInt(document.getElementById('dealSizeCases').value) || 0;
-        const indicator = document.getElementById('bulkCasesIndicator');
-        const indicatorText = document.getElementById('bulkCasesIndicatorText');
         const headerIndicator = document.getElementById('bulkCasesHeaderIndicator');
-        const headerText = document.getElementById('bulkCasesHeaderText');
+        const indicatorText = document.getElementById('bulkCasesIndicatorText');
         const calculateButton = document.getElementById('calculateBtn');
 
-        if (dealSize <= 0 || !indicator || !indicatorText) {
-            if (indicator) indicator.style.display = 'none';
+        if (dealSize <= 0 || !headerIndicator || !indicatorText) {
             if (headerIndicator) headerIndicator.style.display = 'none';
             return;
         }
@@ -1245,27 +1267,19 @@ document.addEventListener('DOMContentLoaded', function() {
             input.classList.remove('validation-error', 'validation-warning', 'validation-success');
         });
 
-        // Only show indicators if there are any bulk case values
-        if (!hasAnyValues) {
-            indicator.style.display = 'none';
+        // ✅ CHANGE: Show indicator even if no bulk case values entered yet (if we have products)
+        const hasAnyProducts = bulkCasesInputs.length > 0;
+        if (!hasAnyProducts) {
             if (headerIndicator) headerIndicator.style.display = 'none';
             return;
         }
 
-        // Show both indicators
-        indicator.style.display = 'block';
+        // Show header indicator
         if (headerIndicator) headerIndicator.style.display = 'block';
 
         const available = dealSize - totalBulkCases;
-        indicatorText.textContent = `Bulk Cases: ${totalBulkCases} / ${dealSize} (Available: ${available})`;
-
-        // Update header indicator
-        if (headerText) {
-            headerText.textContent = `(${totalBulkCases}/${dealSize})`;
-        }
-
-        // Remove previous validation classes from indicators
-        indicator.classList.remove('valid', 'invalid', 'warning');
+        
+        // Remove previous validation classes from header indicator
         if (headerIndicator) {
             headerIndicator.classList.remove('valid', 'invalid', 'warning');
         }
@@ -1273,9 +1287,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Apply validation logic and styling
         if (totalBulkCases > dealSize) {
             // ERROR: Exceeds deal size
-            indicator.classList.add('invalid');
             if (headerIndicator) headerIndicator.classList.add('invalid');
-            indicatorText.textContent = `⚠️ Bulk Cases: ${totalBulkCases} / ${dealSize} (EXCEEDS by ${totalBulkCases - dealSize} cases!)`;
+            indicatorText.textContent = `⚠️ ${totalBulkCases}/${dealSize}`;
 
             // Highlight inputs in error
             bulkCasesInputs.forEach(input => {
@@ -1291,9 +1304,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } else if (totalBulkCases === dealSize) {
             // SUCCESS: Exact match
-            indicator.classList.add('valid');
             if (headerIndicator) headerIndicator.classList.add('valid');
-            indicatorText.textContent = `✅ Bulk Cases: ${totalBulkCases} / ${dealSize} (Perfect allocation!)`;
+            indicatorText.textContent = `✅ ${totalBulkCases}/${dealSize}`;
 
             // Highlight inputs in success
             bulkCasesInputs.forEach(input => {
@@ -1309,9 +1321,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } else if (totalBulkCases > dealSize * 0.8) {
             // WARNING: Close to limit but acceptable
-            indicator.classList.add('warning');
             if (headerIndicator) headerIndicator.classList.add('warning');
-            indicatorText.textContent = `⚡ Bulk Cases: ${totalBulkCases} / ${dealSize} (${available} cases remaining)`;
+            indicatorText.textContent = `⚡ ${totalBulkCases}/${dealSize}`;
 
             // Highlight inputs in warning
             bulkCasesInputs.forEach(input => {
@@ -1326,11 +1337,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 calculateButton.title = '';
             }
         } else {
-            // NORMAL: Under limit
-            indicator.classList.add('valid');
+            // NORMAL: Under limit - but still show the indicator
             if (headerIndicator) headerIndicator.classList.add('valid');
 
-            // No special highlighting needed for normal state
+            if (totalBulkCases === 0) {
+                indicatorText.textContent = `${totalBulkCases}/${dealSize}`;
+            } else {
+                indicatorText.textContent = `${totalBulkCases}/${dealSize}`;
+            }
 
             // Enable calculate button
             if (calculateButton) {
@@ -1432,4 +1446,154 @@ document.addEventListener('DOMContentLoaded', function() {
             bulk_quantity: product.bulk_quantity != null ? product.bulk_quantity : product.bulkCases || 0
         };
     }
+
+    // --- BEGIN: ENHANCED VALIDATION FUNCTIONS ---
+
+    // Clear all bulk cases function
+    function clearAllBulkCases() {
+        if (confirm('Clear all bulk case allocations?')) {
+            const bulkInputs = document.querySelectorAll('.product-bulk-cases');
+            bulkInputs.forEach(input => {
+                input.value = '';
+                input.classList.add('bulk-cases-empty');
+            });
+            validateBulkCasesTotals();
+            validateAndStyleRequiredFields();
+
+            // Clear optimization history since we're starting fresh
+            globalOptimizationHistory = [];
+            updateOptimizationHistory([]);
+
+            // Remove the clear history button since history is now empty
+            const clearHistoryBtn = document.querySelector('.clear-history-btn');
+            if (clearHistoryBtn) {
+                clearHistoryBtn.remove();
+            }
+        }
+    }
+
+    // Enhanced calculate with validation
+    function validateAndCalculate() {
+        console.log('validateAndCalculate called');
+
+        // Show validation summary if there are issues
+        const validationSummary = document.getElementById('formValidationSummary');
+        const errorsList = document.getElementById('validationErrorsList');
+
+        if (!isFormReadyForCalculation()) {
+            validationSummary.style.display = 'block';
+            errorsList.innerHTML = '<li>Please fill in all required fields (marked with *)</li>';
+
+            // Scroll to validation summary
+            validationSummary.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+        }
+
+        validationSummary.style.display = 'none';
+        handleCalculate(); // Call existing calculate function
+    }
+
+    // Check if form is ready for calculation
+    function isFormReadyForCalculation() {
+        // Check parameters
+        const dealSize = parseInt(document.getElementById('dealSizeCases').value);
+        const smallDeal = parseInt(document.getElementById('smallDealCases').value);
+        const minDays = parseInt(document.getElementById('minDaysStock').value);
+        const paymentTerms = parseInt(document.getElementById('paymentTermsDays').value);
+
+        if (!dealSize || dealSize <= 0 || !smallDeal || smallDeal <= 0 ||
+            minDays < 0 || paymentTerms < 0) {
+            return false;
+        }
+
+        // Check products
+        const rows = productsTableBody.querySelectorAll('tr:not(#productRowTemplate)');
+        if (rows.length === 0) {
+            return false;
+        }
+
+        // Check each product has required fields
+        for (const row of rows) {
+            const name = row.querySelector('.product-name')?.value?.trim();
+            const smallPrice = parseFloat(row.querySelector('.product-small-price')?.value);
+            const bulkPrice = parseFloat(row.querySelector('.product-bulk-price')?.value);
+            const onHand = parseInt(row.querySelector('.product-cases-on-hand')?.value);
+            const annual = parseInt(row.querySelector('.product-annual-cases')?.value);
+            const bottles = parseInt(row.querySelector('.product-bottles-per-case')?.value);
+
+            if (!name || !smallPrice || smallPrice <= 0 || !bulkPrice || bulkPrice <= 0 ||
+                onHand < 0 || !annual || annual <= 0 || !bottles || bottles <= 0) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    // Validate and style required fields
+    function validateAndStyleRequiredFields() {
+        // Style parameter fields
+        const parameterInputs = [
+            'dealSizeCases', 'smallDealCases', 'minDaysStock', 'paymentTermsDays'
+        ];
+
+        parameterInputs.forEach(id => {
+            const input = document.getElementById(id);
+            if (input) {
+                const value = parseFloat(input.value);
+                if (!value || value <= 0 || (id === 'minDaysStock' && value < 0) ||
+                    (id === 'paymentTermsDays' && value < 0)) {
+                    input.classList.add('is-invalid');
+                } else {
+                    input.classList.remove('is-invalid');
+                    input.classList.add('is-valid');
+                }
+            }
+        });
+
+        // Style product fields
+        const rows = productsTableBody.querySelectorAll('tr:not(#productRowTemplate)');
+        rows.forEach(row => {
+            const inputs = row.querySelectorAll('input[required]');
+            inputs.forEach(input => {
+                const value = input.value.trim();
+                const numValue = parseFloat(value);
+
+                if (input.classList.contains('product-name')) {
+                    if (!value) {
+                        input.classList.add('is-invalid');
+                    } else {
+                        input.classList.remove('is-invalid');
+                        input.classList.add('is-valid');
+                    }
+                } else if (input.classList.contains('product-annual-cases') ||
+                          input.classList.contains('product-bottles-per-case')) {
+                    if (!value || numValue <= 0) {
+                        input.classList.add('is-invalid');
+                    } else {
+                        input.classList.remove('is-invalid');
+                        input.classList.add('is-valid');
+                    }
+                } else {
+                    if (!value || numValue < 0) {
+                        input.classList.add('is-invalid');
+                    } else {
+                        input.classList.remove('is-invalid');
+                        input.classList.add('is-valid');
+                    }
+                }
+            });
+        });
+    }
+
+    // Note: Removed duplicate autoAllocationBtn2 since we now have only one Auto Allocate button
+
+    // Add validation styling on input changes
+    document.addEventListener('input', function(event) {
+        if (event.target.matches('input[required]')) {
+            validateAndStyleRequiredFields();
+        }
+    });
+
+    // --- END: ENHANCED VALIDATION FUNCTIONS ---
 });

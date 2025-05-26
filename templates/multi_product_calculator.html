@@ -916,6 +916,123 @@
     #productsInputTable .product-bulk-cases input {
         text-align: right !important;
     }
+
+    /* --- BEGIN: ENHANCED FORM VALIDATION STYLING --- */
+
+    /* Required field indicators */
+    .required-field::after {
+        content: " *";
+        color: #dc3545;
+        font-weight: bold;
+    }
+
+    .required-column::after {
+        content: " *";
+        color: #dc3545;
+        font-weight: bold;
+        font-size: 0.8em;
+    }
+
+    /* Enhanced bulk cases validation */
+    .bulk-cases-column {
+        position: relative;
+    }
+
+    .bulk-cases-empty {
+        background-color: #fff3cd !important;
+        border-color: #ffc107 !important;
+    }
+
+    /* Form validation summary */
+    #formValidationSummary {
+        border-left: 4px solid #ffc107;
+    }
+
+    #formValidationSummary h6 {
+        color: #856404;
+        margin-bottom: 0.5rem;
+    }
+
+    #validationErrorsList {
+        margin-bottom: 0;
+        padding-left: 1.5rem;
+    }
+
+    #validationErrorsList li {
+        color: #856404;
+        margin-bottom: 0.25rem;
+    }
+
+    /* Enhanced bulk cases indicator with action buttons */
+    #bulkCasesIndicator .btn-group {
+        margin-left: auto;
+    }
+
+    #bulkCasesIndicator .btn-group .btn {
+        font-size: 0.875rem;
+        padding: 0.25rem 0.5rem;
+    }
+
+    /* Progressive disclosure for optimization button */
+    #iterateBtn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    #iterateBtn:disabled + .form-text {
+        color: #6c757d;
+        font-style: italic;
+    }
+
+    /* Enhanced calculate button styling */
+    #calculateBtn {
+        position: relative;
+    }
+
+    #calculateBtn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    /* Tooltip styling for help text */
+    .form-text.text-muted {
+        font-size: 0.8rem;
+        margin-top: 0.25rem;
+    }
+
+    /* --- END: ENHANCED FORM VALIDATION STYLING --- */
+
+    /* --- BEGIN: BULK CASES HEADER INDICATOR STYLING --- */
+    #bulkCasesHeaderIndicator.valid {
+        color: #28a745 !important;
+    }
+
+    #bulkCasesHeaderIndicator.invalid {
+        color: #dc3545 !important;
+        animation: pulse 1s infinite;
+    }
+
+    #bulkCasesHeaderIndicator.warning {
+        color: #ffc107 !important;
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.6; }
+    }
+
+    /* Make the bulk quantity column header more prominent */
+    .bulk-cases-column {
+        background-color: #f8f9fa !important;
+        font-weight: 600;
+    }
+
+    /* Center the indicator text */
+    #bulkCasesHeaderIndicator {
+        text-align: center;
+        line-height: 1;
+    }
+    /* --- END: BULK CASES HEADER INDICATOR STYLING --- */
 </style>
 {% endblock %}
 
@@ -961,70 +1078,50 @@
                                     <div class="row">
                                         <div class="col-md-2">
                                             <div class="form-group">
-                                                <label for="smallDealCases">Small Deal Quantity
-                                                    <i class="fas fa-info-circle tooltip-icon" data-toggle="tooltip"
-                                                       title="Number of cases in the small deal for ROI comparison"></i>
-                                                </label>
+                                                <label for="smallDealCases" class="form-label required-field">Small Deal Minimum</label>
                                                 <div class="input-group">
                                                     <input type="number" class="form-control" id="smallDealCases" min="1" value="15" required>
                                                     <div class="input-group-append">
                                                         <span class="input-group-text">cases</span>
                                                     </div>
-                                                    <div class="invalid-feedback">
-                                                        Small deal quantity must be at least 1 case
-                                                    </div>
                                                 </div>
+                                                <small class="form-text text-muted">Minimum cases for small deal</small>
                                             </div>
                                         </div>
                                         <div class="col-md-2">
                                             <div class="form-group">
-                                                <label for="dealSizeCases">Deal Size (Bulk)
-                                                    <i class="fas fa-info-circle tooltip-icon" data-toggle="tooltip"
-                                                       title="Total number of cases in the bulk deal"></i>
-                                                </label>
+                                                <label for="dealSizeCases" class="form-label required-field">Deal Size</label>
                                                 <div class="input-group">
                                                     <input type="number" class="form-control" id="dealSizeCases" min="1" value="60" required>
                                                     <div class="input-group-append">
                                                         <span class="input-group-text">cases</span>
                                                     </div>
-                                                    <div class="invalid-feedback">
-                                                        Deal size must be at least 1 case
-                                                    </div>
                                                 </div>
+                                                <small class="form-text text-muted">Total cases in bulk deal</small>
                                             </div>
                                         </div>
                                         <div class="col-md-2">
                                             <div class="form-group">
-                                                <label for="minDaysStock">Minimum Days Stock
-                                                    <i class="fas fa-info-circle tooltip-icon" data-toggle="tooltip"
-                                                       title="Minimum number of days of stock required after allocation"></i>
-                                                </label>
+                                                <label for="minDaysStock" class="form-label required-field">Min Days Stock</label>
                                                 <div class="input-group">
                                                     <input type="number" class="form-control" id="minDaysStock" min="0" value="30" required>
                                                     <div class="input-group-append">
                                                         <span class="input-group-text">days</span>
                                                     </div>
-                                                    <div class="invalid-feedback">
-                                                        Minimum days stock cannot be negative
-                                                    </div>
                                                 </div>
+                                                <small class="form-text text-muted">Minimum days of inventory</small>
                                             </div>
                                         </div>
                                         <div class="col-md-2">
                                             <div class="form-group">
-                                                <label for="paymentTermsDays">Payment Terms
-                                                    <i class="fas fa-info-circle tooltip-icon" data-toggle="tooltip"
-                                                       title="Number of days until payment is due"></i>
-                                                </label>
+                                                <label for="paymentTermsDays" class="form-label required-field">Payment Terms</label>
                                                 <div class="input-group">
                                                     <input type="number" class="form-control" id="paymentTermsDays" min="0" value="30" required>
                                                     <div class="input-group-append">
                                                         <span class="input-group-text">days</span>
                                                     </div>
-                                                    <div class="invalid-feedback">
-                                                        Payment terms cannot be negative
-                                                    </div>
                                                 </div>
+                                                <small class="form-text text-muted">Days until payment due</small>
                                             </div>
                                         </div>
                                         <div class="col-md-4">
@@ -1077,13 +1174,18 @@
                                         <table class="table table-bordered table-hover" id="productsInputTable">
                                             <thead class="thead-light">
                                                 <tr>
-                                                    <th class="product-name">Product Name</th>
-                                                    <th class="price">Small<br>Price</th>
-                                                    <th class="price">Bulk<br>Price</th>
-                                                    <th class="cases detail-column">On<br>Hand</th>
-                                                    <th class="cases detail-column">Annual<br>Cases</th>
-                                                    <th class="cases detail-column">Bottles<br>per Case</th>
-                                                    <th class="bulk-cases">Bulk<br>Quantity</th>
+                                                    <th class="product-name required-column">Product Name</th>
+                                                    <th class="price required-column">Small<br>Price</th>
+                                                    <th class="price required-column">Bulk<br>Price</th>
+                                                    <th class="cases detail-column required-column">On<br>Hand</th>
+                                                    <th class="cases detail-column required-column">Annual<br>Cases</th>
+                                                    <th class="cases detail-column required-column">Bottles<br>per Case</th>
+                                                    <th class="bulk-cases bulk-cases-column position-relative">
+                                        <div>Bulk<br>Quantity</div>
+                                        <div id="bulkCasesHeaderIndicator" class="mt-1">
+                                            <small id="bulkCasesIndicatorText" class="fw-bold text-muted" style="font-size: 0.7rem;">0/60</small>
+                                        </div>
+                                    </th>
                                                     <th class="action">Action</th>
                                                 </tr>
                                             </thead>
@@ -1111,9 +1213,12 @@
                                         </button>
                                     </div>
 
-                                    <!-- Bulk Cases Validation Indicator - MOVED HERE for better UX positioning -->
-                                    <div id="bulkCasesIndicator" class="bulk-cases-total mt-3 mb-2" style="display: none;">
-                                        <span id="bulkCasesIndicatorText">Bulk Cases: 0 / 60 (Available: 60)</span>
+
+
+                                    <!-- Form validation summary -->
+                                    <div id="formValidationSummary" class="alert alert-warning mt-3" style="display: none;">
+                                        <h6><i class="fas fa-exclamation-triangle"></i> Form Validation Issues</h6>
+                                        <ul id="validationErrorsList"></ul>
                                     </div>
                                 </div>
                             </div>
@@ -1154,12 +1259,13 @@
                                 </div>
                             </div>
 
-                            <!-- Actions Section -->
+                            <!-- Enhanced Actions Section -->
                             <div class="row mb-4">
                                 <div class="col-md-6">
-                                    <button id="calculateBtn" class="btn btn-primary w-100">
+                                    <button id="calculateBtn" class="btn btn-primary w-100" onclick="validateAndCalculate()">
                                         <i class="fas fa-calculator"></i> Calculate Results
                                     </button>
+                                    <small class="form-text text-muted">* All required fields must be filled</small>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="btn-group w-100">
@@ -1176,6 +1282,7 @@
                                             <i class="fas fa-file-export"></i> Export Results
                                         </button>
                                     </div>
+                                    <small class="form-text text-muted">Calculate results first to enable optimization</small>
                                 </div>
                             </div>
 

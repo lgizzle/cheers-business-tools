@@ -58,6 +58,82 @@ class MarginCalculator:
             return price
         except ValueError:
             return None
+    
+    def generate_pricing_feedback(self, cost, current_price, target_margin):
+        """
+        Generate intelligent feedback and recommendations based on current vs target pricing
+        Returns a dictionary with feedback data
+        """
+        try:
+            cost = float(cost)
+            current_price = float(current_price)
+            target_margin = float(target_margin)
+            
+            # Calculate metrics
+            current_margin = self.calculate_margin_from_price(cost, current_price)
+            target_price = self.calculate_price_from_margin(cost, target_margin)
+            current_profit = current_price - cost
+            target_profit = target_price - cost
+            
+            if not current_margin or not target_price:
+                return None
+                
+            margin_diff = current_margin - target_margin
+            price_diff = current_price - target_price
+            profit_diff = current_profit - target_profit
+            
+            # Determine feedback type and recommendations
+            feedback_type = 'optimal'
+            summary = ''
+            recommendations = []
+            
+            if abs(margin_diff) < 0.02:  # Within 2% of target
+                feedback_type = 'optimal'
+                summary = 'Your current pricing is well-aligned with your target margin!'
+                recommendations = [
+                    'Current pricing strategy is optimal',
+                    'Monitor competitor pricing to maintain position',
+                    'Consider small price adjustments for seasonal demand'
+                ]
+            elif current_margin < target_margin:
+                feedback_type = 'increase_needed'
+                increase_pct = ((target_price / current_price - 1) * 100)
+                summary = f'Current pricing is below target. Consider increasing price by {increase_pct:.1f}% (${abs(price_diff):.2f})'
+                recommendations = [
+                    f'Increase price to ${target_price:.2f} to reach target margin',
+                    f'This would improve profit by ${abs(profit_diff):.2f} per unit',
+                    'Test price increase gradually to gauge customer response',
+                    'Highlight value proposition to justify higher price'
+                ]
+            else:
+                feedback_type = 'above_target'
+                summary = f'Current pricing exceeds target margin by {(margin_diff * 100):.1f}%'
+                recommendations = [
+                    'Current pricing generates strong margins',
+                    'Monitor for customer price sensitivity',
+                    'Consider competitive positioning - are you pricing yourself out?',
+                    f'Could reduce price by ${abs(price_diff):.2f} and still meet target'
+                ]
+                
+            return {
+                'feedback_type': feedback_type,
+                'summary': summary,
+                'recommendations': recommendations,
+                'metrics': {
+                    'margin_diff': margin_diff,
+                    'price_diff': price_diff,
+                    'profit_diff': profit_diff,
+                    'current_margin': current_margin,
+                    'target_margin': target_margin,
+                    'current_price': current_price,
+                    'target_price': target_price,
+                    'current_profit': current_profit,
+                    'target_profit': target_profit
+                }
+            }
+            
+        except (ValueError, TypeError):
+            return None
 
     def calculate_margin_from_price(self, cost, price):
         """
@@ -93,18 +169,35 @@ class MarginCalculator:
         except (ValueError, ZeroDivisionError):
             return None
 
-    def perform_sensitivity_analysis(self, cost, current_price=None):
+    def perform_sensitivity_analysis(self, cost, current_price=None, intelligent_range=True):
         """
         Perform sensitivity analysis across a range of margins
         Returns a DataFrame with pricing at different margin levels
+        If intelligent_range is True and current_price is provided, 
+        expands range to include current price margin plus buffer
         """
         try:
             cost = float(cost)
             if current_price:
                 current_price = float(current_price)
 
+            # Intelligent range adjustment
+            min_margin = self.min_margin
+            max_margin = self.max_margin
+            
+            if intelligent_range and current_price:
+                current_margin = self.calculate_margin_from_price(cost, current_price)
+                if current_margin:
+                    buffer = 0.05  # 5% buffer
+                    min_margin = min(min_margin, current_margin - buffer)
+                    max_margin = max(max_margin, current_margin + buffer)
+                    
+                    # Ensure reasonable bounds
+                    min_margin = max(0.05, min_margin)  # Minimum 5% margin
+                    max_margin = min(0.70, max_margin)  # Maximum 70% margin
+
             # Generate margin range
-            margins = np.arange(self.min_margin, self.max_margin + self.step_margin, self.step_margin)
+            margins = np.arange(min_margin, max_margin + self.step_margin, self.step_margin)
 
             # Calculate for each margin
             results = []

@@ -624,6 +624,32 @@ def margin_calculator_page():
     """Render the margin calculator page."""
     return render_template('margin_calculator.html')
 
+@app.route('/api/margin-feedback', methods=['POST'])
+def get_margin_feedback():
+    """Get intelligent pricing feedback and recommendations."""
+    try:
+        data = request.json
+        
+        # Validate required parameters
+        required_fields = ['cost', 'current_price', 'target_margin']
+        for field in required_fields:
+            if field not in data or not data[field]:
+                return jsonify({"success": False, "error": f"{field} is required"})
+        
+        # Generate feedback
+        feedback = margin_calculator.generate_pricing_feedback(
+            data['cost'], data['current_price'], data['target_margin']
+        )
+        
+        if feedback:
+            return jsonify({"success": True, "feedback": feedback})
+        else:
+            return jsonify({"success": False, "error": "Unable to generate feedback"})
+            
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({"success": False, "error": str(e)})
+
 @app.route('/api/generate-margin-report', methods=['POST'])
 def generate_margin_report():
     """Generate a margin analysis report."""
@@ -643,9 +669,9 @@ def generate_margin_report():
             data['cost'], data['target_margin']
         )
 
-        # Generate sensitivity data if needed
+        # Generate sensitivity data with intelligent range adjustment
         sensitivity_data = margin_calculator.perform_sensitivity_analysis(
-            data['cost'], data.get('current_price')
+            data['cost'], data.get('current_price'), intelligent_range=True
         )
 
         # Calculate current margin if current price is provided

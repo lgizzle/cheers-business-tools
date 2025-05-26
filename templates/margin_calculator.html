@@ -24,9 +24,103 @@
     }
     .current-price {
         background-color: #FFEB9C;
+        font-weight: bold;
+        border: 2px solid #F4B942;
     }
     .current-price td {
         background-color: #FFEB9C;
+        font-weight: bold;
+        border: 2px solid #F4B942;
+    }
+    .feedback-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+    .feedback-positive {
+        background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+    }
+    .feedback-negative {
+        background: linear-gradient(135deg, #f44336 0%, #da190b 100%);
+    }
+    .feedback-warning {
+        background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+    }
+    .price-indicator {
+        position: relative;
+        background: linear-gradient(to right, #dc3545 0%, #ffc107 50%, #28a745 100%);
+        height: 20px;
+        border-radius: 10px;
+        margin: 10px 0;
+    }
+    .current-price-marker {
+        position: absolute;
+        top: -5px;
+        width: 3px;
+        height: 30px;
+        background-color: #000;
+        border-radius: 2px;
+        z-index: 10;
+    }
+    .current-price-marker::after {
+        content: 'Current';
+        position: absolute;
+        top: -25px;
+        left: -15px;
+        font-size: 10px;
+        font-weight: bold;
+        color: #000;
+    }
+    .target-price-marker {
+        position: absolute;
+        top: -5px;
+        width: 3px;
+        height: 30px;
+        background-color: #007bff;
+        border-radius: 2px;
+        z-index: 10;
+    }
+    .target-price-marker::after {
+        content: 'Target';
+        position: absolute;
+        top: -25px;
+        left: -15px;
+        font-size: 10px;
+        font-weight: bold;
+        color: #007bff;
+    }
+    .improvement-badge {
+        display: inline-block;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        border-radius: 0.375rem;
+        margin-left: 0.5rem;
+    }
+    .badge-increase {
+        background-color: #d4edda;
+        color: #155724;
+    }
+    .badge-decrease {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+    .recommendation-list {
+        list-style: none;
+        padding-left: 0;
+    }
+    .recommendation-list li {
+        margin-bottom: 0.5rem;
+        padding-left: 1.5rem;
+        position: relative;
+    }
+    .recommendation-list li::before {
+        content: '→';
+        position: absolute;
+        left: 0;
+        font-weight: bold;
     }
 </style>
 {% endblock %}
@@ -67,7 +161,21 @@
                     <div class="mb-3">
                         <label for="target_margin" class="form-label">Target Margin (%)</label>
                         <input type="number" step="0.1" class="form-control" id="target_margin" placeholder="Enter target margin" value="30">
-                        <div class="form-text">Recommended: 28-32% for optimal pricing</div>
+                        <div class="form-text">Your optimal margin target</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Sweet Spot Range</label>
+                        <div class="row">
+                            <div class="col">
+                                <label for="sweet_spot_minus" class="form-label">Minus %</label>
+                                <input type="number" step="0.1" class="form-control" id="sweet_spot_minus" value="2">
+                            </div>
+                            <div class="col">
+                                <label for="sweet_spot_plus" class="form-label">Plus %</label>
+                                <input type="number" step="0.1" class="form-control" id="sweet_spot_plus" value="2">
+                            </div>
+                        </div>
+                        <div class="form-text">Sweet spot will be Target ± these values</div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Sensitivity Analysis Range</label>
@@ -81,6 +189,7 @@
                                 <input type="number" step="1" class="form-control" id="max_margin" value="35">
                             </div>
                         </div>
+                        <div class="form-text">Range will auto-expand to include current price if needed</div>
                     </div>
                 </div>
             </div>
@@ -93,7 +202,44 @@
     </div>
 </form>
 
+<!-- Pricing Feedback Section -->
+<div id="feedback-container" class="d-none">
+    <div id="feedback-section" class="feedback-section">
+        <h4><i class="fas fa-lightbulb me-2"></i>Pricing Recommendation</h4>
+        <div class="row">
+            <div class="col-md-8">
+                <div id="feedback-content">
+                    <!-- Filled by JavaScript -->
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div id="feedback-metrics" class="text-center">
+                    <!-- Filled by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div id="results-container" class="d-none">
+    <!-- Price Visualization -->
+    <div id="price-visualization" class="card mb-4 d-none">
+        <div class="card-header">
+            <h5 class="mb-0">Price Positioning</h5>
+        </div>
+        <div class="card-body">
+            <p class="mb-2">Visual comparison of current price positioning:</p>
+            <div class="price-indicator" id="price-indicator">
+                <!-- Current marker added by JavaScript -->
+            </div>
+            <div class="d-flex justify-content-between small text-muted">
+                <span id="left-label">Lower Margin</span>
+                <span id="center-label">Sweet Spot</span>
+                <span id="right-label">Higher Margin</span>
+            </div>
+        </div>
+    </div>
+
     <div class="card mb-4">
         <div class="card-header bg-success text-white">
             <h4 class="mb-0">Calculation Results</h4>
@@ -152,7 +298,7 @@
             <h4 class="mb-0">Sensitivity Analysis</h4>
         </div>
         <div class="card-body">
-            <p>The table below shows pricing at different margin levels. The "sweet spot" range (28-32%) is highlighted in green.</p>
+            <p>The table below shows pricing at different margin levels. Your custom "sweet spot" range is highlighted in green.</p>
             <div class="table-responsive">
                 <table class="table table-striped table-hover" id="sensitivity-table">
                     <thead>
@@ -181,6 +327,8 @@
         const exportBtn = document.getElementById('export-btn');
         const resultsContainer = document.getElementById('results-container');
         const currentPriceResults = document.getElementById('current-price-results');
+        const feedbackContainer = document.getElementById('feedback-container');
+        const priceVisualization = document.getElementById('price-visualization');
 
         calculateBtn.addEventListener('click', function() {
             // Get input values
@@ -189,12 +337,31 @@
             const currentPrice = document.getElementById('current_price').value ?
                                 parseFloat(document.getElementById('current_price').value) : null;
             const targetMargin = parseFloat(document.getElementById('target_margin').value) / 100;
-            const minMargin = parseFloat(document.getElementById('min_margin').value) / 100;
-            const maxMargin = parseFloat(document.getElementById('max_margin').value) / 100;
+            const sweetSpotMinus = parseFloat(document.getElementById('sweet_spot_minus').value) / 100;
+            const sweetSpotPlus = parseFloat(document.getElementById('sweet_spot_plus').value) / 100;
+            let minMargin = parseFloat(document.getElementById('min_margin').value) / 100;
+            let maxMargin = parseFloat(document.getElementById('max_margin').value) / 100;
 
             if (isNaN(cost) || cost <= 0) {
                 alert('Please enter a valid product cost');
                 return;
+            }
+
+            // Calculate dynamic sweet spot
+            const sweetSpotMin = targetMargin - sweetSpotMinus;
+            const sweetSpotMax = targetMargin + sweetSpotPlus;
+
+            // Intelligent sensitivity range adjustment
+            if (currentPrice) {
+                const currentMargin = (currentPrice - cost) / currentPrice;
+                // Expand range to include current price margin plus buffer
+                const buffer = 0.05; // 5% buffer
+                minMargin = Math.min(minMargin, currentMargin - buffer);
+                maxMargin = Math.max(maxMargin, currentMargin + buffer);
+                
+                // Update the input fields to show adjusted range
+                document.getElementById('min_margin').value = Math.round(minMargin * 100);
+                document.getElementById('max_margin').value = Math.round(maxMargin * 100);
             }
 
             // Calculate price at target margin
@@ -212,7 +379,7 @@
             if (currentPrice) {
                 const currentMargin = (currentPrice - cost) / currentPrice;
                 const currentProfit = currentPrice - cost;
-                const profitDiff = profitAtTargetMargin - currentProfit;
+                const profitDiff = currentProfit - profitAtTargetMargin; // Fixed: current - target
 
                 document.getElementById('result-current-margin').textContent = (currentMargin * 100).toFixed(1) + '%';
                 document.getElementById('result-current-price').textContent = '$' + currentPrice.toFixed(2);
@@ -224,74 +391,258 @@
                 profitDiffElem.classList.add(profitDiff >= 0 ? 'text-success' : 'text-danger');
 
                 currentPriceResults.classList.remove('d-none');
+                
+                // Generate feedback
+                generateFeedback(currentMargin, targetMargin, currentPrice, priceAtTargetMargin, currentProfit, profitAtTargetMargin);
+                
+                // Show price visualization
+                createPriceVisualization(currentPrice, cost, sweetSpotMin, sweetSpotMax);
+                priceVisualization.classList.remove('d-none');
             } else {
                 currentPriceResults.classList.add('d-none');
+                feedbackContainer.classList.add('d-none');
+                priceVisualization.classList.add('d-none');
             }
 
             // Generate sensitivity analysis
-            generateSensitivityTable(cost, currentPrice, minMargin, maxMargin);
+            generateSensitivityTable(cost, currentPrice, minMargin, maxMargin, sweetSpotMin, sweetSpotMax);
 
             // Show results
             resultsContainer.classList.remove('d-none');
         });
 
-        // Sensitivity analysis table generator
-        function generateSensitivityTable(cost, currentPrice, minMargin, maxMargin) {
+        // Generate intelligent feedback
+        function generateFeedback(currentMargin, targetMargin, currentPrice, targetPrice, currentProfit, targetProfit) {
+            const feedbackSection = document.getElementById('feedback-section');
+            const feedbackContent = document.getElementById('feedback-content');
+            const feedbackMetrics = document.getElementById('feedback-metrics');
+            
+            const marginDiff = currentMargin - targetMargin;
+            const priceDiff = currentPrice - targetPrice;
+            const profitDiff = currentProfit - targetProfit;
+            
+            let feedbackClass = 'feedback-section';
+            let recommendations = [];
+            let summary = '';
+
+            if (Math.abs(marginDiff) < 0.02) { // Within 2% of target
+                feedbackClass += ' feedback-positive';
+                summary = '✅ Your current pricing is well-aligned with your target margin!';
+                recommendations.push('Current pricing strategy is optimal');
+                recommendations.push('Monitor competitor pricing to maintain position');
+                recommendations.push('Consider small price adjustments for seasonal demand');
+            } else if (currentMargin < targetMargin) {
+                feedbackClass += ' feedback-negative';
+                const increase = ((targetPrice / currentPrice - 1) * 100).toFixed(1);
+                summary = `📈 Current pricing is below target. Consider increasing price by ${increase}% (${Math.abs(priceDiff).toFixed(2)})`;
+                recommendations.push(`Increase price to ${targetPrice.toFixed(2)} to reach target margin`);
+                recommendations.push(`This would improve profit by ${Math.abs(profitDiff).toFixed(2)} per unit`);
+                recommendations.push('Test price increase gradually to gauge customer response');
+                recommendations.push('Highlight value proposition to justify higher price');
+            } else {
+                feedbackClass += ' feedback-warning';
+                summary = `💰 Current pricing exceeds target margin by ${(marginDiff * 100).toFixed(1)}%`;
+                recommendations.push('Current pricing generates strong margins');
+                recommendations.push('Monitor for customer price sensitivity');
+                recommendations.push('Consider competitive positioning - are you pricing yourself out?');
+                recommendations.push(`Could reduce price by ${Math.abs(priceDiff).toFixed(2)} and still meet target`);
+            }
+
+            feedbackSection.className = feedbackClass;
+            
+            // Left column: Summary and recommendations
+            let content = `<p class="mb-3"><strong>${summary}</strong></p>`;
+            content += '<h6>Recommendations:</h6>';
+            content += '<ul class="recommendation-list">';
+            recommendations.forEach(rec => {
+                content += `<li>${rec}</li>`;
+            });
+            content += '</ul>';
+            feedbackContent.innerHTML = content;
+
+            // Right column: Key metrics in cards
+            let metrics = '<div class="row g-2">';
+            
+            // Margin Difference Card
+            metrics += '<div class="col-12">';
+            metrics += '<div class="card text-center" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);">';
+            metrics += '<div class="card-body p-2">';
+            metrics += '<h6 class="card-title mb-1" style="color: white; font-size: 0.9rem;">Margin Difference</h6>';
+            metrics += `<h4 class="mb-0" style="color: white;">${(marginDiff * 100).toFixed(1)}%</h4>`;
+            if (marginDiff !== 0) {
+                const badgeClass = marginDiff > 0 ? 'badge-increase' : 'badge-decrease';
+                metrics += `<small><span class="improvement-badge ${badgeClass}">${marginDiff > 0 ? '+' : ''}${(marginDiff * 100).toFixed(1)}%</span></small>`;
+            }
+            metrics += '</div></div></div>';
+            
+            // Price Adjustment Card (instead of redundant Price Difference)
+            metrics += '<div class="col-12">';
+            metrics += '<div class="card text-center" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);">';
+            metrics += '<div class="card-body p-2">';
+            metrics += '<h6 class="card-title mb-1" style="color: white; font-size: 0.9rem;">Price Adjustment</h6>';
+            metrics += `<h4 class="mb-0" style="color: white;">${Math.abs(priceDiff).toFixed(2)}</h4>`;
+            if (priceDiff !== 0) {
+                const adjustmentText = priceDiff > 0 ? 'Reduce' : 'Increase';
+                const badgeClass = priceDiff > 0 ? 'badge-decrease' : 'badge-increase';
+                metrics += `<small><span class="improvement-badge ${badgeClass}">${adjustmentText}</span></small>`;
+            }
+            metrics += '</div></div></div>';
+            
+            // Margin Health Card (instead of redundant Profit Impact)
+            metrics += '<div class="col-12">';
+            metrics += '<div class="card text-center" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);">';
+            metrics += '<div class="card-body p-2">';
+            metrics += '<h6 class="card-title mb-1" style="color: white; font-size: 0.9rem;">Margin Health</h6>';
+            const marginHealthScore = Math.abs(marginDiff) < 0.02 ? 'Optimal' : 
+                                    Math.abs(marginDiff) < 0.05 ? 'Good' : 
+                                    Math.abs(marginDiff) < 0.10 ? 'Fair' : 'Review';
+            const healthColor = marginHealthScore === 'Optimal' ? '#4CAF50' : 
+                              marginHealthScore === 'Good' ? '#8BC34A' :
+                              marginHealthScore === 'Fair' ? '#FFC107' : '#FF5722';
+            metrics += `<h4 class="mb-0" style="color: ${healthColor};">${marginHealthScore}</h4>`;
+            metrics += `<small style="color: white;">Current: ${(currentMargin * 100).toFixed(1)}%</small>`;
+            metrics += '</div></div></div>';
+            
+            metrics += '</div>';
+            feedbackMetrics.innerHTML = metrics;
+            
+            feedbackContainer.classList.remove('d-none');
+        }
+
+        // Create price visualization
+        function createPriceVisualization(currentPrice, cost, sweetSpotMin, sweetSpotMax) {
+            const indicator = document.getElementById('price-indicator');
+            indicator.innerHTML = ''; // Clear existing markers
+            
+            // Create a more intuitive visualization centered around the sweet spot
+            const sweetSpotCenter = (sweetSpotMin + sweetSpotMax) / 2;
+            
+            // Create a balanced range around the sweet spot for better visualization
+            const visualRange = 0.15; // 15% range on each side of sweet spot center
+            const leftBound = sweetSpotCenter - visualRange;
+            const rightBound = sweetSpotCenter + visualRange;
+            
+            // Calculate corresponding prices for the visual range
+            const leftPrice = cost / (1 - leftBound);
+            const rightPrice = cost / (1 - rightBound);
+            
+            // Calculate positions (0-100%) across this balanced range
+            const currentPos = ((currentPrice - leftPrice) / (rightPrice - leftPrice)) * 100;
+            
+            // Add only current price marker (target is implicit in sweet spot)
+            const currentMarker = document.createElement('div');
+            currentMarker.className = 'current-price-marker';
+            currentMarker.style.left = Math.max(0, Math.min(97, currentPos)) + '%';
+            indicator.appendChild(currentMarker);
+            
+            // Update the labels to show dynamic sweet spot
+            const leftLabel = Math.round((sweetSpotCenter - visualRange) * 100);
+            const rightLabel = Math.round((sweetSpotCenter + visualRange) * 100);
+            const sweetSpotLabel = `${Math.round(sweetSpotMin * 100)}-${Math.round(sweetSpotMax * 100)}%`;
+            
+            // Update label text using proper IDs
+            document.getElementById('left-label').textContent = `Lower Margin (${leftLabel}%)`;
+            document.getElementById('center-label').textContent = `Sweet Spot (${sweetSpotLabel})`;
+            document.getElementById('right-label').textContent = `Higher Margin (${rightLabel}%+)`;
+        }
+
+        // Enhanced sensitivity analysis table generator
+        function generateSensitivityTable(cost, currentPrice, minMargin, maxMargin, sweetSpotMin, sweetSpotMax) {
             const tableBody = document.getElementById('sensitivity-body');
             tableBody.innerHTML = '';
 
-            // Generate margin range with 1% steps
-            const steps = Math.floor((maxMargin - minMargin) * 100) + 1;
-            const step = (maxMargin - minMargin) / (steps - 1);
+            // Generate margin range with more steps for better granularity
+            const stepSize = 0.01; // 1% steps
+            const steps = Math.floor((maxMargin - minMargin) / stepSize) + 1;
 
+            // Create array to hold all data including current price
+            let analysisData = [];
+
+            // Generate standard margin points
             for (let i = 0; i < steps; i++) {
-                const margin = minMargin + (i * step);
+                const margin = minMargin + (i * stepSize);
                 const price = cost / (1 - margin);
                 const profit = price - cost;
                 const markup = margin / (1 - margin);
 
+                analysisData.push({
+                    margin: margin,
+                    price: price,
+                    profit: profit,
+                    markup: markup,
+                    isCurrentPrice: false,
+                    isSweetSpot: margin >= sweetSpotMin && margin <= sweetSpotMax
+                });
+            }
+
+            // Add current price data if it exists
+            if (currentPrice) {
+                const currentMargin = (currentPrice - cost) / currentPrice;
+                const currentMarkup = (currentPrice - cost) / cost;
+                const currentProfit = currentPrice - cost;
+
+                // Check if we already have this margin level (within 0.5%)
+                const existingIndex = analysisData.findIndex(item => Math.abs(item.margin - currentMargin) < 0.005);
+                
+                if (existingIndex >= 0) {
+                    // Mark existing row as current price
+                    analysisData[existingIndex].isCurrentPrice = true;
+                } else {
+                    // Add new row for current price
+                    analysisData.push({
+                        margin: currentMargin,
+                        price: currentPrice,
+                        profit: currentProfit,
+                        markup: currentMarkup,
+                        isCurrentPrice: true,
+                        isSweetSpot: currentMargin >= sweetSpotMin && currentMargin <= sweetSpotMax
+                    });
+                }
+            }
+
+            // Sort by margin
+            analysisData.sort((a, b) => a.margin - b.margin);
+
+            // Generate table rows
+            analysisData.forEach(data => {
                 const row = document.createElement('tr');
 
-                // Determine if this is current price or sweet spot
-                const isCurrentPrice = currentPrice && Math.abs(price - currentPrice) < 0.01;
-                const isSweetSpot = margin >= 0.28 && margin <= 0.32;
-
-                if (isCurrentPrice) {
+                if (data.isCurrentPrice) {
                     row.classList.add('current-price');
-                } else if (isSweetSpot) {
+                } else if (data.isSweetSpot) {
                     row.classList.add('sweet-spot');
                 }
 
                 // Margin
                 const marginCell = document.createElement('td');
-                marginCell.textContent = (margin * 100).toFixed(1) + '%';
+                marginCell.textContent = (data.margin * 100).toFixed(1) + '%';
                 row.appendChild(marginCell);
 
                 // Markup
                 const markupCell = document.createElement('td');
-                markupCell.textContent = (markup * 100).toFixed(1) + '%';
+                markupCell.textContent = (data.markup * 100).toFixed(1) + '%';
                 row.appendChild(markupCell);
 
                 // Price
                 const priceCell = document.createElement('td');
-                priceCell.textContent = '$' + price.toFixed(2);
+                priceCell.textContent = '$' + data.price.toFixed(2);
                 row.appendChild(priceCell);
 
                 // Profit
                 const profitCell = document.createElement('td');
-                profitCell.textContent = '$' + profit.toFixed(2);
+                profitCell.textContent = '$' + data.profit.toFixed(2);
                 row.appendChild(profitCell);
 
                 // Notes
                 const notesCell = document.createElement('td');
                 const notes = [];
-                if (isCurrentPrice) notes.push('Current Price');
-                if (isSweetSpot) notes.push('Sweet Spot');
+                if (data.isCurrentPrice) notes.push('Current Price');
+                if (data.isSweetSpot) notes.push('Sweet Spot');
                 notesCell.textContent = notes.join(', ');
                 row.appendChild(notesCell);
 
                 tableBody.appendChild(row);
-            }
+            });
         }
 
         // Export to Excel
