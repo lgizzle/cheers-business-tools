@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Margin Calculator Test</title>
+    <style>
+        :root {
+            --cheers-primary: #D10000;
+            --cheers-primary-dark: #B00000;
+            --cheers-primary-light: rgba(209, 0, 0, 0.1);
+            --cheers-secondary: #212529;
+            --cheers-secondary-dark: #000000;
+            --cheers-light-bg: #f8f9fa;
+            --cheers-light-section: #f2f2f2;
+            --cheers-border: #dee2e6;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.5;
+            background-color: var(--cheers-light-bg);
+            color: #333;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: var(--cheers-primary);
+            color: white;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .header p {
+            margin: 4px 0 0 0;
+            opacity: 0.9;
+        }
+
+        /* Two-column grid layout */
+        .margin-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .left-column, .right-column {
+            background: white;
+            border-radius: 4px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-header {
+            background: var(--cheers-primary);
+            color: white;
+            padding: 12px 20px;
+            font-weight: 600;
+            font-size: 16px;
+            margin: 0;
+        }
+
+        .section-content {
+            padding: 20px;
+        }
+
+        .field-group {
+            margin-bottom: 20px;
+        }
+
+        .field-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .field-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            cursor: help;
+            position: relative;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: border-color 0.15s ease;
+            line-height: 1.5;
+            box-sizing: border-box;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--cheers-primary);
+            box-shadow: none;
+        }
+
+        /* Slider controls */
+        .slider-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 6px;
+        }
+
+        .form-range {
+            flex: 1;
+            height: 6px;
+            background: #e9ecef;
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .form-range::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--cheers-primary);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .form-range::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: var(--cheers-primary);
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+
+        .slider-value {
+            min-width: 60px;
+            padding: 6px 8px;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .range-inputs {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .range-inputs .field-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        /* Action buttons */
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            border: 2px solid;
+        }
+
+        .btn-primary {
+            background: var(--cheers-primary);
+            color: white;
+            border-color: var(--cheers-primary);
+        }
+
+        .btn-primary:hover {
+            background: var(--cheers-primary-dark);
+            border-color: var(--cheers-primary-dark);
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--cheers-primary);
+            border-color: var(--cheers-primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--cheers-primary);
+            color: white;
+        }
+
+        /* Recommendation box */
+        .recommendation-box {
+            border: 2px solid var(--cheers-primary);
+            border-radius: 4px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .recommendation-box h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .key-metric {
+            font-weight: 700;
+            color: var(--cheers-primary);
+        }
+
+        /* Price position bar */
+        .price-position {
+            margin: 20px 0;
+        }
+
+        .position-bar {
+            position: relative;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            margin: 12px 0;
+        }
+
+        .position-tick {
+            position: absolute;
+            top: -4px;
+            width: 4px;
+            height: 16px;
+            background: var(--cheers-primary);
+            border-radius: 2px;
+        }
+
+        .position-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* Results cards */
+        .results-cards {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .result-card {
+            flex: 1;
+            border: 2px solid #e9ecef;
+            border-radius: 4px;
+            padding: 16px;
+        }
+
+        .result-card h4 {
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .result-card .value {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--cheers-primary);
+            margin-bottom: 4px;
+        }
+
+        .result-card .detail {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* Table styles */
+        .table-container {
+            overflow-x: auto;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            margin-bottom: 0;
+        }
+
+        .table th {
+            background: #f8f9fa;
+            padding: 12px 8px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid #e9ecef;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .table th.sortable {
+            cursor: pointer;
+        }
+
+        .table th.sortable:after {
+            content: ' ↕';
+            color: #999;
+        }
+
+        .table td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #f1f3f4;
+        }
+
+        .table .number {
+            text-align: right;
+        }
+
+        .sweet-spot {
+            font-weight: 700;
+            background: #f8f9fa;
+        }
+
+        .current-price {
+            background: #fff3cd;
+            font-weight: 700;
+        }
+
+        /* Tooltips */
+        .tooltip-label {
+            position: relative;
+            cursor: help;
+        }
+
+        .tooltip-label:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 0;
+            background: #333;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            z-index: 1000;
+            margin-bottom: 4px;
+        }
+
+        .tooltip-label:hover::before {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            left: 12px;
+            border: 4px solid transparent;
+            border-top-color: #333;
+            margin-bottom: -4px;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .margin-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .results-cards {
+                flex-direction: column;
+            }
+            
+            .range-inputs {
+                flex-direction: column;
+            }
+        }
+
+        /* Hide default elements */
+        .d-none {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Margin/Markup Calculator</h1>
+            <p>Calculate optimal selling price based on cost and desired margin, or analyze current pricing to determine margins and markup.</p>
+        </div>
+
+        <div class="margin-grid">
+            <!-- Left Column: Inputs -->
+            <div class="left-column">
+                <div class="section-header">Product Information & Settings</div>
+                <div class="section-content">
+                    <form id="margin-calc-form">
+                        <div class="field-group">
+                            <label for="product_name" class="tooltip-label" data-tooltip="Enter the name or SKU of your product">Product Name</label>
+                            <input type="text" class="form-control" id="product_name" placeholder="Example: Grey Goose" value="Grey Goose">
+                        </div>
+
+                        <div class="field-group">
+                            <label for="cost" class="tooltip-label" data-tooltip="Your total cost per unit including all expenses">Product Cost ($)</label>
+                            <input type="number" class="form-control" id="cost" step="0.01" placeholder="Enter product cost" value="25.50" required>
+                        </div>
+
+                        <div class="field-group">
+                            <label for="current_price" class="tooltip-label" data-tooltip="Your current selling price (optional for analysis)">Current Price ($, Optional)</label>
+                            <input type="number" class="form-control" id="current_price" step="0.01" placeholder="Enter current price (if any)" value="39.00">
+                        </div>
+
+                        <div class="field-group">
+                            <label class="tooltip-label" data-tooltip="Your desired profit margin as a percentage of selling price">Target Margin (%)</label>
+                            <div class="slider-group">
+                                <input type="range" class="form-range" id="targetMargin" min="0" max="80" value="30" step="0.5">
+                                <input type="number" class="form-control slider-value" id="targetMarginValue" value="30" min="0" max="80" step="0.5">
+                            </div>
+                            <small style="color: #666; margin-top: 4px; display: block;">Recommended: 28-32% for optimal pricing</small>
+                        </div>
+
+                        <div class="field-group">
+                            <label class="tooltip-label" data-tooltip="Range for sensitivity analysis table">Sensitivity Analysis Range</label>
+                            <div class="range-inputs">
+                                <div class="field-group">
+                                    <label for="min_margin">Min %</label>
+                                    <input type="number" class="form-control" id="min_margin" value="23" min="0" max="100">
+                                </div>
+                                <div class="field-group">
+                                    <label for="max_margin">Max %</label>
+                                    <input type="number" class="form-control" id="max_margin" value="40" min="0" max="100">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="action-buttons">
+                            <button type="button" class="btn btn-primary" id="calculate-btn">Calculate</button>
+                            <button type="button" class="btn btn-outline" id="export-btn">Export to Excel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Right Column: Outputs -->
+            <div class="right-column">
+                <div class="section-header">Results & Analysis</div>
+                <div class="section-content">
+                    <div id="results-container" class="d-none">
+                        <!-- Pricing Recommendation -->
+                        <div class="recommendation-box">
+                            <h3>Pricing Recommendation</h3>
+                            <p>Current pricing exceeds target margin by <span class="key-metric" id="marginDiff">4.6%</span></p>
+                            <ul style="margin: 12px 0; padding-left: 20px;">
+                                <li>Current pricing generates strong margins</li>
+                                <li>Monitor for customer price sensitivity</li>
+                                <li>Consider competitive positioning - are you pricing yourself out?</li>
+                                <li>Could reduce price by <strong>$<span id="priceDiff">2.57</span></strong> and still meet target</li>
+                            </ul>
+                        </div>
+
+                        <!-- Price Position Bar -->
+                        <div class="price-position">
+                            <h4 style="margin-bottom: 8px;">Price Positioning</h4>
+                            <div class="position-bar">
+                                <div class="position-tick" style="left: 65%;" id="currentTick"></div>
+                                <div class="position-tick" style="left: 45%;" id="targetTick"></div>
+                            </div>
+                            <div class="position-labels">
+                                <span>Lower Margin</span>
+                                <span style="color: #28a745; font-weight: 600;">Sweet Spot (28-32%)</span>
+                                <span>Higher Margin</span>
+                            </div>
+                        </div>
+
+                        <!-- Results Cards -->
+                        <div class="results-cards">
+                            <div class="result-card">
+                                <h4>Price at Target Margin</h4>
+                                <div class="value" id="targetPrice">$36.43</div>
+                                <div class="detail">Profit per Unit: $<span id="targetProfit">10.93</span></div>
+                                <div class="detail">Equivalent Markup: <span id="targetMarkup">42.9</span>%</div>
+                            </div>
+                            <div class="result-card">
+                                <h4>Current Price Analysis</h4>
+                                <div class="value" id="currentMargin">34.6%</div>
+                                <div class="detail">Current Profit: $<span id="currentProfit">13.50</span></div>
+                                <div class="detail">Profit Difference: $<span id="profitDiff">2.57</span> more</div>
+                            </div>
+                        </div>
+
+                        <!-- Sensitivity Table -->
+                        <div class="table-container">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th class="sortable">Margin %</th>
+                                        <th class="number">Markup %</th>
+                                        <th class="number">Price</th>
+                                        <th class="number">Profit</th>
+                                        <th>Notes</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="sensitivityTable">
+                                    <!-- Table content will be populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div id="empty-state" class="text-center" style="padding: 40px; color: #666;">
+                        <h5>Enter product details to see calculations</h5>
+                        <p>Fill in the product information on the left to generate pricing analysis and recommendations.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const calculateBtn = document.getElementById('calculate-btn');
+            const exportBtn = document.getElementById('export-btn');
+            const resultsContainer = document.getElementById('results-container');
+            const emptyState = document.getElementById('empty-state');
+
+            // Sync sliders with number inputs
+            document.getElementById('targetMargin').addEventListener('input', function() {
+                document.getElementById('targetMarginValue').value = this.value;
+                calculate();
+            });
+
+            document.getElementById('targetMarginValue').addEventListener('input', function() {
+                document.getElementById('targetMargin').value = this.value;
+                calculate();
+            });
+
+            // Live calculation on input changes
+            document.querySelectorAll('input').forEach(input => {
+                input.addEventListener('input', calculate);
+            });
+
+            calculateBtn.addEventListener('click', calculate);
+
+            function calculate() {
+                const cost = parseFloat(document.getElementById('cost').value) || 0;
+                const currentPrice = parseFloat(document.getElementById('current_price').value) || 0;
+                const targetMargin = parseFloat(document.getElementById('targetMarginValue').value) || 0;
+
+                if (cost === 0) {
+                    resultsContainer.classList.add('d-none');
+                    emptyState.classList.remove('d-none');
+                    return;
+                }
+
+                emptyState.classList.add('d-none');
+                resultsContainer.classList.remove('d-none');
+
+                // Calculate target price
+                const targetPrice = cost / (1 - targetMargin / 100);
+                const targetProfit = targetPrice - cost;
+                const targetMarkup = (targetProfit / cost) * 100;
+
+                // Calculate current margin if current price is provided
+                let currentMargin = 0;
+                let currentProfit = 0;
+                if (currentPrice > 0) {
+                    currentMargin = ((currentPrice - cost) / currentPrice) * 100;
+                    currentProfit = currentPrice - cost;
+                }
+
+                // Update UI
+                document.getElementById('targetPrice').textContent = `$${targetPrice.toFixed(2)}`;
+                document.getElementById('targetProfit').textContent = targetProfit.toFixed(2);
+                document.getElementById('targetMarkup').textContent = targetMarkup.toFixed(1);
+
+                if (currentPrice > 0) {
+                    document.getElementById('currentMargin').textContent = `${currentMargin.toFixed(1)}%`;
+                    document.getElementById('currentProfit').textContent = currentProfit.toFixed(2);
+                    
+                    const marginDiff = currentMargin - targetMargin;
+                    const priceDiff = currentPrice - targetPrice;
+                    
+                    document.getElementById('marginDiff').textContent = `${Math.abs(marginDiff).toFixed(1)}%`;
+                    document.getElementById('priceDiff').textContent = Math.abs(priceDiff).toFixed(2);
+                    document.getElementById('profitDiff').textContent = Math.abs(currentProfit - targetProfit).toFixed(2);
+                }
+
+                updateSensitivityTable();
+            }
+
+            function updateSensitivityTable() {
+                const cost = parseFloat(document.getElementById('cost').value) || 0;
+                const currentPrice = parseFloat(document.getElementById('current_price').value) || 0;
+                const minRange = parseInt(document.getElementById('min_margin').value) || 23;
+                const maxRange = parseInt(document.getElementById('max_margin').value) || 40;
+                
+                const tbody = document.getElementById('sensitivityTable');
+                tbody.innerHTML = '';
+
+                for (let margin = minRange; margin <= maxRange; margin++) {
+                    const price = cost / (1 - margin / 100);
+                    const profit = price - cost;
+                    const markup = (profit / cost) * 100;
+                    
+                    const row = document.createElement('tr');
+                    
+                    let rowClass = '';
+                    let notes = '';
+                    
+                    if (margin >= 28 && margin <= 32) {
+                        rowClass = 'sweet-spot';
+                        notes = 'Sweet Spot';
+                    }
+                    
+                    if (currentPrice > 0 && Math.abs(price - currentPrice) < 0.50) {
+                        rowClass = 'current-price';
+                        notes = 'Current Price';
+                    }
+                    
+                    row.className = rowClass;
+                    row.innerHTML = `
+                        <td><strong>${margin}.0%</strong></td>
+                        <td class="number">${markup.toFixed(1)}%</td>
+                        <td class="number">$${price.toFixed(2)}</td>
+                        <td class="number">$${profit.toFixed(2)}</td>
+                        <td>${notes}</td>
+                    `;
+                    
+                    tbody.appendChild(row);
+                }
+            }
+
+            // Export to Excel (mock function for testing)
+            exportBtn.addEventListener('click', function() {
+                alert('Export functionality would be available when connected to the Flask backend.');
+            });
+
+            // Initialize with default values
+            calculate();
+        });
+    </script>
+</body>
+</html>

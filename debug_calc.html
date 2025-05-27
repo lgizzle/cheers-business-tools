@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Margin Calculator</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .debug { background: #f0f0f0; padding: 10px; margin: 10px 0; }
+        input { margin: 5px; padding: 5px; }
+        button { padding: 10px; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Debug Margin Calculator</h1>
+    
+    <div>
+        <label>Cost: $<input type="number" id="cost" value="10" step="0.01"></label><br>
+        <label>Current Price: $<input type="number" id="currentPrice" value="14" step="0.01"></label><br>
+        <label>Target Margin: <input type="number" id="targetMargin" value="30" step="0.1">%</label><br>
+        <button onclick="calculate()">Calculate</button>
+    </div>
+
+    <div id="results" class="debug">
+        <h3>Results:</h3>
+        <div id="output"></div>
+    </div>
+
+    <script>
+        function calculate() {
+            const cost = parseFloat(document.getElementById('cost').value) || 0;
+            const currentPrice = parseFloat(document.getElementById('currentPrice').value) || 0;
+            const targetMargin = parseFloat(document.getElementById('targetMargin').value) || 0;
+            
+            console.log('Inputs:', { cost, currentPrice, targetMargin });
+            
+            // Calculate target price
+            const targetPrice = cost / (1 - targetMargin / 100);
+            const targetProfit = targetPrice - cost;
+            
+            // Calculate current margin
+            const currentMargin = ((currentPrice - cost) / currentPrice) * 100;
+            const currentProfit = currentPrice - cost;
+            
+            // Calculate differences 
+            const marginDiff = currentMargin - targetMargin;
+            const priceDiff = currentPrice - targetPrice;
+            const profitDiff = currentProfit - targetProfit;
+            
+            console.log('Calculations:', {
+                targetPrice,
+                targetProfit,
+                currentMargin,
+                currentProfit,
+                marginDiff,
+                priceDiff,
+                profitDiff
+            });
+            
+            const output = document.getElementById('output');
+            output.innerHTML = `
+                <strong>Expected Results:</strong><br>
+                Current Margin: ${currentMargin.toFixed(2)}% (should be ~28.57%)<br>
+                Target Price: $${targetPrice.toFixed(2)} (should be ~$14.29)<br>
+                Margin Difference: ${Math.abs(marginDiff).toFixed(2)}% (should be ~1.43%)<br>
+                Price Difference: $${Math.abs(priceDiff).toFixed(2)} (should be ~$0.29)<br>
+                <br>
+                <strong>Debug Info:</strong><br>
+                Cost: $${cost}<br>
+                Current Price: $${currentPrice}<br>
+                Target Margin: ${targetMargin}%<br>
+                <br>
+                Current Margin Calculation: ((${currentPrice} - ${cost}) / ${currentPrice}) * 100 = ${currentMargin.toFixed(2)}%<br>
+                Target Price Calculation: ${cost} / (1 - ${targetMargin}/100) = $${targetPrice.toFixed(2)}<br>
+                Margin Diff: ${currentMargin.toFixed(2)} - ${targetMargin} = ${marginDiff.toFixed(2)}%<br>
+                Price Diff: ${currentPrice} - ${targetPrice.toFixed(2)} = ${priceDiff.toFixed(2)}<br>
+            `;
+        }
+        
+        // Calculate on load
+        calculate();
+    </script>
+</body>
+</html>

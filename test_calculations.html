@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Margin Calculator Test</title>
+</head>
+<body>
+    <h1>Margin Calculator Debug Test</h1>
+    
+    <div>
+        <label>Cost: <input type="number" id="cost" value="10"></label><br><br>
+        <label>Current Price: <input type="number" id="currentPrice" value="14"></label><br><br>
+        <label>Target Margin: <input type="number" id="targetMargin" value="30"></label><br><br>
+        <button onclick="testCalculations()">Test Calculations</button>
+    </div>
+    
+    <div id="results" style="margin-top: 20px; font-family: monospace;"></div>
+
+    <script>
+        function testCalculations() {
+            const cost = parseFloat(document.getElementById('cost').value) || 0;
+            const currentPrice = parseFloat(document.getElementById('currentPrice').value) || 0;
+            const targetMargin = parseFloat(document.getElementById('targetMargin').value) || 0;
+            
+            console.log('=== INPUTS ===');
+            console.log('Cost:', cost);
+            console.log('Current Price:', currentPrice);
+            console.log('Target Margin:', targetMargin);
+            
+            // Calculate target price
+            const targetPrice = cost / (1 - targetMargin / 100);
+            const targetProfit = targetPrice - cost;
+            
+            // Calculate current margin
+            const currentMargin = ((currentPrice - cost) / currentPrice) * 100;
+            const currentProfit = currentPrice - cost;
+            
+            // Calculate differences
+            const profitDifference = currentProfit - targetProfit;
+            const marginDiff = currentMargin - targetMargin;
+            const priceDiff = currentPrice - targetPrice;
+            
+            const results = document.getElementById('results');
+            results.innerHTML = `
+                <h3>CALCULATION RESULTS:</h3>
+                <strong>Current Margin:</strong> ${currentMargin.toFixed(2)}%<br>
+                <strong>Target Price:</strong> $${targetPrice.toFixed(2)}<br>
+                <strong>Current Profit:</strong> $${currentProfit.toFixed(2)}<br>
+                <strong>Target Profit:</strong> $${targetProfit.toFixed(2)}<br>
+                <br>
+                <strong>Margin Difference:</strong> ${marginDiff.toFixed(2)}% (should be ~-1.43%)<br>
+                <strong>Price Difference:</strong> $${priceDiff.toFixed(2)} (should be ~-$0.29)<br>
+                <strong>Profit Difference:</strong> $${profitDifference.toFixed(2)}<br>
+                <br>
+                <strong>Expected vs Actual:</strong><br>
+                Margin Diff: ${marginDiff.toFixed(2)}% vs -1.43%<br>
+                Price Diff: $${priceDiff.toFixed(2)} vs -$0.29<br>
+            `;
+            
+            console.log('=== CALCULATIONS ===');
+            console.log('Current Margin:', currentMargin);
+            console.log('Target Price:', targetPrice);
+            console.log('Margin Difference:', marginDiff);
+            console.log('Price Difference:', priceDiff);
+        }
+        
+        // Test on page load
+        window.onload = function() {
+            testCalculations();
+        };
+    </script>
+</body>
+</html>

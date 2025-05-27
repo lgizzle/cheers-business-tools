@@ -1,0 +1,1091 @@
+{% extends "base.html" %}
+
+{% block title %}Margin/Markup Calculator - Cheers Liquor Mart{% endblock %}
+
+{% block header_title %}Margin/Markup Calculator{% endblock %}
+
+{% block additional_style %}
+<style>
+    /* Enhanced typography system */
+    :root {
+        --font-size-xs: 12px;
+        --font-size-sm: 14px;
+        --font-size-base: 16px;
+        --font-size-lg: 18px;
+        --font-size-xl: 24px;
+        --font-size-2xl: 32px;
+        --spacing-xs: 8px;
+        --spacing-sm: 16px;
+        --spacing-md: 24px;
+        --spacing-lg: 32px;
+        --border-radius-sm: 4px;
+        --border-radius-md: 6px;
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Two-column grid layout */
+    .margin-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--spacing-sm);
+        margin-bottom: var(--spacing-md);
+    }
+
+    .left-column, .right-column {
+        background: white;
+        border-radius: var(--border-radius-md);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        transition: box-shadow 0.2s ease;
+    }
+
+    .left-column:hover, .right-column:hover {
+        box-shadow: var(--shadow-md);
+    }
+
+    .section-header {
+        background: var(--cheers-primary);
+        color: white;
+        padding: var(--spacing-sm) var(--spacing-md);
+        font-weight: 600;
+        font-size: var(--font-size-base);
+        margin: 0;
+        letter-spacing: -0.01em;
+    }
+
+    .section-content {
+        padding: var(--spacing-md);
+    }
+
+    .field-group {
+        margin-bottom: var(--spacing-md);
+    }
+
+    .field-group:last-child {
+        margin-bottom: 0;
+    }
+
+    .field-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: var(--spacing-xs);
+        cursor: help;
+        position: relative;
+        font-size: var(--font-size-sm);
+        color: #374151;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px 16px;
+        border: 2px solid #e5e7eb;
+        border-radius: var(--border-radius-sm);
+        font-size: var(--font-size-base);
+        transition: all 0.15s ease;
+        line-height: 1.5;
+        box-sizing: border-box;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: var(--cheers-primary);
+        box-shadow: 0 0 0 3px rgba(209, 0, 0, 0.1);
+        transform: translateY(-1px);
+    }
+
+    .form-control:hover {
+        border-color: #d1d5db;
+    }
+
+    /* Enhanced slider controls */
+    .slider-group {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-top: var(--spacing-xs);
+    }
+
+    .form-range {
+        flex: 1;
+        height: 8px;
+        background: linear-gradient(to right, #fee2e2, #fbbf24, #10b981);
+        border-radius: 4px;
+        outline: none;
+        -webkit-appearance: none;
+        position: relative;
+        cursor: pointer;
+    }
+
+    .form-range::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 24px;
+        height: 24px;
+        background: var(--cheers-primary);
+        border-radius: 50%;
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        transition: all 0.15s ease;
+    }
+
+    .form-range::-webkit-slider-thumb:hover {
+        transform: scale(1.1);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .form-range::-moz-range-thumb {
+        width: 24px;
+        height: 24px;
+        background: var(--cheers-primary);
+        border-radius: 50%;
+        cursor: pointer;
+        border: none;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .slider-value {
+        min-width: 70px;
+        padding: 8px 12px;
+        border: 2px solid #e5e7eb;
+        border-radius: var(--border-radius-sm);
+        text-align: center;
+        font-size: var(--font-size-sm);
+        font-weight: 600;
+        transition: border-color 0.15s ease;
+    }
+
+    .slider-value:focus {
+        border-color: var(--cheers-primary);
+        box-shadow: 0 0 0 3px rgba(209, 0, 0, 0.1);
+    }
+
+    .range-inputs {
+        display: flex;
+        gap: 16px;
+        margin-top: 16px;
+    }
+
+    .range-inputs .field-group {
+        flex: 1;
+        margin-bottom: 0;
+    }
+
+    /* Enhanced action buttons */
+    .action-buttons {
+        display: flex;
+        gap: 16px;
+        margin-bottom: var(--spacing-md);
+    }
+
+    .btn {
+        padding: 14px 28px;
+        border-radius: var(--border-radius-md);
+        font-size: var(--font-size-base);
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+        border: 2px solid;
+        position: relative;
+        letter-spacing: -0.01em;
+    }
+
+    .btn:active {
+        transform: translateY(1px);
+    }
+
+    .btn-primary {
+        background: var(--cheers-primary);
+        color: white;
+        border-color: var(--cheers-primary);
+        box-shadow: 0 2px 4px rgba(209, 0, 0, 0.2);
+    }
+
+    .btn-primary:hover {
+        background: var(--cheers-primary-dark);
+        border-color: var(--cheers-primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(209, 0, 0, 0.3);
+    }
+
+    .btn-outline {
+        background: transparent;
+        color: var(--cheers-primary);
+        border-color: var(--cheers-primary);
+    }
+
+    .btn-outline:hover {
+        background: var(--cheers-primary);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(209, 0, 0, 0.2);
+    }
+
+    /* Enhanced recommendation box */
+    .recommendation-box {
+        border: 2px solid var(--cheers-primary);
+        border-radius: var(--border-radius-md);
+        padding: var(--spacing-md);
+        margin-bottom: var(--spacing-md);
+        background: linear-gradient(135deg, #fef2f2 0%, #ffffff 100%);
+        position: relative;
+    }
+
+    .recommendation-box::before {
+        content: '💡';
+        position: absolute;
+        top: var(--spacing-sm);
+        right: var(--spacing-sm);
+        font-size: 20px;
+    }
+
+    .recommendation-box h3 {
+        font-size: var(--font-size-lg);
+        font-weight: 600;
+        margin-bottom: 12px;
+        color: #1f2937;
+        letter-spacing: -0.02em;
+    }
+
+    .key-metric {
+        font-weight: 700;
+        color: var(--cheers-primary);
+        font-size: 1.1em;
+    }
+
+    .recommendation-box ul {
+        margin: 16px 0;
+        padding-left: 0;
+        list-style: none;
+    }
+
+    .recommendation-box li {
+        padding: 6px 0 6px 24px;
+        position: relative;
+        font-size: var(--font-size-sm);
+        line-height: 1.5;
+    }
+
+    .recommendation-box li::before {
+        content: '→';
+        position: absolute;
+        left: 0;
+        color: var(--cheers-primary);
+        font-weight: bold;
+    }
+
+    /* Enhanced price position bar */
+    .price-position {
+        margin: var(--spacing-md) 0;
+    }
+
+    .price-position h4 {
+        margin-bottom: 12px;
+        font-size: var(--font-size-base);
+        font-weight: 600;
+        color: #374151;
+    }
+
+    .position-bar {
+        position: relative;
+        height: 12px;
+        background: linear-gradient(to right, #ef4444 0%, #f59e0b 50%, #10b981 100%);
+        border-radius: 6px;
+        margin: 16px 0;
+        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .position-tick {
+        position: absolute;
+        top: -6px;
+        width: 24px;
+        height: 24px;
+        background: var(--cheers-primary);
+        border-radius: 50%;
+        border: 3px solid white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        transform: translateX(-12px);
+    }
+
+    .position-tick::after {
+        content: attr(data-label);
+        position: absolute;
+        top: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: var(--font-size-xs);
+        font-weight: 600;
+        color: #374151;
+        white-space: nowrap;
+    }
+
+    .position-labels {
+        display: flex;
+        justify-content: space-between;
+        font-size: var(--font-size-sm);
+        font-weight: 600;
+        color: #6b7280;
+        margin-top: 8px;
+    }
+
+    /* Enhanced results cards */
+    .results-cards {
+        display: flex;
+        gap: 16px;
+        margin-bottom: var(--spacing-md);
+    }
+
+    .result-card {
+        flex: 1;
+        border: 2px solid #e5e7eb;
+        border-radius: var(--border-radius-md);
+        padding: var(--spacing-md);
+        background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+        transition: all 0.15s ease;
+    }
+
+    .result-card:hover {
+        border-color: var(--cheers-primary);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .result-card h4 {
+        font-weight: 600;
+        margin-bottom: 12px;
+        font-size: var(--font-size-base);
+        color: #374151;
+        letter-spacing: -0.01em;
+    }
+
+    .result-card .value {
+        font-size: var(--font-size-2xl);
+        font-weight: 700;
+        color: var(--cheers-primary);
+        margin-bottom: 8px;
+        line-height: 1.2;
+        letter-spacing: -0.02em;
+    }
+
+    .result-card .detail {
+        font-size: var(--font-size-sm);
+        color: #6b7280;
+        margin-bottom: 4px;
+        line-height: 1.4;
+    }
+
+    .result-card .detail strong {
+        color: #374151;
+        font-weight: 600;
+    }
+
+    /* Enhanced table styles */
+    .table-container {
+        overflow-x: auto;
+        border: 1px solid #e5e7eb;
+        border-radius: var(--border-radius-md);
+        background: white;
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: var(--font-size-sm);
+        margin-bottom: 0;
+    }
+
+    .table th {
+        background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+        padding: 16px 12px;
+        text-align: left;
+        font-weight: 600;
+        border-bottom: 2px solid #e5e7eb;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        color: #374151;
+        letter-spacing: -0.01em;
+    }
+
+    .table th.sortable {
+        cursor: pointer;
+        transition: background-color 0.15s ease;
+    }
+
+    .table th.sortable:hover {
+        background: #f3f4f6;
+    }
+
+    .table th.sortable:after {
+        content: ' ↕';
+        color: #9ca3af;
+        font-size: 12px;
+    }
+
+    .table td {
+        padding: 16px 12px;
+        border-bottom: 1px solid #f3f4f6;
+        transition: background-color 0.15s ease;
+        line-height: 1.4;
+    }
+
+    .table tbody tr:hover {
+        background-color: #f9fafb;
+    }
+
+    .table tbody tr:nth-child(even) {
+        background-color: #fafafa;
+    }
+
+    .table tbody tr:nth-child(even):hover {
+        background-color: #f3f4f6;
+    }
+
+    .table .number {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+        font-weight: 500;
+    }
+
+    .sweet-spot {
+        background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%) !important;
+        border-left: 4px solid #22c55e;
+        font-weight: 600;
+    }
+
+    .sweet-spot td {
+        background: transparent !important;
+        color: #166534;
+    }
+
+    .current-price {
+        background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%) !important;
+        border-left: 4px solid #f59e0b;
+        font-weight: 600;
+    }
+
+    .current-price td {
+        background: transparent !important;
+        color: #92400e;
+    }
+
+    /* Enhanced tooltips */
+    .tooltip-label {
+        position: relative;
+        cursor: help;
+    }
+
+    .tooltip-label:hover::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        bottom: 100%;
+        left: 0;
+        background: #1f2937;
+        color: white;
+        padding: 8px 12px;
+        border-radius: var(--border-radius-sm);
+        font-size: var(--font-size-xs);
+        white-space: nowrap;
+        z-index: 1000;
+        margin-bottom: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        animation: fadeIn 0.2s ease;
+    }
+
+    .tooltip-label:hover::before {
+        content: '';
+        position: absolute;
+        bottom: 100%;
+        left: 12px;
+        border: 4px solid transparent;
+        border-top-color: #1f2937;
+        margin-bottom: -4px;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(4px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Success and error states */
+    .success-indicator {
+        color: #22c55e;
+        font-weight: 600;
+    }
+
+    .warning-indicator {
+        color: #f59e0b;
+        font-weight: 600;
+    }
+
+    .error-indicator {
+        color: #ef4444;
+        font-weight: 600;
+    }
+
+    /* Loading states */
+    .loading {
+        opacity: 0.6;
+        pointer-events: none;
+        position: relative;
+    }
+
+    .loading::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 20px;
+        height: 20px;
+        border: 2px solid #e5e7eb;
+        border-top: 2px solid var(--cheers-primary);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: translate(-50%, -50%) rotate(0deg); }
+        100% { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    /* Smooth transitions for value changes */
+    .animate-value {
+        transition: all 0.3s ease;
+    }
+
+    /* Enhanced responsive design */
+    @media (max-width: 768px) {
+        .margin-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+        }
+        
+        .results-cards {
+            flex-direction: column;
+        }
+        
+        .range-inputs {
+            flex-direction: column;
+        }
+
+        .section-content {
+            padding: var(--spacing-sm);
+        }
+
+        .result-card .value {
+            font-size: var(--font-size-xl);
+        }
+
+        .table th, .table td {
+            padding: 12px 8px;
+        }
+    }
+
+    /* Accessibility improvements */
+    .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+    }
+
+    /* Focus styles for keyboard navigation */
+    .btn:focus,
+    .form-control:focus,
+    .form-range:focus {
+        outline: 2px solid var(--cheers-primary);
+        outline-offset: 2px;
+    }
+
+    /* Hide default elements */
+    .d-none {
+        display: none !important;
+    }
+
+    /* Empty state styling */
+    .empty-state {
+        text-align: center;
+        padding: var(--spacing-lg);
+        color: #6b7280;
+    }
+
+    .empty-state h5 {
+        font-size: var(--font-size-lg);
+        font-weight: 600;
+        margin-bottom: 12px;
+        color: #374151;
+    }
+
+    .empty-state p {
+        font-size: var(--font-size-sm);
+        line-height: 1.6;
+        max-width: 300px;
+        margin: 0 auto;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<p class="lead">Calculate optimal selling price based on cost and desired margin, or analyze current pricing to determine margins and markup.</p>
+
+<div class="margin-grid">
+    <!-- Left Column: Inputs -->
+    <div class="left-column">
+        <div class="section-header">Product Information & Settings</div>
+        <div class="section-content">
+            <form id="margin-calc-form">
+                <div class="field-group">
+                    <label for="product_name" class="tooltip-label" data-tooltip="Enter the name or SKU of your product">Product Name</label>
+                    <input type="text" class="form-control" id="product_name" placeholder="Example: Grey Goose" autocomplete="off">
+                </div>
+
+                <div class="field-group">
+                    <label for="cost" class="tooltip-label" data-tooltip="Your total cost per unit including all expenses">Product Cost ($)</label>
+                    <input type="number" class="form-control" id="cost" step="0.01" placeholder="Enter product cost" required autocomplete="off">
+                </div>
+
+                <div class="field-group">
+                    <label for="current_price" class="tooltip-label" data-tooltip="Your current selling price (optional for analysis)">Current Price ($, Optional)</label>
+                    <input type="number" class="form-control" id="current_price" step="0.01" placeholder="Enter current price (if any)" autocomplete="off">
+                </div>
+
+                <div class="field-group">
+                    <label class="tooltip-label" data-tooltip="Your desired profit margin as a percentage of selling price">Target Margin (%)</label>
+                    <div class="slider-group">
+                        <input type="range" class="form-range" id="targetMargin" min="0" max="80" value="30" step="0.5" aria-label="Target margin percentage">
+                        <input type="number" class="form-control slider-value" id="targetMarginValue" value="30" min="0" max="80" step="0.5" aria-label="Target margin value">
+                    </div>
+                    <small style="color: #6b7280; margin-top: 8px; display: block; font-size: var(--font-size-xs);">Recommended: 28-32% for optimal pricing</small>
+                </div>
+
+                <div class="field-group">
+                    <label class="tooltip-label" data-tooltip="Range for sensitivity analysis table">Sensitivity Analysis Range</label>
+                    <div class="range-inputs">
+                        <div class="field-group">
+                            <label for="min_margin">Min %</label>
+                            <input type="number" class="form-control" id="min_margin" value="23" min="0" max="100">
+                        </div>
+                        <div class="field-group">
+                            <label for="max_margin">Max %</label>
+                            <input type="number" class="form-control" id="max_margin" value="40" min="0" max="100">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button type="button" class="btn btn-primary" id="calculate-btn">Calculate</button>
+                    <button type="button" class="btn btn-outline" id="export-btn">Export to Excel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Right Column: Outputs -->
+    <div class="right-column">
+        <div class="section-header">Results & Analysis</div>
+        <div class="section-content">
+            <div id="results-container" class="d-none">
+                <!-- Pricing Recommendation -->
+                <div class="recommendation-box" id="recommendationBox">
+                    <h3>Pricing Recommendation</h3>
+                    <p id="recommendationText">Enter product cost to see recommendations</p>
+                    <ul id="recommendationList">
+                        <li>Current pricing generates strong margins</li>
+                        <li>Monitor for customer price sensitivity</li>
+                        <li>Consider competitive positioning - are you pricing yourself out?</li>
+                        <li id="priceDiffRecommendation">Could reduce price by <strong>$<span class="animate-value" id="priceDiff">0.00</span></strong> and still meet target</li>
+                    </ul>
+                </div>
+
+                <!-- Price Position Bar -->
+                <div class="price-position">
+                    <h4>Price Positioning</h4>
+                    <div class="position-bar">
+                        <div class="position-tick" style="left: 65%;" id="currentTick" data-label="Current"></div>
+                        <div class="position-tick" style="left: 45%;" id="targetTick" data-label="Target"></div>
+                    </div>
+                    <div class="position-labels">
+                        <span>Lower Margin</span>
+                        <span style="color: #22c55e; font-weight: 600;">Sweet Spot (28-32%)</span>
+                        <span>Higher Margin</span>
+                    </div>
+                </div>
+
+                <!-- Results Cards -->
+                <div class="results-cards">
+                    <div class="result-card">
+                        <h4>Price at Target Margin</h4>
+                        <div class="value animate-value" id="targetPrice">$0.00</div>
+                        <div class="detail">Profit per Unit: <strong>$<span class="animate-value" id="targetProfit">0.00</span></strong></div>
+                        <div class="detail">Equivalent Markup: <strong><span class="animate-value" id="targetMarkup">0.00</span>%</strong></div>
+                    </div>
+                    <div class="result-card">
+                        <h4>Current Price Analysis</h4>
+                        <div class="value animate-value" id="currentMargin">0.00%</div>
+                        <div class="detail">Current Profit: <strong>$<span class="animate-value" id="currentProfit">0.00</span></strong></div>
+                        <div class="detail">Profit Difference: <strong id="profitDiffText">$<span class="animate-value" id="profitDiff">0.00</span> difference</strong></div>
+                    </div>
+                </div>
+
+                <!-- Sensitivity Table -->
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th class="sortable" aria-sort="none">Margin %</th>
+                                <th class="number">Markup %</th>
+                                <th class="number">Price</th>
+                                <th class="number">Profit</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sensitivityTable">
+                            <!-- Table content will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="empty-state" class="empty-state">
+                <h5>Enter product details to see calculations</h5>
+                <p>Fill in the product information on the left to generate pricing analysis and recommendations.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const calculateBtn = document.getElementById('calculate-btn');
+        const exportBtn = document.getElementById('export-btn');
+        const resultsContainer = document.getElementById('results-container');
+        const emptyState = document.getElementById('empty-state');
+
+        // Add loading state management
+        function setLoading(element, isLoading) {
+            if (isLoading) {
+                element.classList.add('loading');
+            } else {
+                element.classList.remove('loading');
+            }
+        }
+
+        // Animate number changes
+        function animateNumber(element, newValue, isPercentage = false, isCurrency = false) {
+            const current = parseFloat(element.textContent.replace(/[$%,]/g, '')) || 0;
+            const target = parseFloat(newValue) || 0;
+            const duration = 300;
+            const steps = 20;
+            const stepValue = (target - current) / steps;
+            const stepDuration = duration / steps;
+            
+            let currentStep = 0;
+            const timer = setInterval(() => {
+                currentStep++;
+                const value = current + (stepValue * currentStep);
+                
+                let formattedValue = value.toFixed(2);
+                if (isCurrency) formattedValue = '$' + formattedValue;
+                if (isPercentage) formattedValue = formattedValue + '%';
+                
+                element.textContent = formattedValue;
+                
+                if (currentStep >= steps) {
+                    clearInterval(timer);
+                    let finalValue = target.toFixed(2);
+                    if (isCurrency) finalValue = '$' + finalValue;
+                    if (isPercentage) finalValue = finalValue + '%';
+                    element.textContent = finalValue;
+                }
+            }, stepDuration);
+        }
+
+        // FIXED: Sync sliders with number inputs
+        const targetMarginSlider = document.getElementById('targetMargin');
+        const targetMarginValue = document.getElementById('targetMarginValue');
+
+        targetMarginSlider.addEventListener('input', function() {
+            targetMarginValue.value = this.value;
+            calculate();
+        });
+
+        targetMarginValue.addEventListener('input', function() {
+            const value = Math.max(0, Math.min(80, parseFloat(this.value) || 0));
+            this.value = value;
+            targetMarginSlider.value = value;
+            calculate();
+        });
+
+        // Live calculation on input changes with debouncing
+        let calculationTimeout;
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', function() {
+                clearTimeout(calculationTimeout);
+                calculationTimeout = setTimeout(calculate, 150);
+            });
+        });
+
+        calculateBtn.addEventListener('click', calculate);
+
+        function calculate() {
+            const cost = parseFloat(document.getElementById('cost').value) || 0;
+            const currentPrice = parseFloat(document.getElementById('current_price').value) || 0;
+            const targetMargin = parseFloat(document.getElementById('targetMarginValue').value) || 0;
+
+            if (cost === 0) {
+                resultsContainer.classList.add('d-none');
+                emptyState.classList.remove('d-none');
+                return;
+            }
+
+            emptyState.classList.add('d-none');
+            resultsContainer.classList.remove('d-none');
+
+            // FIXED: Calculate target price
+            const targetPrice = cost / (1 - targetMargin / 100);
+            const targetProfit = targetPrice - cost;
+            const targetMarkup = (targetProfit / cost) * 100;
+
+            // FIXED: Calculate current margin if current price is provided
+            let currentMargin = 0;
+            let currentProfit = 0;
+            if (currentPrice > 0) {
+                currentMargin = ((currentPrice - cost) / currentPrice) * 100;
+                currentProfit = currentPrice - cost;
+            }
+
+            // Update UI with animations
+            document.getElementById('targetPrice').textContent = '$' + targetPrice.toFixed(2);
+            document.getElementById('targetProfit').textContent = targetProfit.toFixed(2);
+            document.getElementById('targetMarkup').textContent = targetMarkup.toFixed(1);
+
+            if (currentPrice > 0) {
+                document.getElementById('currentMargin').textContent = currentMargin.toFixed(2) + '%';
+                document.getElementById('currentProfit').textContent = currentProfit.toFixed(2);
+                
+                // FIXED: Calculate actual profit difference
+                const profitDifference = currentProfit - targetProfit;
+                const marginDiff = currentMargin - targetMargin;
+                const priceDiff = currentPrice - targetPrice;
+                
+                document.getElementById('profitDiff').textContent = Math.abs(profitDifference).toFixed(2);
+                
+                // FIXED: Update profit difference text direction
+                const profitDiffText = document.getElementById('profitDiffText');
+                if (profitDifference > 0) {
+                    profitDiffText.innerHTML = '<strong>$<span class="animate-value" id="profitDiff">' + Math.abs(profitDifference).toFixed(2) + '</span> more</strong>';
+                } else if (profitDifference < 0) {
+                    profitDiffText.innerHTML = '<strong>$<span class="animate-value" id="profitDiff">' + Math.abs(profitDifference).toFixed(2) + '</span> less</strong>';
+                } else {
+                    profitDiffText.innerHTML = '<strong>$<span class="animate-value" id="profitDiff">0.00</span> exact match</strong>';
+                }
+
+                // FIXED: Update recommendation text based on margin difference
+                updateRecommendation(marginDiff, priceDiff, currentMargin, targetMargin);
+                
+                // FIXED: Update position bar
+                updatePositionBar(currentMargin, targetMargin);
+            } else {
+                // No current price provided
+                document.getElementById('currentMargin').textContent = 'Not set';
+                document.getElementById('currentProfit').textContent = '0.00';
+                document.getElementById('profitDiff').textContent = '0.00';
+                
+                const recommendationText = document.getElementById('recommendationText');
+                recommendationText.innerHTML = 'Set your target price at <span class="key-metric">$' + targetPrice.toFixed(2) + '</span> for ' + targetMargin.toFixed(1) + '% margin';
+                
+                // Hide recommendations that need current price
+                document.getElementById('priceDiffRecommendation').style.display = 'none';
+            }
+
+            // FIXED: Update sensitivity table
+            updateSensitivityTable(cost, currentPrice);
+        }
+
+        // FIXED: Update recommendation function
+        function updateRecommendation(marginDiff, priceDiff, currentMargin, targetMargin) {
+            const recommendationBox = document.getElementById('recommendationBox');
+            const recommendationText = document.getElementById('recommendationText');
+            const priceDiffElement = document.getElementById('priceDiff');
+            const priceDiffRecommendation = document.getElementById('priceDiffRecommendation');
+            
+            // Show price difference recommendation
+            priceDiffRecommendation.style.display = 'list-item';
+            priceDiffElement.textContent = Math.abs(priceDiff).toFixed(2);
+            
+            if (Math.abs(marginDiff) < 2) {
+                recommendationBox.style.background = 'linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%)';
+                recommendationBox.style.borderColor = '#22c55e';
+                recommendationText.innerHTML = `Current pricing is well-aligned with target margin (within <span class="key-metric">${Math.abs(marginDiff).toFixed(1)}%</span>)`;
+                
+                if (priceDiff > 0) {
+                    priceDiffRecommendation.innerHTML = '→ Could reduce price by <strong>$<span class="animate-value">' + Math.abs(priceDiff).toFixed(2) + '</span></strong> and still meet target';
+                } else {
+                    priceDiffRecommendation.innerHTML = '→ Could increase price by <strong>$<span class="animate-value">' + Math.abs(priceDiff).toFixed(2) + '</span></strong> to reach target';
+                }
+            } else if (marginDiff > 0) {
+                recommendationBox.style.background = 'linear-gradient(135deg, #fffbeb 0%, #ffffff 100%)';
+                recommendationBox.style.borderColor = '#f59e0b';
+                recommendationText.innerHTML = `Current pricing exceeds target margin by <span class="key-metric">${Math.abs(marginDiff).toFixed(1)}%</span>`;
+                priceDiffRecommendation.innerHTML = '→ Could reduce price by <strong>$<span class="animate-value">' + Math.abs(priceDiff).toFixed(2) + '</span></strong> and still meet target';
+            } else {
+                recommendationBox.style.background = 'linear-gradient(135deg, #fef2f2 0%, #ffffff 100%)';
+                recommendationBox.style.borderColor = '#ef4444';
+                recommendationText.innerHTML = `Current pricing is below target margin by <span class="key-metric">${Math.abs(marginDiff).toFixed(1)}%</span>`;
+                priceDiffRecommendation.innerHTML = '→ Should increase price by <strong>$<span class="animate-value">' + Math.abs(priceDiff).toFixed(2) + '</span></strong> to reach target';
+            }
+        }
+
+        // FIXED: Update position bar
+        function updatePositionBar(currentMargin, targetMargin) {
+            const currentTick = document.getElementById('currentTick');
+            const targetTick = document.getElementById('targetTick');
+            
+            // Calculate positions (0-100% on the bar)
+            const maxMargin = 50; // Assume 50% as max for visualization
+            const currentPosition = Math.min(100, Math.max(0, (currentMargin / maxMargin) * 100));
+            const targetPosition = Math.min(100, Math.max(0, (targetMargin / maxMargin) * 100));
+            
+            currentTick.style.left = currentPosition + '%';
+            targetTick.style.left = targetPosition + '%';
+        }
+
+        // FIXED: Update sensitivity table
+        function updateSensitivityTable(cost, currentPrice) {
+            if (cost === 0) return;
+            
+            const minRange = parseInt(document.getElementById('min_margin').value) || 23;
+            const maxRange = parseInt(document.getElementById('max_margin').value) || 40;
+            
+            const tbody = document.getElementById('sensitivityTable');
+            setLoading(tbody.parentElement, true);
+            
+            // Clear existing content
+            tbody.innerHTML = '';
+
+            // Use setTimeout to show loading state
+            setTimeout(() => {
+                for (let margin = minRange; margin <= maxRange; margin++) {
+                    // FIXED: Use cost variable properly
+                    const price = cost / (1 - margin / 100);
+                    const profit = price - cost;
+                    const markup = (profit / cost) * 100;
+                    
+                    const row = document.createElement('tr');
+                    
+                    let rowClass = '';
+                    let notes = '';
+                    
+                    // FIXED: Sweet spot highlighting
+                    if (margin >= 28 && margin <= 32) {
+                        rowClass = 'sweet-spot';
+                        notes = 'Sweet Spot';
+                    }
+                    
+                    // FIXED: Current price highlighting with better logic
+                    if (currentPrice > 0) {
+                        const currentMargin = ((currentPrice - cost) / currentPrice) * 100;
+                        if (Math.abs(margin - currentMargin) < 0.75) {
+                            rowClass = 'current-price';
+                            notes = 'Current Price';
+                        }
+                    }
+                    
+                    row.className = rowClass;
+                    row.innerHTML = `
+                        <td><strong>${margin}.0%</strong></td>
+                        <td class="number">${markup.toFixed(1)}%</td>
+                        <td class="number">$${price.toFixed(2)}</td>
+                        <td class="number">$${profit.toFixed(2)}</td>
+                        <td>${notes}</td>
+                    `;
+                    
+                    tbody.appendChild(row);
+                }
+                
+                setLoading(tbody.parentElement, false);
+            }, 100);
+        }
+
+        // Export to Excel with loading state
+        exportBtn.addEventListener('click', function() {
+            const productName = document.getElementById('product_name').value || 'Unnamed Product';
+            const cost = parseFloat(document.getElementById('cost').value);
+            const currentPrice = document.getElementById('current_price').value ?
+                               parseFloat(document.getElementById('current_price').value) : null;
+            const targetMargin = parseFloat(document.getElementById('targetMarginValue').value) / 100;
+            const minMargin = parseFloat(document.getElementById('min_margin').value) / 100;
+            const maxMargin = parseFloat(document.getElementById('max_margin').value) / 100;
+
+            if (isNaN(cost) || cost <= 0) {
+                alert('Please enter a valid product cost');
+                return;
+            }
+
+            // Show loading state
+            setLoading(exportBtn, true);
+            exportBtn.textContent = 'Generating...';
+
+            // Prepare data for API request
+            const data = {
+                product_name: productName,
+                cost: cost,
+                current_price: currentPrice,
+                target_margin: targetMargin,
+                min_margin: minMargin,
+                max_margin: maxMargin
+            };
+
+            // Send request to generate the report
+            fetch('/api/generate-margin-report', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                setLoading(exportBtn, false);
+                exportBtn.textContent = 'Export to Excel';
+                
+                if (data.success) {
+                    // Navigate to the download URL
+                    window.location.href = data.download_url;
+                } else {
+                    alert('Error generating report: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                setLoading(exportBtn, false);
+                exportBtn.textContent = 'Export to Excel';
+                alert('Failed to generate report. Please try again.');
+            });
+        });
+
+        // Initialize with empty state
+        calculate();
+
+        // Add keyboard navigation for accessibility
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && document.activeElement.tagName === 'INPUT') {
+                calculate();
+            }
+        });
+    });
+</script>
+{% endblock %}
